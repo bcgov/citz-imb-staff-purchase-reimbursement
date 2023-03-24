@@ -1,0 +1,19 @@
+# Auto Label Git Action Config
+# 'label_name'
+#   - path_of_diff/where/code_lives/to_base_label_upon
+
+'GitHub Actions':
+  - .github/workflows/*
+  
+'Docker':
+  - */dockerfile
+  - docker-compose.yaml
+  
+'Backend':
+  - */api/*
+  
+'Frontend':
+  - */app/*
+  
+'Environment Variables':
+  - .env*
