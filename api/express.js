@@ -21,10 +21,18 @@ const OPENAPI_OPTIONS = {
       version: '1.0.0',
       description: 'Documentation for the Purchase Reimbursement API.',
     },
-    servers: [{ url: `http://${Constants.HOSTNAME}:${Constants.PORT}` }],
+    servers: [{ url: `http://${Constants.HOSTNAME}:${Constants.PORT}/api` }],
   },
   apis: ['./docs/*.yaml'],
 };
+
+// Express Rate Limiter Configuration
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
 
 // Express middleware
 app.use(express.json());
@@ -33,7 +41,7 @@ app.use(cookieParser());
 app.use(compression());
 app.use(morgan('dev')); // logging middleware
 app.use(cors());
-app.use(rateLimit());
+app.use(limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
 // Routing
