@@ -10,10 +10,10 @@
   - docker-compose.yaml
   
 'Backend':
-  - */api/*
+  - /api/*
   
 'Frontend':
-  - */app/*
+  - /app/*
   
 'Environment Variables':
   - .env*
