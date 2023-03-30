@@ -5,19 +5,10 @@
 # Any change to any file in .github/workflows
 'GitHub Actions':
   - .github/workflows/*
-
-# Any change to the docker-compose file or any dockerfile in the repo
-'Docker':
-  - '**/dockerfile'
-  - docker-compose.yaml
   
 # Any changes to file or subfolders in /api
 'Backend':
   - api/**/*
-  
-# Any changes to file or subfolders in /app
-'Frontend':
-  - app/**/*
   
 # Any change to any file in any directory with a .env in name
 'Environment Variables':
