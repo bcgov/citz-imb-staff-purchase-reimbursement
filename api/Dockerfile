@@ -11,9 +11,4 @@ COPY package*.json .
 RUN npm i --omit=dev
 COPY . .
 
-
-
-# Expose the port
-#EXPOSE 3004
-
 CMD ["node", "server.js"]
