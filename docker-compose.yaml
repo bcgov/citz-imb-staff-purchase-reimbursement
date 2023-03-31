@@ -21,6 +21,25 @@ services:
       timeout: 30s
       retries: 10
       start_period: 120s
+###########
+### APP ###
+###########
+  app:
+    container_name: dbarkowsky-capstone-app
+    tty: true
+    restart: on-failure
+    build:
+      context: ./app
+    networks:
+      - purchase-net
+    ports:
+      - 8080:8080
+    depends_on:
+      api:
+        condition: service_healthy
+###########
+### NET ###
+###########
 networks:
   purchase-net:
     driver: "bridge"
