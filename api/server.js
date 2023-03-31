@@ -1,6 +1,6 @@
 import app from './express.js';
 
-const port = process.env.PORT || 3004;
+const port = process.env.API_PORT || 3004;
 
 app.listen(port, (err) => {
     if (err) console.log(err);
