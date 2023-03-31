@@ -1,0 +1,27 @@
+components:
+  responses:
+    429TooManyRequests:
+      description: Express rate limiter reached. Too many requests.
+      content: 
+        text/plain:
+          schema:
+            type: string
+            example: 'Too many requests, please try again later.'
+### PATHS ###
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Checks if the API is running and healthy.
+      description: Checks if the API is running and healthy.
+      responses:
+        '200':
+          description: OK
+          content: 
+            text/plain:
+              schema:
+                type: string
+                example: '/health endpoint reached. API running.'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
