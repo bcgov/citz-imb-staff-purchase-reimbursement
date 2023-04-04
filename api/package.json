@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "dev": "nodemon server.js"
   },
   "keywords": [],
@@ -12,7 +12,9 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3"
   },
   "dependencies": {
     "compression": "^1.7.4",
