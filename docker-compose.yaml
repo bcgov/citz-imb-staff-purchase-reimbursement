@@ -19,8 +19,34 @@ services:
       test: curl localhost:${API_PORT:-3004}/api/health | grep 'API running'
       interval: 20s
       timeout: 30s
-      retries: 10
-      start_period: 120s
+      retries: 5
+      start_period: 20s
+###########
+### APP ###
+###########
+  app:
+    container_name: dbarkowsky-capstone-app
+    tty: true
+    restart: on-failure
+    build:
+      context: ./app
+      target: prod
+    networks:
+      - purchase-net
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: curl --fail http://localhost:8080 || exit 1
+      interval: 20s
+      retries: 5
+      start_period: 20s
+      timeout: 30s
+    depends_on:
+      api:
+        condition: service_healthy
+###########
+### NET ###
+###########
 networks:
   purchase-net:
     driver: "bridge"
