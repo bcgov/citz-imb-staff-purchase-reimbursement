@@ -52,7 +52,7 @@ RUN npm i
 RUN npm run build
 
 #########################
-### PROD IMAGE Part 1 ###
+### PROD IMAGE Part 2 ###
 #########################
 FROM nginx:stable-alpine3.17-slim as prod
 
