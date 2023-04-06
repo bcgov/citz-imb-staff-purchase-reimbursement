@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "test": "npx cypress run",
+    "dev": "nodemon server.js",
+    "cypress": "./node_modules/.bin/cypress open"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,7 @@
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "cypress": "^12.9.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-rate-limit": "^6.7.0",
