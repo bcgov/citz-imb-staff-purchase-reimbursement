@@ -1,5 +1,5 @@
 import express from 'express';
-import { postTest } from '../controllers/chefs-api-controller.js';
+import { submitRequestHandler } from '../controllers/chefs-api-controller.js';
 import { healthCheck } from '../controllers/health-api-controller.js';
 const router = express.Router();
 
@@ -8,7 +8,7 @@ router.route('/health')
     .get(healthCheck);
 
 // CHEFS endpoints
-router.route('/chefs')
-    .post(postTest);
+router.route('/requests')
+    .post(submitRequestHandler);
 
 export default router;

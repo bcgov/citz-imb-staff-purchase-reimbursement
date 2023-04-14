@@ -28,3 +28,6 @@ dist-ssr
 # Cypress 
 **/cypress/**/videos
 **/cypress/**/screenshots
+
+# Mongo
+mongo

@@ -1,5 +1,4 @@
 const endpoint = `http://${process.env.HOSTNAME}:${process.env.API_PORT}/api`;
-//import supertest from 'supertest';
 const supertest = require('supertest')
 
 const request = supertest(endpoint);
