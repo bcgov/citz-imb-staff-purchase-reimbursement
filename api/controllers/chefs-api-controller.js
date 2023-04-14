@@ -9,7 +9,7 @@ const submitRequestHandler = async (req, res) => {
   if (response.insertedId) {
     return res.status(201).json(newPurchaseRequest);
   }
-  return res.status(400);
+  return res.status(400).send('Reimbursement request was not successful.');
 }
 
 export { submitRequestHandler };

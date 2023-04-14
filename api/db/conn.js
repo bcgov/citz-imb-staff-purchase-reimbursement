@@ -6,7 +6,7 @@ let conn;
 try {
   conn = await client.connect();
 } catch (e) {
-  console.error(e);
+  console.error(`Error connecting to MongoDB. \nDetails: ${e}`);
 }
 
 const db = conn.db(process.env.MONGO_DATABASE);
