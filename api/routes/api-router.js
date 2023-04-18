@@ -1,6 +1,7 @@
 import express from 'express';
 import { submitRequestHandler } from '../controllers/chefs-api-controller.js';
 import { healthCheck } from '../controllers/health-api-controller.js';
+
 const router = express.Router();
 
 // Health-check endpoints

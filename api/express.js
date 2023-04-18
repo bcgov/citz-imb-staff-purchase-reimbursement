@@ -9,8 +9,14 @@ import rateLimit from 'express-rate-limit';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import Constants from './constants/Constants.js';
+import { keycloakInit } from './keycloak/index.js';
+import { middleware as protect } from './keycloak/index.js';
+
+// TODO: delete after test
+import { healthCheck } from './controllers/health-api-controller.js';
 
 const app = express();
+keycloakInit(app);
 
 // Swagger Configuration
 const OPENAPI_OPTIONS = {
@@ -43,6 +49,16 @@ app.use(morgan('dev')); // logging middleware
 app.use(cors());
 app.use(limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
+
+// Keycloak test
+
+// Protected Endpoints
+const keycloakRouter = express.Router();
+
+keycloakRouter.route('/test')
+  .get(healthCheck);
+
+app.use('/keycloak', protect, keycloakRouter);
 
 // Routing
 app.use('/api', apiRouter);
