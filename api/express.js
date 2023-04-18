@@ -4,16 +4,14 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import morgan from 'morgan';
 import cors from 'cors';
-import apiRouter from './routes/api-router.js';
 import rateLimit from 'express-rate-limit';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import Constants from './constants/Constants.js';
 import { keycloakInit } from './keycloak/index.js';
 import { middleware as protect } from './keycloak/index.js';
-
-// TODO: delete after test
-import { healthCheck } from './controllers/health-api-controller.js';
+import openRouter from './routes/open/index.js';
+import protectedRouter from './routes/protected/index.js';
 
 const app = express();
 keycloakInit(app);
@@ -50,17 +48,11 @@ app.use(cors());
 app.use(limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
-// Keycloak test
+// Routing Open Routes
+app.use('/api', openRouter.chefsRouter);
+app.use('/api', openRouter.healthRouter);
 
-// Protected Endpoints
-const keycloakRouter = express.Router();
-
-keycloakRouter.route('/test')
-  .get(healthCheck);
-
-app.use('/keycloak', protect, keycloakRouter);
-
-// Routing
-app.use('/api', apiRouter);
+// Routing Protected Routes
+app.use('/api', protect, protectedRouter.keycloakTest)
 
 export default app;
