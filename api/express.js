@@ -53,6 +53,13 @@ app.use('/api', openRouter.chefsRouter);
 app.use('/api', openRouter.healthRouter);
 
 // Routing Protected Routes
-app.use('/api', protect, protectedRouter.keycloakTest)
+// Allow for removed protection when API testing
+
+// TODO: Remove test route after demo
+if (`${process.env.TESTING}`.toLowerCase() == "true") {
+  app.use('/api', protectedRouter.keycloakTest)
+} else {
+  app.use('/api', protect, protectedRouter.keycloakTest)
+}
 
 export default app;
