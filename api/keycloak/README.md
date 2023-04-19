@@ -67,7 +67,7 @@ keycloak/
 
 ENVIRONMENT= # (local only) Set to 'local' when running container locally.
 FRONTEND_PORT= # (local only) Port of the frontend application.
-PORT= # (local only) Port of the backend application.
+API_PORT= # (local only) Port of the backend application.
 
 FRONTEND_URL= # (production only) URL of the frontend application.
 BACKEND_URL= # (production only) URL of the backend application.

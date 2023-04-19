@@ -6,7 +6,7 @@ const {
   FRONTEND_URL,
   FRONTEND_PORT,
   BACKEND_URL,
-  PORT,
+  API_PORT,
   SSO_AUTH_SERVER_URL,
   SSO_CLIENT_ID,
   SSO_CLIENT_SECRET,
@@ -18,7 +18,7 @@ let backendUrl = BACKEND_URL;
 
 if (ENVIRONMENT && ENVIRONMENT === 'local') {
   frontendUrl = `http://localhost:${FRONTEND_PORT}`;
-  backendUrl = `http://localhost:${PORT}`;
+  backendUrl = `http://localhost:${API_PORT}`;
 }
 
 // Exported configuration values.

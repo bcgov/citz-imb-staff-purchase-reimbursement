@@ -25,7 +25,7 @@ const OPENAPI_OPTIONS = {
       version: '1.0.0',
       description: 'Documentation for the Purchase Reimbursement API.',
     },
-    servers: [{ url: `http://${Constants.HOSTNAME}:${Constants.PORT}/api` }],
+    servers: [{ url: `http://${Constants.HOSTNAME}:${Constants.API_PORT}/api` }],
   },
   apis: ['./docs/*.yaml'],
 };
