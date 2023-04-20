@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "dev": "nodemon server.js"
+    "dev": "npx nodemon -r dotenv/config server.js dotenv_config_path=../.env"
   },
   "keywords": [],
   "author": "",
