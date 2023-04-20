@@ -8,9 +8,9 @@ import rateLimit from 'express-rate-limit';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import Constants from './constants/Constants.js';
-import { keycloakInit, middleware as protect } from './keycloak';
-import openRouter from './routes/open';
-import protectedRouter from './routes/protected';
+import { keycloakInit, middleware as protect } from './keycloak/index.js';
+import openRouter from './routes/open/index.js';
+import protectedRouter from './routes/protected/index.js';
 
 const app = express();
 keycloakInit(app);
@@ -53,7 +53,7 @@ app.use('/api', openRouter.healthRouter);
 
 // Routing Protected Routes
 // Allow for removed protection when API testing
-const routeProtector = `${process.env.TESTING}`.toLowerCase() == "true" ? (request, response, next) => { next(); } : protect;
+const routeProtector = `${process.env.TESTING}`.toLowerCase() == 'true' ? (request, response, next) => { next(); } : protect;
 // TODO: Remove test route after demo
 app.use('/api', routeProtector, protectedRouter.keycloakTest);
 
