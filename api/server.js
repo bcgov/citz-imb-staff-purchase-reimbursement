@@ -1,6 +1,7 @@
+import Constants from './constants/Constants.js';
 import app from './express.js';
 
-const port = process.env.API_PORT || 3004;
+const port = Constants.API_PORT;
 
 app.listen(port, (err) => {
     if (err) console.log(err);

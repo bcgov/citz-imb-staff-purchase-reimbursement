@@ -4,13 +4,16 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import morgan from 'morgan';
 import cors from 'cors';
-import apiRouter from './routes/api-router.js';
 import rateLimit from 'express-rate-limit';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import Constants from './constants/Constants.js';
+import { keycloakInit, middleware as protect } from './keycloak/index.js';
+import openRouter from './routes/open/index.js';
+import protectedRouter from './routes/protected/index.js';
 
 const app = express();
+keycloakInit(app);
 
 // Swagger Configuration
 const OPENAPI_OPTIONS = {
@@ -21,7 +24,7 @@ const OPENAPI_OPTIONS = {
       version: '1.0.0',
       description: 'Documentation for the Purchase Reimbursement API.',
     },
-    servers: [{ url: `http://${Constants.HOSTNAME}:${Constants.PORT}/api` }],
+    servers: [{ url: `http://${Constants.HOSTNAME}:${Constants.API_PORT}/api` }],
   },
   apis: ['./docs/*.yaml'],
 };
@@ -44,7 +47,15 @@ app.use(cors());
 app.use(limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
-// Routing
-app.use('/api', apiRouter);
+// Routing Open Routes
+app.use('/api', openRouter.chefsRouter);
+app.use('/api', openRouter.healthRouter);
+
+// Routing Protected Routes
+// Allow for removed protection when API testing
+const routeProtector = `${process.env.TESTING}`.toLowerCase() == 'true' ? (request, response, next) => { next(); } : protect;
+// TODO: Remove test route after demo
+app.use('/api', routeProtector, protectedRouter.keycloakTest);
+
 
 export default app;
