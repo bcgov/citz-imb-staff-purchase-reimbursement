@@ -8,10 +8,9 @@ import rateLimit from 'express-rate-limit';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import Constants from './constants/Constants.js';
-import { keycloakInit } from './keycloak/index.js';
-import { middleware as protect } from './keycloak/index.js';
-import openRouter from './routes/open/index.js';
-import protectedRouter from './routes/protected/index.js';
+import { keycloakInit, middleware as protect } from './keycloak';
+import openRouter from './routes/open';
+import protectedRouter from './routes/protected';
 
 const app = express();
 keycloakInit(app);
