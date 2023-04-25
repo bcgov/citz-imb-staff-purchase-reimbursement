@@ -4,8 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
-    "types": ["cypress", "node"]
+    "types": ["cypress", "node", "jest"]
   },
   "include": ["vite.config.ts"],
-  "exclude": ["**/*.cy.tsx"],
 }
