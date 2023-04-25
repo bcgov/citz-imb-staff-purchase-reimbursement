@@ -1,10 +1,20 @@
 import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-import oauthRouter from './routes.js';
+import { Application } from 'express';
+import oauthRouter from './routes';
 
-export { default as middleware } from './middleware.js';
+// The token and user properties are not a part of the Request object by default.
+declare global {
+  namespace Express {
+    interface Request {
+      token?: string;
+      user?: object;
+    }
+  }
+}
 
-export const keycloakInit = (app, options) => {
+export { default as middleware } from './middleware';
+
+export const keycloakInit = (app: Application) => {
   /**
    * Middleware for parsing request bodies.
    * @module body-parser
@@ -23,9 +33,6 @@ export const keycloakInit = (app, options) => {
    */
   app.set('view engine', 'ejs');
 
-  // Allows for use of req.cookies
-  app.use(cookieParser());
-
   // Routes defined in ./routes.js file.
-  app.use('/oauth', oauthRouter(options));
+  app.use('/oauth', oauthRouter);
 };

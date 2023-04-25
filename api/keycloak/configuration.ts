@@ -28,6 +28,7 @@ export default {
   OIDC_AUTHORIZATION_URL: `${SSO_AUTH_SERVER_URL}/auth`,
   OIDC_TOKEN_URL: `${SSO_AUTH_SERVER_URL}/token`,
   OIDC_INTROSPECT_URL: `${SSO_AUTH_SERVER_URL}/token/introspect`,
+  OIDC_USER_INFO_URL: `${SSO_AUTH_SERVER_URL}/userinfo`,
   OIDC_LOGOUT_URL: `${SSO_AUTH_SERVER_URL}/logout`,
   OIDC_GRANT_TYPE: 'authorization_code',
   OIDC_REDIRECT_URL: '/oauth/login/callback',

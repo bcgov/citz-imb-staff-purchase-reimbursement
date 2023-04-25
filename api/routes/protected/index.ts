@@ -1,4 +1,4 @@
-import keycloakTest from './keycloak-test-router.js';
+import keycloakTest from './keycloak-test-router';
 
 // TODO: Remove test route after demo
 
