@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "DOTENV_CONFIG_PATH=../.env jest",
     "dev": "npx nodemon -r dotenv/config server.js dotenv_config_path=../.env"
   },
   "keywords": [],
