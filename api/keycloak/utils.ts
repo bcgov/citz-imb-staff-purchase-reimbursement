@@ -7,7 +7,6 @@ const {
   SSO_CLIENT_SECRET,
   OIDC_AUTHORIZATION_URL,
   OIDC_TOKEN_URL,
-  OIDC_USER_INFO_URL,
   OIDC_LOGOUT_URL,
   OIDC_GRANT_TYPE,
   OIDC_REDIRECT_URL,
@@ -18,29 +17,70 @@ const {
   BACKEND_URL,
 } = configuration;
 
-const btoa = (originalString: string) => Buffer.from(originalString).toString('base64');
+// Encodes a string to a Base64-encoded string.
+const encodeToBase64 = (string: string) => Buffer.from(string).toString('base64');
 
-const decodeValue = (base64String: string) => {
+// Decodes a Base64-encoded string to a JSON object.
+const decodeBase64ToJSON = (base64String: string) => {
   try {
     return JSON.parse(Buffer.from(base64String, 'base64').toString('ascii'));
   } catch {
-    return '';
+    throw new Error('Invalid input in decodeBase64ToJSON()');
   }
 };
 
-const decodingJWT = (token: string) => {
+// Parses a JWT and returns an object with decoded header and payload.
+const parseJWT = (token: string) => {
   if (!token) return null;
-
   const [header, payload] = token.split('.');
 
   return {
-    header: decodeValue(header),
-    payload: decodeValue(payload),
+    header: decodeBase64ToJSON(header),
+    payload: decodeBase64ToJSON(payload),
   };
 };
 
+// Gets decoded tokens and user information from the OIDC server using a code.
+// See https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.3
+export const getTokens = async (code: unknown) => {
+  const params = {
+    grant_type: OIDC_GRANT_TYPE,
+    client_id: SSO_CLIENT_ID,
+    redirect_uri: BACKEND_URL + OIDC_REDIRECT_URL,
+    code,
+  };
+  const headers = SSO_CLIENT_ID
+    ? { Authorization: `Basic ${encodeToBase64(`${SSO_CLIENT_ID}:${SSO_CLIENT_SECRET}`)}` }
+    : {};
+
+  const { data } = await axios.post(OIDC_TOKEN_URL, qs.stringify(params), { headers });
+
+  const { id_token, access_token, refresh_token } = data;
+  const id_token_decoded = parseJWT(id_token);
+  const access_token_decoded = parseJWT(access_token);
+  const refresh_token_decoded = parseJWT(refresh_token);
+
+  return { ...data, id_token_decoded, access_token_decoded, refresh_token_decoded };
+};
+
+// Use refresh token to get a new access token.
+export const getNewAccessToken = async (refresh_token: string) => {
+  const params = {
+    grant_type: 'refresh_token',
+    client_id: SSO_CLIENT_ID,
+    client_secret: SSO_CLIENT_SECRET,
+    refresh_token,
+  };
+
+  const {
+    data: { access_token },
+  } = await axios.post(OIDC_TOKEN_URL, qs.stringify(params));
+  return access_token;
+};
+
+// Gets the authorization URL to redirect the user to the OIDC server for authentication.
 // See https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.1
-export const getAuthorizationUrl = async () => {
+export const getAuthorizationUrl = (): string => {
   const params = {
     client_id: SSO_CLIENT_ID,
     response_type: OIDC_RESPONSE_TYPE,
@@ -51,60 +91,8 @@ export const getAuthorizationUrl = async () => {
   return `${OIDC_AUTHORIZATION_URL}?${qs.stringify(params, { encode: false })}`;
 };
 
-// See https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.3
-export const getAccessToken = async (code: unknown) => {
-  const url = OIDC_TOKEN_URL;
-  const params = {
-    grant_type: OIDC_GRANT_TYPE,
-    client_id: SSO_CLIENT_ID,
-    redirect_uri: BACKEND_URL + OIDC_REDIRECT_URL,
-    code,
-  };
-
-  const config = {
-    url,
-    method: 'POST',
-    data: qs.stringify(params),
-    headers: {},
-  };
-
-  if (SSO_CLIENT_SECRET) {
-    config.headers = {
-      Authorization: `Basic ${btoa(`${SSO_CLIENT_ID}:${SSO_CLIENT_SECRET}`)}`,
-    };
-  }
-
-  const { data } = await axios(config);
-
-  const { id_token, access_token, refresh_token } = data;
-
-  // Decode tokens to get user information
-  data.id_token_decoded = decodingJWT(id_token);
-
-  data.access_token_decoded = decodingJWT(access_token);
-
-  data.refresh_token_decoded = decodingJWT(refresh_token);
-
-  return data;
-};
-
-interface IGetUserInfo {
-  accessToken: string;
-}
-
-export const getUserInfo = async ({ accessToken }: IGetUserInfo) => {
-  const { data } = await axios({
-    url: OIDC_USER_INFO_URL,
-    method: 'get',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  return data;
-};
-
-export const getLogoutUrl = () => {
+// Gets the logout URL to redirect the user to the OIDC server for logout.
+export const getLogoutUrl = (): string => {
   const params = {
     client_id: SSO_CLIENT_ID,
     redirect_uri: BACKEND_URL + OIDC_LOGOUT_REDIRECT_URL,
@@ -113,28 +101,28 @@ export const getLogoutUrl = () => {
   return `${OIDC_LOGOUT_URL}?${qs.stringify(params, { encode: false })}`;
 };
 
-export const isJWTValid = async (jwt: string) => {
-  const headersList = {
+// Checks if a JWT is valid.
+export const isJWTValid = async (jwt: string): Promise<boolean> => {
+  const params = {
+    client_id: SSO_CLIENT_ID,
+    client_secret: SSO_CLIENT_SECRET,
+    token: jwt,
+  };
+  const headers = {
     Accept: '*/*',
     'Content-Type': 'application/x-www-form-urlencoded',
   };
 
-  const bodyContent = `client_id=${SSO_CLIENT_ID}&client_secret=${SSO_CLIENT_SECRET}&token=${jwt}`;
+  const {
+    data: { active },
+  } = await axios.post(OIDC_INTROSPECT_URL, qs.stringify(params), { headers });
 
-  const response = await fetch(OIDC_INTROSPECT_URL, {
-    method: 'POST',
-    body: bodyContent,
-    headers: headersList,
-  });
-
-  const data = await response.json();
-  return data.active;
+  return active;
 };
 
-export const getUserData = (accessToken: string) => {
-  const data = decodingJWT(accessToken);
-  if (data) {
-    return data.payload;
-  }
-  return null;
+// Gets user information from parsing an access token JWT.
+export const getUserInfo = (access_token: string) => {
+  const data = parseJWT(access_token);
+  if (!data) return null;
+  return data.payload;
 };

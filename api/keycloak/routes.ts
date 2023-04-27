@@ -1,38 +1,52 @@
 import express from 'express';
 const router = express.Router();
 
+import { IKeycloakInitOptions } from '.';
 import * as oauthController from './controllers';
+const { login, loginCallback, logout, logoutCallback, refreshToken } = oauthController;
 
-/**
- * Prompts the user to login.
- * @author Zach Bourque
- * @method GET
- * @route /oauth/login
- */
-router.get('/login', oauthController.login);
+const oauthRouter = (options?: IKeycloakInitOptions | undefined) => {
+  /**
+   * Prompts the user to login.
+   * @author Zach Bourque & Brady Mitchell
+   * @method GET
+   * @route /oauth/login
+   */
+  router.get('/login', login);
 
-/**
- *
- * @author Zach Bourque
- * @method GET
- * @route /oauth/login/callback
- */
-router.get('/login/callback', oauthController.callback);
+  /**
+   * Redirects user to the frontend, with an access and refresh token.
+   * @author Zach Bourque & Brady Mitchell
+   * @method GET
+   * @route /oauth/login/callback
+   */
+  router.get('/login/callback', loginCallback(options));
 
-/**
- *
- * @author Zach Bourque
- * @method GET
- * @route /oauth/logout
- */
-router.get('/logout', oauthController.logout);
+  /**
+   * Logs out the user and, once finished, redirects them to /oauth/logout/callback
+   * @author Zach Bourque & Brady Mitchell
+   * @method GET
+   * @route /oauth/logout
+   */
+  router.get('/logout', logout);
 
-/**
- *
- * @author Zach Bourque
- * @method GET
- * @route /oauth/logout/callback
- */
-router.get('/logout/callback', oauthController.logoutCallback);
+  /**
+   * Removes the user's httpOnly refresh token, and redirects back to the frontend.
+   * @author Zach Bourque & Brady Mitchell
+   * @method GET
+   * @route /oauth/logout/callback
+   */
+  router.get('/logout/callback', logoutCallback);
 
-export default router;
+  /**
+   * Use refresh token to get a new access token.
+   * @author Brady Mitchell
+   * @method POST
+   * @route /oauth/token
+   */
+  router.post('/token', refreshToken);
+
+  return router;
+};
+
+export default oauthRouter;

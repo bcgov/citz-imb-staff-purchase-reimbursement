@@ -1,5 +1,5 @@
 import 'dotenv/config.js';
-import express, { NextFunction } from 'express';
+import express, { NextFunction, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import morgan from 'morgan';
@@ -55,7 +55,7 @@ app.use('/api', openRouter.healthRouter);
 
 // Routing Protected Routes
 // Allow for removed protection when API testing
-const routeProtector: any = `${process.env.TESTING}`.toLowerCase() === 'true' ? (request: Request, response: Response, next: NextFunction) => { next(); } : protect;
+const routeProtector: (any | Promise<Response<any, Record<string, any>>>) = `${process.env.TESTING}`.toLowerCase() === 'true' ? (request: Request, response: Response, next: NextFunction) => { next(); } : protect;
 // TODO: Remove test route after demo
 app.use('/api', routeProtector, protectedRouter.keycloakTest);
 
