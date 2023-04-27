@@ -1,4 +1,5 @@
-import { isJWTValid, getUserInfo } from './utils.js';
+import { Request, Response, NextFunction } from 'express';
+import { isJWTValid, getUserInfo } from './utils';
 
 /**
  * Express middleware that checks for a valid JWT in the Authorization header,
@@ -8,7 +9,7 @@ import { isJWTValid, getUserInfo } from './utils.js';
  * @param res - The Express response object.
  * @param next - The next middleware function.
  */
-const keycloakMiddleware = async (req, res, next) => {
+const keycloakMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   // Check if Authorization header exists.
   const header = req.headers['authorization'];
   if (!header) return res.status(403).json({ error: 'No authorization header found' });

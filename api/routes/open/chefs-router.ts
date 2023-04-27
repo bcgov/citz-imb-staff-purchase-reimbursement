@@ -1,5 +1,5 @@
 import express from 'express';
-import { submitRequestHandler } from '../../controllers/chefs-api-controller.js';
+import { submitRequestHandler } from '../../controllers/chefs-api-controller';
 
 const router = express.Router();
 

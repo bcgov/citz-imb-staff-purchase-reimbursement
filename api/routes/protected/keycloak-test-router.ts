@@ -1,5 +1,5 @@
 import express from 'express';
-import { healthCheck } from '../../controllers/health-api-controller.js';
+import { healthCheck } from '../../controllers/health-api-controller';
 
 // TODO: Remove this route after demo
 

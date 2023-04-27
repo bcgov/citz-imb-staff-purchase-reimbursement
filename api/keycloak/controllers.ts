@@ -1,11 +1,13 @@
-import config from './configuration.js';
+import config from './configuration';
+import { IKeycloakInitOptions } from '.';
+import { Request, Response } from 'express';
 import {
   getTokens,
   getNewAccessToken,
   getAuthorizationUrl,
   getLogoutUrl,
   getUserInfo,
-} from './utils.js';
+} from './utils';
 
 /**
  * Prompts the user to login.
@@ -13,11 +15,11 @@ import {
  * @method GET
  * @route /oauth/login
  */
-export const login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
   try {
     if (!req.token) return res.redirect(getAuthorizationUrl());
     return res.redirect('');
-  } catch (error) {
+  } catch (error: any) {
     console.error('Keycloak: Error in login controller', error);
     res.json({ success: false, error: error.message ?? error });
   }
@@ -29,8 +31,8 @@ export const login = async (req, res) => {
  * @method GET
  * @route /oauth/login/callback
  */
-export const loginCallback = (options) => {
-  const loginCallbackRequest = async (req, res) => {
+export const loginCallback = (options?: IKeycloakInitOptions | undefined) => {
+  const loginCallbackRequest = async (req: Request, res: Response) => {
     try {
       const { code } = req.query;
       const { access_token, refresh_token } = await getTokens(code);
@@ -44,7 +46,7 @@ export const loginCallback = (options) => {
       if (options?.afterUserLogin) {
         options.afterUserLogin(getUserInfo(access_token));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Keycloak: Error in login callback controller', error);
       res.json({ success: false, error: error.message ?? error });
     }
@@ -58,10 +60,10 @@ export const loginCallback = (options) => {
  * @method GET
  * @route /oauth/logout
  */
-export const logout = (req, res) => {
+export const logout = (req: Request, res: Response) => {
   try {
     res.redirect(getLogoutUrl());
-  } catch (error) {
+  } catch (error: any) {
     console.error('Keycloak: Error in logout controller', error);
     res.json({ success: false, error: error.message ?? error });
   }
@@ -73,7 +75,7 @@ export const logout = (req, res) => {
  * @method GET
  * @route /oauth/logout/callback
  */
-export const logoutCallback = (req, res) => {
+export const logoutCallback = (req: Request, res: Response) => {
   try {
     res
       .cookie('refresh_token', '', { httpOnly: true, secure: true })
@@ -89,7 +91,7 @@ export const logoutCallback = (req, res) => {
  * @method POST
  * @route /oauth/token
  */
-export const refreshToken = async (req, res) => {
+export const refreshToken = async (req: Request, res: Response) => {
   try {
     const { refresh_token } = req.cookies;
     if (!refresh_token) return res.status(401).send('Cookies must include refresh_token.');
@@ -97,7 +99,7 @@ export const refreshToken = async (req, res) => {
     const access_token = await getNewAccessToken(refresh_token);
 
     res.json({ access_token });
-  } catch (error) {
+  } catch (error: any) {
     res.json({ success: false, error: error.message ?? error });
   }
 };

@@ -1,10 +1,11 @@
 import express from 'express';
 const router = express.Router();
 
-import * as oauthController from './controllers.js';
+import { IKeycloakInitOptions } from '.';
+import * as oauthController from './controllers';
 const { login, loginCallback, logout, logoutCallback, refreshToken } = oauthController;
 
-const oauthRouter = (options) => {
+const oauthRouter = (options?: IKeycloakInitOptions | undefined) => {
   /**
    * Prompts the user to login.
    * @author Zach Bourque & Brady Mitchell
