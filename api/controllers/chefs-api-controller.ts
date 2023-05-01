@@ -1,6 +1,7 @@
 import db from '../db/conn';
 import { Request, Response } from 'express';
 import { Collection } from 'mongodb';
+import chefRequestSchema from '../schemas/chefRequestSchema';
 
 // Extend the request to include data object from CHEFS
 interface ChefsRequest extends Request{
@@ -10,7 +11,14 @@ interface ChefsRequest extends Request{
 }
 
 const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
-  // TODO: Determine how incoming requests will be validated.
+  try {
+    // Validate incoming data
+    chefRequestSchema.parse(req.body.data);
+  } catch (e) {
+    if (e.issues) console.warn(e.issues);
+    return res.status(400).send('Request has invalid or missing properties.');
+  }
+  
   // Add current timestamp to request
   const newPurchaseRequest = { ...req.body.data, submissionDate: new Date().toISOString() }
   const collection : Collection = db.collection('requests');
@@ -19,7 +27,7 @@ const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
   if (response.insertedId) {
     return res.status(201).json({ ...newPurchaseRequest, _id: response.insertedId });
   }
-  // TODO: Adjust error responses after request validation has been implemented.
+  // Generic error response
   return res.status(400).send('Reimbursement request was not successful.');
 }
 
