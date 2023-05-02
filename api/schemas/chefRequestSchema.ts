@@ -22,7 +22,8 @@ const datePickerSchema =  z.string()
 const chefRequestSchema = z.object({
   lateEntry:  z.boolean()
               .optional(),
-  idir: z.string(),
+  idir: z.string()
+        .length(32),
   firstName: nameSchema,
   lastName: nameSchema,
   employeeId: z.number()

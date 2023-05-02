@@ -10,17 +10,29 @@ interface ChefsRequest extends Request{
   }
 }
 
+// Removes keys with a blank string.
+const removeBlankKeys = (obj: object) => {
+  Object.keys(obj).forEach((key: keyof object) => {
+    if (obj[key] === '') delete obj[key];
+  });
+  return obj;
+}
+
 const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
+  let requestData = { ...req.body.data };
   try {
+    // Remove properties that may be blank. Otherwise the validation does not pass for optional fields.
+    requestData = removeBlankKeys(requestData);
+    console.log(requestData)
     // Validate incoming data
-    chefRequestSchema.parse(req.body.data);
+    chefRequestSchema.parse(requestData);
   } catch (e) {
     if (e.issues) console.warn(e.issues);
     return res.status(400).send('Request has invalid or missing properties.');
   }
   
   // Add current timestamp to request
-  const newPurchaseRequest = { ...req.body.data, submissionDate: new Date().toISOString() }
+  const newPurchaseRequest = { ...requestData, submissionDate: new Date().toISOString() }
   const collection : Collection = db.collection('requests');
   const response = await collection.insertOne(newPurchaseRequest);
   // If insertedID exists, the insert was successful!
