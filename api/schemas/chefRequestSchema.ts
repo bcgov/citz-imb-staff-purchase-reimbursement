@@ -62,6 +62,6 @@ const chefRequestSchema = z.object({
                       .optional(),
   submit: z.boolean()
           .optional()
-});
+}).strict();
 
 export default chefRequestSchema;

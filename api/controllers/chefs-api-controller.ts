@@ -23,7 +23,6 @@ const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
   try {
     // Remove properties that may be blank. Otherwise the validation does not pass for optional fields.
     requestData = removeBlankKeys(requestData);
-    console.log(requestData)
     // Validate incoming data
     chefRequestSchema.parse(requestData);
   } catch (e) {
@@ -31,7 +30,7 @@ const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
     return res.status(400).send('Request has invalid or missing properties.');
   }
   
-  // Add current timestamp to request
+  // Add current timestamp to request and insert
   const newPurchaseRequest = { ...requestData, submissionDate: new Date().toISOString() }
   const collection : Collection = db.collection('requests');
   const response = await collection.insertOne(newPurchaseRequest);
