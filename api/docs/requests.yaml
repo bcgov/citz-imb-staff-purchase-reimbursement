@@ -1,74 +1,10 @@
 components:
 ### SCHEMAS ###
   schemas:
-    ReimbursementRequestReceived:
+    ReimbursementRequestObject:
       type: object
-      description: The received form data.
-      properties:
-        data:
-          type: object
-          properties:
-            firstName:
-              type: string
-              example: Joe
-            lastName:
-              type: string
-              example: Smith
-            employeeId:
-              type: integer
-              example: 123456
-            itemsPurchased:
-              type: array
-              items:
-                type: string
-              example:
-                - Toothpaste
-                - Oranges
-            purchaseDate:
-              type: string
-              example: 2023-03-30
-            attachReceipts:
-              type: array
-              items:
-                type: object
-                format: binary
-            approvalDate:
-              type: string
-              example: 2023-03-30
-            attachApproval:
-              type: array
-              items:
-                type: object
-                format: binary
-            supplierName: 
-              type: string
-              example: Walmart
-            supplierPhoneNumber:
-              type: string
-              example: (234) 234-2345
-            supplierEmail:
-              type: string
-              example: joesmith@gmail.com
-            additionalComments:
-              type: string
-              example: Have a good day!
-            submit:
-              type: boolean
-              example: true
-      required:
-        - firstName
-        - lastName
-        - employeeId
-        - itemsPurchased
-        - purchaseDate
-        - attachReceipts
-        - approvalDate
-        - attachApproval
-        - submit
-    ReimbursementRequest:
-      type: object
-      description: The received form data.
-      properties:
+      description: A single request entry
+      properties: 
         firstName:
           type: string
           example: Joe
@@ -78,6 +14,9 @@ components:
         employeeId:
           type: integer
           example: 123456
+        idir:
+          type: string
+          example: W0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0
         itemsPurchased:
           type: array
           items:
@@ -85,22 +24,61 @@ components:
           example:
             - Toothpaste
             - Oranges
+        totalCost:
+          type: number
+          example: 34.55
         purchaseDate:
           type: string
-          example: 2023-03-30
+          example: 2023-05-01T00:00:00-07:00
         attachReceipts:
           type: array
           items:
             type: object
-            format: binary
+            properties:
+              storage:
+                type: string
+                example: chefs
+              url:
+                type: string
+                example: /app/api/v1/files/fd667f16-bd58-416d-bf74-2011a53361a8
+              size:
+                type: integer
+                example: 9234
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: fd667f16-bd58-416d-bf74-2011a53361a8
+              originalName:
+                type: string
+                example: myfile.pdf              
         approvalDate:
           type: string
-          example: 2023-03-30
+          example: 2023-05-01T00:00:00-07:00
         attachApproval:
           type: array
           items:
             type: object
-            format: binary
+            properties:
+              storage:
+                type: string
+                example: chefs
+              url:
+                type: string
+                example: /app/api/v1/files/fd667f16-bd58-416d-bf74-2011a53361a8
+              size:
+                type: integer
+                example: 9234
+              data:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: fd667f16-bd58-416d-bf74-2011a53361a8
+              originalName:
+                type: string
+                example: myfile.pdf
         supplierName: 
           type: string
           example: Walmart
@@ -113,9 +91,38 @@ components:
         additionalComments:
           type: string
           example: Have a good day!
-        submit:
-          type: boolean
-          example: true
+      required:
+        - firstName
+        - lastName
+        - employeeId
+        - itemsPurchased
+        - purchaseDate
+        - attachReceipts
+        - approvalDate
+        - attachApproval
+
+    ReimbursementRequestReceived:
+      type: object
+      description: The received form data.
+      properties:
+        data:
+          allOf:
+          - $ref: '#/components/schemas/ReimbursementRequestObject'
+          - type: object
+          properties:
+            lateEntry:
+              type: boolean
+              example: false
+            submit:
+              type: boolean
+              example: true
+
+    ReimbursementRequest:
+      allOf:
+          - $ref: '#/components/schemas/ReimbursementRequestObject'
+          - type: object
+      description: The received form data.
+      properties:
         submissionDate:
           type: string
           example: 2023-04-25T16:51:31.929Z

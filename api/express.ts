@@ -39,13 +39,22 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 })
 
+// CORS Configuration
+// Localhost does not need to be specified.
+// TODO: Add origin for frontend when available
+const corsOptions = {
+  origin: [
+    'https://submit.digital.gov.bc.ca',
+  ]
+}
+
 // Express middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(compression());
 app.use(morgan('dev')); // logging middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
