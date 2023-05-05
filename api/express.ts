@@ -67,8 +67,7 @@ app.use('/api', openRouter.healthRouter);
 const falseProtect: unknown = (req: Request, res: Response, next : NextFunction) => { console.warn('Keycloak is off'); next(); }
 // Allow for removed protection when API testing is enabled, otherwise use Keycloak
 const routeProtector : (RequestHandler | Promise<Response<any, Record<string, any>>>) = `${process.env.TESTING}`.toLowerCase() === 'true' ? (falseProtect as RequestHandler) : protect;
-// TODO: Remove test route after demo
-app.use('/api', routeProtector, protectedRouter.keycloakTest);
+app.use('/api', routeProtector, protectedRouter.requests);
 
 
 export default app;

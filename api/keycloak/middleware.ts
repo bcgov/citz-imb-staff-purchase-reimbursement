@@ -12,12 +12,12 @@ import { isJWTValid, getUserInfo } from './utils';
 const keycloakMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   // Check if Authorization header exists.
   const header = req.headers['authorization'];
-  if (!header) return res.status(403).json({ error: 'No authorization header found' });
+  if (!header) return res.status(401).json({ error: 'No authorization header found' });
 
   // Extract token from header and check if it is valid.
   const token = header.split(' ')[1];
   const isTokenValid = await isJWTValid(token);
-  if (!isTokenValid) return res.status(403).json({ error: 'Invalid token' });
+  if (!isTokenValid) return res.status(401).json({ error: 'Invalid token' });
 
   // Set decoded token and user information in request object.
   req.token = token;

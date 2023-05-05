@@ -1,9 +1,7 @@
-import keycloakTest from './keycloak-test-router';
-
-// TODO: Remove test route after demo
+import requests from './requests-router';
 
 const protectedRouter = {
-  keycloakTest
+  requests
 };
 
 export default protectedRouter;
