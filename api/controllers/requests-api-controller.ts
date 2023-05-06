@@ -22,7 +22,7 @@ export interface RequestRecord {
   attachApproval: Array<object>,
   submit: boolean,
   submissionDate: string,
-  state: number
+  state: RequestStates
 }
 
 // Allows for a reduced version of each document to be returned from Mongo
@@ -107,6 +107,8 @@ export const getRequestByID = async (req: Request, res: Response) => {
 export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { state } = req.body;
+  // Check that state is a valid option
+  if ( state < 0 || state >= RequestStates.__LENGTH) return res.status(403).send('An invalid state was requested.');
   // Establish that id is used to find document
   const filter = { _id: { $eq: new ObjectId(id) } };
   // Update its state
@@ -121,7 +123,7 @@ export const updateRequestState = async (req: Request, res: Response) => {
     // If no records matched that ID
     if (result.matchedCount === 0) return res.status(404).send('No matching record found.');
     // Else, return the updated result
-    return res.status(200).send('Request state updated.');
+    return res.status(200).send(`Request state updated to ${RequestStates[state]}.`);
   } catch (e) {
     console.warn(e);
     return res.status(400).send('Request could not be processed.');

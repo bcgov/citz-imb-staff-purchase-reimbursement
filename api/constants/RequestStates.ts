@@ -4,7 +4,8 @@ enum RequestStates {
   DENIED,
   APPROVED,
   INPROGRESS,
-  SUBMITTED
+  SUBMITTED,
+  __LENGTH
 }
 
 export default RequestStates;
