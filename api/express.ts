@@ -22,9 +22,9 @@ const OPENAPI_OPTIONS = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Purchase Reimbursement API',
+      title: 'Staff Purchase Reimbursement (SPR) API',
       version: '1.0.0',
-      description: 'Documentation for the Purchase Reimbursement API.',
+      description: 'Documentation for the SPR API.',
     },
     servers: [{ url: `${HOSTNAME}:${API_PORT}/api` }],
   },

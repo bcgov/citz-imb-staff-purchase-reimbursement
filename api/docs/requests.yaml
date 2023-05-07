@@ -1,4 +1,9 @@
 components:
+  securitySchemes:
+      bearerAuth:            # arbitrary name for the security scheme
+        type: http
+        scheme: bearer
+        bearerFormat: JWT 
 ### SCHEMAS ###
   schemas:
     ReimbursementRequestObject:
@@ -140,6 +145,13 @@ components:
           schema:
             type: string
             example: 'Response could not be processed.'
+    400BadRequestID:
+      description: Bad request response.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: 'ID was malformed. Cannot complete request.'
     404NoRecords:
       description: No records were found.
       content:
@@ -177,6 +189,8 @@ paths:
         '429':
           $ref: '#/components/responses/429TooManyRequests'
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Requests
       summary: Returns all request documents from the database.
@@ -206,6 +220,8 @@ paths:
 
   /requests/idir:
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Requests
       summary: Returns all request records originating from a provided IDIR.
@@ -241,6 +257,8 @@ paths:
 
   /requests/{id}:
     get:
+      security:
+        - bearerAuth: []
       tags:
         - Requests
       summary: Returns a single request record that matches a specific ID.
@@ -260,12 +278,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReimbursementRequest'
         '400':
-          $ref: '#/components/responses/400BadRequest'
+          $ref: '#/components/responses/400BadRequestID'
         '404':
           $ref: '#/components/responses/404NoRecords'
         '429':
           $ref: '#/components/responses/429TooManyRequests'
     patch:
+      security:
+        - bearerAuth: []
       tags:
         - Requests
       summary: Updates the state of a single request record that matches a specific ID.
@@ -295,7 +315,7 @@ paths:
                 type: string
                 example: 'Record state updated to DENIED.'
         '400':
-          $ref: '#/components/responses/400BadRequest'
+          $ref: '#/components/responses/400BadRequestID'
         '403':
           #description: Forbidden
             content:
