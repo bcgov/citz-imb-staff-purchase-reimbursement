@@ -1,9 +1,4 @@
 components:
-  securitySchemes:
-      bearerAuth:            # arbitrary name for the security scheme
-        type: http
-        scheme: bearer
-        bearerFormat: JWT 
 ### SCHEMAS ###
   schemas:
     ReimbursementRequestObject:
@@ -138,13 +133,6 @@ components:
           type: string
           example: 64480513a30c8be7b83d9593
   responses:
-    400BadRequest:
-      description: Bad request response.
-      content:
-        text/plain:
-          schema:
-            type: string
-            example: 'Response could not be processed.'
     400BadRequestID:
       description: Bad request response.
       content:
@@ -159,13 +147,7 @@ components:
           schema:
             type: string
             example: 'No record. || No records found. || No matching records found.'
-    429TooManyRequests:
-      description: Express rate limiter reached. Too many requests.
-      content: 
-        text/plain:
-          schema:
-            type: string
-            example: 'Too many requests, please try again later.'
+
 ### PATHS ###
 paths:
   /requests:

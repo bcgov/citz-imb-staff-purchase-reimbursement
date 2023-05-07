@@ -1,12 +1,4 @@
-components:
-  responses:
-    429TooManyRequests:
-      description: Express rate limiter reached. Too many requests.
-      content: 
-        text/plain:
-          schema:
-            type: string
-            example: 'Too many requests, please try again later.'
+
 ### PATHS ###
 paths:
   /health:
