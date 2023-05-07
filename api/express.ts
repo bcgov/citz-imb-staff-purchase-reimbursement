@@ -15,7 +15,7 @@ import protectedRouter from './routes/protected/index';
 const app: express.Application = express();
 keycloakInit(app);
 
-const { HOSTNAME, API_PORT } = Constants;
+const { HOSTNAME, API_PORT, TESTING } = Constants;
 
 // Swagger Configuration
 const OPENAPI_OPTIONS = {
@@ -55,7 +55,7 @@ app.use(cookieParser());
 app.use(compression());
 app.use(morgan('dev')); // logging middleware
 app.use(cors(corsOptions));
-app.use(limiter);
+if (!TESTING) app.use(limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
 // Routing Open Routes

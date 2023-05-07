@@ -2,9 +2,13 @@ import db from '../db/conn';
 import { Request, Response } from 'express';
 import { Collection, WithId, ObjectId } from 'mongodb';
 import RequestStates from '../constants/RequestStates';
+import { z } from 'zod';
 
 // All functions use requests collection
 const collection : Collection<RequestRecord> = db.collection<RequestRecord>('requests');
+
+// Schema to check for employee id when coming in as url params
+const idSchema = z.string().length(24);
 
 // The record expected from the requests collection
 export interface RequestRecord {
@@ -87,6 +91,13 @@ export const getRequestsByIDIR = async (req: Request, res: Response) => {
 // Get a single request record by ID
 export const getRequestByID = async (req: Request, res: Response) => {
   const { id } = req.params;
+  // If ID doesn't match schema, return a 400
+  try {
+    idSchema.parse(id);
+  } catch (e){
+    return res.status(400).send('ID was malformed. Cannot complete request.');
+  }
+
   try {
     const record : WithId<RequestRecord> = await collection.findOne({ _id: { $eq: new ObjectId(id) } });
     if (!record){
@@ -107,6 +118,13 @@ export const getRequestByID = async (req: Request, res: Response) => {
 export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { state } = req.body;
+  // If ID doesn't match schema, return a 400
+  try {
+    idSchema.parse(id);
+  } catch (e){
+    return res.status(400).send('ID was malformed. Cannot complete request.');
+  }
+
   // Check that state is a valid option
   if ( state < 0 || state >= RequestStates.__LENGTH) return res.status(403).send('An invalid state was requested.');
   // Establish that id is used to find document
