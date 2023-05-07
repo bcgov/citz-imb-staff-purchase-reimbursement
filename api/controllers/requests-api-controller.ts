@@ -38,10 +38,10 @@ const minimalProjection = {
 
 // Get all request records
 export const getAllRequests = async (req: Request, res: Response) => {
-  const { minimal } = req.body;
+  const { minimal } = req.query;
   try {
     // TODO: Is there a more memory-efficient solution? Like only returning the first X records?
-    const cursor = minimal === true
+    const cursor = !!minimal === true
                   ? collection.find().sort({submissionDate: -1}).project(minimalProjection)
                   : collection.find().sort({submissionDate: -1});
     const records = await cursor.toArray();
@@ -62,11 +62,11 @@ export const getAllRequests = async (req: Request, res: Response) => {
 
 // Get any request records matching a specific IDIR GUID
 export const getRequestsByIDIR = async (req: Request, res: Response) => {
-  const { minimal } = req.body;
+  const { minimal, idir } = req.query;
   try {
-    const cursor = minimal === true
-                  ? collection.find({ idir: { $eq: req.body.idir }}).sort({submissionDate: -1}).project(minimalProjection)
-                  : collection.find({ idir: { $eq: req.body.idir }}).sort({submissionDate: -1});
+    const cursor = !!minimal === true
+                  ? collection.find({ idir: { $eq: idir as string }}).sort({submissionDate: -1}).project(minimalProjection)
+                  : collection.find({ idir: { $eq: idir as string }}).sort({submissionDate: -1});
     const records = await cursor.toArray();
 
     // If there are no records.

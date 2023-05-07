@@ -35,7 +35,7 @@ const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
   const newPurchaseRequest = { 
     ...requestData, 
     submissionDate: new Date().toISOString(), 
-    state: RequestStates.INPROGRESS 
+    state: RequestStates.SUBMITTED 
   };
   // Insert request into collection
   const collection : Collection = db.collection('requests');
