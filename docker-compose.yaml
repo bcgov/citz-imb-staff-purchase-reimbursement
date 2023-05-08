@@ -2,8 +2,8 @@ services:
 ###########
 ### API ###
 ###########
-  api:
-    container_name: dbarkowsky-capstone-api
+  spr-api:
+    container_name: spr-api
     tty: true
     restart: on-failure
     build:
@@ -41,8 +41,8 @@ services:
 ###########
 ### APP ###
 ###########
-  app:
-    container_name: dbarkowsky-capstone-app
+  spr-app:
+    container_name: spr-app
     tty: true
     restart: on-failure
     build:
