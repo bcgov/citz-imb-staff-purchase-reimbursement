@@ -2,6 +2,7 @@ import db from '../db/conn';
 import { Request, Response } from 'express';
 import { Collection } from 'mongodb';
 import chefRequestSchema from '../schemas/chefRequestSchema';
+import RequestStates from '../constants/RequestStates';
 
 // Extend the request to include data object from CHEFS
 interface ChefsRequest extends Request{
@@ -30,8 +31,13 @@ const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
     return res.status(400).send('Request has invalid or missing properties.');
   }
   
-  // Add current timestamp to request and insert
-  const newPurchaseRequest = { ...requestData, submissionDate: new Date().toISOString() }
+  // Add current timestamp and state to request
+  const newPurchaseRequest = { 
+    ...requestData, 
+    submissionDate: new Date().toISOString(), 
+    state: RequestStates.SUBMITTED 
+  };
+  // Insert request into collection
   const collection : Collection = db.collection('requests');
   const response = await collection.insertOne(newPurchaseRequest);
   // If insertedID exists, the insert was successful!

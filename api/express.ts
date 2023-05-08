@@ -15,18 +15,18 @@ import protectedRouter from './routes/protected/index';
 const app: express.Application = express();
 keycloakInit(app);
 
-const { HOSTNAME, API_PORT } = Constants;
+const { HOSTNAME, API_PORT, TESTING } = Constants;
 
 // Swagger Configuration
 const OPENAPI_OPTIONS = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Purchase Reimbursement API',
+      title: 'Staff Purchase Reimbursement (SPR) API',
       version: '1.0.0',
-      description: 'Documentation for the Purchase Reimbursement API.',
+      description: 'Documentation for the SPR API.',
     },
-    servers: [{ url: `http://${HOSTNAME}:${API_PORT}/api` }],
+    servers: [{ url: `${HOSTNAME}:${API_PORT}/api` }],
   },
   apis: ['./docs/*.yaml'],
 };
@@ -55,7 +55,7 @@ app.use(cookieParser());
 app.use(compression());
 app.use(morgan('dev')); // logging middleware
 app.use(cors(corsOptions));
-app.use(limiter);
+if (!TESTING) app.use(limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
 // Routing Open Routes
@@ -67,8 +67,7 @@ app.use('/api', openRouter.healthRouter);
 const falseProtect: unknown = (req: Request, res: Response, next : NextFunction) => { console.warn('Keycloak is off'); next(); }
 // Allow for removed protection when API testing is enabled, otherwise use Keycloak
 const routeProtector : (RequestHandler | Promise<Response<any, Record<string, any>>>) = `${process.env.TESTING}`.toLowerCase() === 'true' ? (falseProtect as RequestHandler) : protect;
-// TODO: Remove test route after demo
-app.use('/api', routeProtector, protectedRouter.keycloakTest);
+app.use('/api', routeProtector, protectedRouter.requests);
 
 
 export default app;
