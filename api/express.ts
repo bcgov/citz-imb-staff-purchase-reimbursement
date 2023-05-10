@@ -15,9 +15,10 @@ import protectedRouter from './routes/protected/index';
 const app: express.Application = express();
 keycloakInit(app);
 
-const { HOSTNAME, API_PORT, TESTING } = Constants;
+const { HOSTNAME, API_PORT, TESTING, BACKEND_URL } = Constants;
 
 // Swagger Configuration
+const swaggerURL = HOSTNAME.includes('localhost') ? `${HOSTNAME}:${API_PORT}/api` : `${BACKEND_URL}/api`;
 const OPENAPI_OPTIONS = {
   definition: {
     openapi: '3.0.0',
@@ -26,7 +27,7 @@ const OPENAPI_OPTIONS = {
       version: '1.0.0',
       description: 'Documentation for the SPR API.',
     },
-    servers: [{ url: `${HOSTNAME}:${API_PORT}/api` }],
+    servers: [{ url: swaggerURL }],
   },
   apis: ['./docs/*.yaml'],
 };

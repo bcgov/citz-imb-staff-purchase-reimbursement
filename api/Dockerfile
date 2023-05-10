@@ -34,5 +34,7 @@ RUN npm i
 
 # Copy compiled build from base
 COPY --from=base /usr/api/dist .
+# Copy swagger over too
+COPY --from=base /usr/api/docs ./docs
 
 CMD [ "node", "server.js" ]
