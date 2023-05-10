@@ -34,17 +34,6 @@ objects:
         resources: {}
         activeDeadlineSeconds: 21600
       triggers:
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${CONTAINER_NAME}
-            from:
-              kind: ImageStreamTag
-              namespace: ${OPENSHIFT_PROJECT}
-              name: '${CONTAINER_NAME}:latest'
-            lastTriggeredImage: >-
-              image-registry.openshift-image-registry.svc:5000/${OPENSHIFT_PROJECT}/${CONTAINER_NAME}@sha256:a2384bf2fd577b20d42e2d2f133f90cf47906b39c14f8060581069f4fad800c4
         - type: ConfigChange
       replicas: 1
       revisionHistoryLimit: 10
@@ -64,7 +53,7 @@ objects:
           containers:
             - name: ${CONTAINER_NAME}
               image: >-
-                image-registry.openshift-image-registry.svc:5000/${OPENSHIFT_PROJECT}/${CONTAINER_NAME}@sha256:a2384bf2fd577b20d42e2d2f133f90cf47906b39c14f8060581069f4fad800c4
+                ${ARTIFACTORY_URL}/${IMAGE_REPOSITORY}/${CONTAINER_NAME}:latest
               ports:
                 - containerPort: 3004
                   protocol: TCP
@@ -142,11 +131,13 @@ objects:
               resources: {}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
-              imagePullPolicy: IfNotPresent
+              imagePullPolicy: Always
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
           dnsPolicy: ClusterFirst
           securityContext: {}
+          imagePullSecrets:
+            - name: artifactory-pull
           schedulerName: default-scheduler
 
 parameters:
@@ -161,4 +152,12 @@ parameters:
   - description: Application Name
     displayName: Application Name
     name: APPLICATION_NAME
+    required: true
+  - description: Image Repository
+    displayName: Image Repository
+    name: IMAGE_REPOSITORY
+    required: true
+  - description: Artifactory URL
+    displayName: Artifactory URL
+    name: ARTIFACTORY_URL
     required: true

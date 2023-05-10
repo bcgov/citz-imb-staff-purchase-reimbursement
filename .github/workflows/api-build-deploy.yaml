@@ -1,7 +1,7 @@
 name: Build and Deploy API
 
 on:
-  merge:
+  push:
     branches: [ main ]
     paths:
       - "api/**"
@@ -14,14 +14,20 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Log In to Docker
         run: |
           docker login ${{ secrets.ARTIFACTORY_URL }} -u ${{ secrets.ARTIFACTORY_USERNAME }} -p ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+      - name: Copy env.template
+        run: |
+          cp .env.template .env
       
       - name: Build API Image
         run: |
-          docker-compose build api
+          docker-compose build spr-api
 
       - name: List Docker Images
         run: |
@@ -29,7 +35,7 @@ jobs:
         
       - name: Tag Image
         run: |
-          docker tag staff-purchasing-reimbursement_spr-api ${{ secrets.ARTIFACTORY_URL }}/${{ secrets.IMAGE_REPOSITORY }}/spr-api:latest
+          docker tag citz-imb-staff-purchasing-reimbursement_spr-api ${{ secrets.ARTIFACTORY_URL }}/${{ secrets.IMAGE_REPOSITORY }}/spr-api:latest
       
       - name: Push Image
         run: |
@@ -59,6 +65,8 @@ jobs:
           APPLICATION_NAME: staff-purchase-reimbursement
           CONTAINER_NAME: spr-api
           DEPLOYMENT_CONFIG: api-deployment-config.yaml
+          IMAGE_REPOSITORY: ${{ secrets.IMAGE_REPOSITORY }}
+          ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}
         run: |
           ./.github/helpers/deploy.sh
 
@@ -78,7 +86,6 @@ jobs:
           namespace: ${{ secrets.OPENSHIFT_PROJECT }}
       
       - name: Check Status of Rollout
-        description: Asks for the status of the current rollout. Waits until success or failure.
         run: |
           oc rollout status -n ${{ secrets.OPENSHIFT_PROJECT }} dc/spr-api --watch
   
