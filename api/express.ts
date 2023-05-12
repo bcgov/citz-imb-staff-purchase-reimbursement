@@ -45,7 +45,8 @@ const limiter = rateLimit({
 // TODO: Add origin for frontend when available
 const corsOptions = {
   origin: [
-    'https://submit.digital.gov.bc.ca',
+    'https://submit.digital.gov.bc.ca', // CHEFS
+    'http://localhost:8080'             // Local frontend testing
   ]
 }
 

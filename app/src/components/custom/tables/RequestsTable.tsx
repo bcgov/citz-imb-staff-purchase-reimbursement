@@ -6,10 +6,9 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import HeaderCell from './HeaderCell';
 import RequestTableCell from './RequestTableCell';
-import { Link } from 'react-router-dom';
-import { Button } from '@mui/material';
 import { ReimbursementRequest } from '../../../interfaces/ReimbursementRequest';
 import { convertStateToStatus } from '../../../utils/convertStateToStatus';
+import { bcgov } from '../../../constants/colours';
 
 interface RequestTableProps {
   data: Array<ReimbursementRequest>
@@ -28,14 +27,15 @@ const RequestsTable = (props: RequestTableProps) => {
             <HeaderCell>Purchase Date</HeaderCell>
             <HeaderCell>Submission Date</HeaderCell>
             <HeaderCell>Status</HeaderCell>
-            {/* {<HeaderCell></HeaderCell>} */}
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((row, index) => (
+          {data.length === 0
+          ? <h3 style={{ padding: '1em' }}>Waiting for data...</h3>
+          : data.map((row, index) => (
             <TableRow
               key={row._id}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? 'white' : '#ededed' }}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
             >
               <RequestTableCell>{`${row.firstName} ${row.lastName}`}</RequestTableCell>
               <RequestTableCell>{row.itemsPurchased.join('; ')}</RequestTableCell>
@@ -43,7 +43,6 @@ const RequestsTable = (props: RequestTableProps) => {
               <RequestTableCell>{new Date(row.purchaseDate).toLocaleDateString()}</RequestTableCell>
               <RequestTableCell>{new Date(row.submissionDate).toLocaleDateString()}</RequestTableCell>
               <RequestTableCell>{convertStateToStatus(row.state)}</RequestTableCell>
-              {/* {<TableCell><Button variant='outlined' component={Link} to={`/product/${row.productId}`} >Edit</Button></TableCell>} */}
             </TableRow>
           ))}
         </TableBody>
