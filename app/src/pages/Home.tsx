@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Constants from '../constants/Constants';
 import axios from 'axios';
 import RequestsTable from '../components/custom/tables/RequestsTable';
+import { headerFont } from '../constants/fonts';
 
 const homeStyle = {
   maxWidth: '100%',
@@ -27,6 +28,7 @@ const Home = () => {
 
   return (
     <div style={homeStyle}>
+      <h2 style={headerFont}>Reimbursement Requests</h2>
       <RequestsTable data={data} />
     </div>
   );

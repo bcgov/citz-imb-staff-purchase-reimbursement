@@ -1,14 +1,20 @@
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import { 
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button
+} from '@mui/material';
+import { Link } from 'react-router-dom';
 import HeaderCell from './HeaderCell';
 import RequestTableCell from './RequestTableCell';
 import { ReimbursementRequest } from '../../../interfaces/ReimbursementRequest';
 import { convertStateToStatus } from '../../../utils/convertStateToStatus';
 import { bcgov } from '../../../constants/colours';
+import LinkButton from '../../bcgov/LinkButton';
+import { buttonStyles } from '../../bcgov/ButtonStyles';
 
 interface RequestTableProps {
   data: Array<ReimbursementRequest>
@@ -27,6 +33,7 @@ const RequestsTable = (props: RequestTableProps) => {
             <HeaderCell>Purchase Date</HeaderCell>
             <HeaderCell>Submission Date</HeaderCell>
             <HeaderCell>Status</HeaderCell>
+            <HeaderCell></HeaderCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -43,6 +50,7 @@ const RequestsTable = (props: RequestTableProps) => {
               <RequestTableCell>{new Date(row.purchaseDate).toLocaleDateString()}</RequestTableCell>
               <RequestTableCell>{new Date(row.submissionDate).toLocaleDateString()}</RequestTableCell>
               <RequestTableCell>{convertStateToStatus(row.state)}</RequestTableCell>
+              <RequestTableCell><LinkButton link='/' style={buttonStyles.primary}>Edit</LinkButton></RequestTableCell>
             </TableRow>
           ))}
         </TableBody>
