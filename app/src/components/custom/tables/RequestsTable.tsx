@@ -37,8 +37,8 @@ const RequestsTable = (props: RequestTableProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.length === 0
-          ? <h3 style={{ padding: '1em' }}>Waiting for data...</h3>
+          {data.length === 0 || !data
+          ? <h4 style={{ padding: '1em' }}>No records available.</h4>
           : data.map((row, index) => (
             <TableRow
               key={row._id}

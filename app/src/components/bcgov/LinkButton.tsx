@@ -7,17 +7,19 @@ import { Link } from 'react-router-dom';
 interface LinkButtonProps {
   children: ReactNode,
   link: string,
-  style: object
+  style: object,
+  disabled?: boolean
 }
 
 const LinkButton = (props: LinkButtonProps) => {
   const {
     children,
     link,
-    style
+    style,
+    disabled
   } = props;
 
-  return <Button variant='contained' component={Link} to={link} sx={style}>{children}</Button>;
+  return <Button variant='contained' component={Link} to={link} sx={style} disabled={disabled}>{children}</Button>;
 }
 
 export default LinkButton;

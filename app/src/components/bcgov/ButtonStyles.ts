@@ -1,45 +1,37 @@
 import { bcgov } from "../../constants/colours";
 import { normalFont } from "../../constants/fonts";
 
+const commonButtonStyle = {
+    ...normalFont,
+    borderRadius: '4px',
+    padding: '12px 24px',
+    textAlign: 'center',
+    textDecoration: 'none',
+    display: 'block',
+    fontSize: '14px',
+    fontWeight: '700',
+    letterSpacing: '1px',
+    cursor: 'pointer',
+  '&:hover': {
+    background: bcgov.links,
+    color: bcgov.white
+  }
+}
+
 export const buttonStyles = {
   primary: {
-      ...normalFont,
+      ...commonButtonStyle,      
       backgroundColor: bcgov.primary,
-      borderRadius: '4px',
       color: bcgov.white,
-      padding: '12px 24px',
-      textAlign: 'center',
-      textDecoration: 'none',
-      display: 'block',
-      fontSize: '14px',
-      fontWeight: '700',
-      letterSpacing: '1px',
-      cursor: 'pointer',
-    '&:hover': {
-      background: bcgov.links,
-      color: bcgov.white
-    },
-    '&:disabled': {
-      background: 'white'
+    disabled: {
+      ...commonButtonStyle,
+      backgroundColor: bcgov.white
     }
   },
   secondary: {
-      ...normalFont,
+      ...commonButtonStyle,       
       backgroundColor: bcgov.white,
       border: `1px solid ${bcgov.links}`,
-      borderRadius: '4px',
       color: bcgov.text,
-      padding: '12px 24px',
-      textAlign: 'center',
-      textDecoration: 'none',
-      display: 'block',
-      fontSize: '14px',
-      fontWeight: '700',
-      letterSpacing: '1px',
-      cursor: 'pointer',
-    '&:hover': {
-      background: bcgov.links,
-      color: bcgov.white
     },
-  }
 };
