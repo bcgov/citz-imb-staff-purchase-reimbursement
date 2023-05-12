@@ -19,7 +19,7 @@ const headerTextStyle : React.CSSProperties = {
   fontWeight: 'normal',
   fontFamily: headerFont.fontFamily,
   display: 'inline',
-  fontSize: '130%'
+  fontSize: '30px'
 }
 
 const bannerStyle : React.CSSProperties = {
