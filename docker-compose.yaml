@@ -28,7 +28,7 @@ services:
     networks:
       - purchase-net
     ports:
-      - ${API_PORT:-3004}:3004
+      - ${API_PORT:-3004}:${API_PORT:-3004}
     healthcheck:
       test: curl localhost:${API_PORT:-3004}/api/health | grep 'API running'
       interval: 20s
@@ -78,7 +78,7 @@ services:
       - ./mongo/init/data:/tmp/data
       - ./mongo/data:/data/db
     ports:
-      - ${MONGO_PORT:-27017}:${MONGO_PORT:-27017}
+      - ${MONGO_PORT:-27017}:27017
     networks:
       - purchase-net
     healthcheck:
