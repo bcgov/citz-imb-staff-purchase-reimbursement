@@ -7,7 +7,7 @@ import { z } from 'zod';
 // All functions use requests collection
 const collection : Collection<RequestRecord> = db.collection<RequestRecord>('requests');
 
-// Schema to check for employee id when coming in as url params
+// Schema to check for document id when coming in as url params
 const idSchema = z.string().length(24);
 
 // The record expected from the requests collection
@@ -45,7 +45,7 @@ export const getAllRequests = async (req: Request, res: Response) => {
   const { minimal } = req.query;
   try {
     // TODO: Is there a more memory-efficient solution? Like only returning the first X records?
-    const cursor = !!minimal === true
+    const cursor = minimal === 'true'
                   ? collection.find().sort({submissionDate: -1}).project(minimalProjection)
                   : collection.find().sort({submissionDate: -1});
     const records = await cursor.toArray();
@@ -68,7 +68,7 @@ export const getAllRequests = async (req: Request, res: Response) => {
 export const getRequestsByIDIR = async (req: Request, res: Response) => {
   const { minimal, idir } = req.query;
   try {
-    const cursor = !!minimal === true
+    const cursor = minimal === 'true'
                   ? collection.find({ idir: { $eq: idir as string }}).sort({submissionDate: -1}).project(minimalProjection)
                   : collection.find({ idir: { $eq: idir as string }}).sort({submissionDate: -1});
     const records = await cursor.toArray();

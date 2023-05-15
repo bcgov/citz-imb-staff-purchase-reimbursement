@@ -4,13 +4,6 @@ import axios from 'axios';
 import RequestsTable from '../components/custom/tables/RequestsTable';
 import { headerFont } from '../constants/fonts';
 
-const homeStyle = {
-  maxWidth: '100%',
-  minWidth: '50%',
-  width: 'fit-content',
-  margin: '2em auto'
-}
-
 const Home = () => {
   const [data, setData] = useState([]);
   const { BACKEND_URL } = Constants;
@@ -27,10 +20,10 @@ const Home = () => {
   }, []);
 
   return (
-    <div style={homeStyle}>
+    <>
       <h2 style={headerFont}>Reimbursement Requests</h2>
       <RequestsTable data={data} />
-    </div>
+    </>
   );
 }
 
