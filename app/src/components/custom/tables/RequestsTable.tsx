@@ -37,7 +37,7 @@ const RequestsTable = (props: RequestTableProps) => {
         </TableHead>
         <TableBody>
           {data.length === 0 || !data
-          ? <Typography style={{ padding: '1em' }}>No records available.</Typography>
+          ? <TableRow><CustomTableCell>No requests available.</CustomTableCell></TableRow>
           : data.map((row, index) => (
             <TableRow
               key={row._id}
