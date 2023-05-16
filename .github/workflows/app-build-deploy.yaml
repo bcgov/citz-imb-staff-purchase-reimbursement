@@ -51,15 +51,15 @@ jobs:
         uses: redhat-actions/oc-login@v1
         env:
           OPENSHIFT_USER: github-actions
-          OPENSHIFT_PROJECT: ${{ secrets.OPENSHIFT_PROJECT }}
+          OPENSHIFT_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE }}
         with: 
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          namespace: ${{ secrets.OPENSHIFT_PROJECT }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
 
       - name: Deploy from DeploymentConfig
         env:
-          OPENSHIFT_PROJECT: ${{ secrets.OPENSHIFT_PROJECT }}
+          OPENSHIFT_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE }}
           APPLICATION_NAME: staff-purchase-reimbursement
           CONTAINER_NAME: spr-app
           DEPLOYMENT_CONFIG: api-deployment-config.yaml
@@ -77,15 +77,15 @@ jobs:
         uses: redhat-actions/oc-login@v1
         env:
           OPENSHIFT_USER: github-actions
-          OPENSHIFT_PROJECT: ${{ secrets.OPENSHIFT_PROJECT }}
+          OPENSHIFT_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE }}
         with: 
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          namespace: ${{ secrets.OPENSHIFT_PROJECT }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
       
       - name: Check Status of Rollout
         run: |
-          oc rollout status -n ${{ secrets.OPENSHIFT_PROJECT }} dc/spr-app --watch
+          oc rollout status -n ${{ secrets.OPENSHIFT_NAMESPACE }} dc/spr-app --watch
   
   cleanup:
     name: Clean Up Old Objects
@@ -96,16 +96,16 @@ jobs:
         uses: redhat-actions/oc-login@v1
         env:
           OPENSHIFT_USER: github-actions
-          OPENSHIFT_PROJECT: ${{ secrets.OPENSHIFT_PROJECT }}
+          OPENSHIFT_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE }}
         with: 
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER_URL }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          namespace: ${{ secrets.OPENSHIFT_PROJECT }}
+          namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
 
       - name: Remove old pod objects
         run: |
-          oc delete pod --namespace=${{ secrets.OPENSHIFT_PROJECT }} --field-selector status.phase=Succeeded
+          oc delete pod --namespace=${{ secrets.OPENSHIFT_NAMESPACE }} --field-selector status.phase=Succeeded
 
       - name: Remove old replication controllers
         run: |
-          oc delete rc --namespace=${{ secrets.OPENSHIFT_PROJECT }} --field-selector status.replicas=0
+          oc delete rc --namespace=${{ secrets.OPENSHIFT_NAMESPACE }} --field-selector status.replicas=0
