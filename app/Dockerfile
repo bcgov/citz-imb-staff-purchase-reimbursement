@@ -56,6 +56,10 @@ RUN npm run build
 #########################
 FROM nginx:stable-alpine3.17-slim as prod
 
+ENV NODE_ENV=prod
+ENV VITE_PORT=8080
+ENV VITE_TARGET=prod
+
 # Add curl for health check
 RUN apk --update --no-cache add curl
 
