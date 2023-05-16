@@ -67,6 +67,9 @@ RUN apk --update --no-cache add curl
 COPY --from=prod-part1 /usr/app/dist /usr/share/nginx/html
 COPY --from=prod-part1 /usr/app/nginx.conf /etc/nginx/nginx.conf
 
+# ngnix needs permissions. Only an issue when not local.
+RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
+
 # Expose the default port
 EXPOSE 8080 
 
