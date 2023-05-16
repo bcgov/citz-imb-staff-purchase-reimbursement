@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { RequestStates, convertStateToStatus } from "../utils/convertState";
+import { RequestStates } from "../utils/convertState";
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Constants from "../constants/Constants";
 import { ReimbursementRequest } from "../interfaces/ReimbursementRequest";
-import { Paper, TextField, Button, Select, FormControl, FormLabel, MenuItem } from '@mui/material';
+import { Paper, TextField, Select, FormControl, FormLabel, MenuItem } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -12,6 +12,8 @@ import dayjs from 'dayjs';
 import { normalFont } from "../constants/fonts";
 import ItemsPurchasedTable from "../components/custom/tables/ItemsPurchasedTable";
 import FileAttachmentTable from "../components/custom/tables/FileAttachmentTable";
+import ActionButton from "../components/bcgov/ActionButton";
+import { buttonStyles } from "../components/bcgov/ButtonStyles";
 
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
@@ -41,6 +43,25 @@ const IndividualRequest = () => {
     })();
   }, []);
 
+  const handleUpdate = async () => {
+    try {
+      const axiosReqConfig = {
+        url: `${Constants.BACKEND_URL}/api/requests/${id}`,
+        method: `patch`,
+        data: {
+          state: requestState
+        }
+      }
+      let response = await axios(axiosReqConfig);
+      if (response.status === 200) {
+        // Return to home page
+        navigate('/');
+      }
+    } catch (e) {
+      console.warn('Record could not be retrieved.');
+    }
+  }
+
   const formControlStyle : React.CSSProperties = {
     width: '85%',
     marginBottom: '1em',
@@ -54,8 +75,14 @@ const IndividualRequest = () => {
       }}>
         <form>
           <Grid container spacing={2}>
-            <Grid xs={12}>
+            <Grid xs={10}>
               <h4>Request ID: {reimbursementRequest?._id || 'No request found'}</h4>
+            </Grid>
+            <Grid xs={2}>
+              <ActionButton style={{
+                ...buttonStyles.primary,
+                float: 'right'
+                }} handler={handleUpdate}>Update</ActionButton>
             </Grid>
             {/* FIRST ROW */}
             <Grid xs={4}>

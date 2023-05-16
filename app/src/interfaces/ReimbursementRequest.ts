@@ -1,5 +1,3 @@
-import { FileAttachments } from "../components/custom/tables/FileAttachmentTable";
-import { ItemsPurchased } from "../components/custom/tables/ItemsPurchasedTable";
 import { ItemPurchased } from "./ItemPurchased";
 import { AttachedFile } from './AttachedFile';
 
