@@ -1,5 +1,7 @@
 import { bcgov } from "../../constants/colours";
 import { headerFont } from "../../constants/fonts";
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const headerStyle : React.CSSProperties = {
   backgroundColor: bcgov.header,
@@ -8,10 +10,12 @@ const headerStyle : React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between', 
   height: '65px',
-  width: '100%',
+  width: '100vw',
   top: '0px',
+  left: '0px',
   position: 'fixed',
-  padding: '0 1em'
+  padding: '0 1em',
+  zIndex: 100,
 }
 
 const headerTextStyle : React.CSSProperties = {
@@ -19,7 +23,6 @@ const headerTextStyle : React.CSSProperties = {
   fontWeight: 'normal',
   fontFamily: headerFont.fontFamily,
   display: 'inline',
-  fontSize: '30px'
 }
 
 const bannerStyle : React.CSSProperties = {
@@ -30,15 +33,18 @@ const bannerStyle : React.CSSProperties = {
 }
 
 const NavigationBar = () => {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('md'));
+
   return (
     <header style={headerStyle}>
       <div style={bannerStyle}>
         <a href="https://gov.bc.ca">
-          <img src="logo-banner.svg" alt="Go to the Government of British Columbia website" style={{
+          <img src="/logo-banner.svg" alt="Go to the Government of British Columbia website" style={{
             height: '45px'
           }}/>
         </a>
-        <h1 style={headerTextStyle}>Staff Purchase Reimbursement</h1>
+        <h1 style={{ ...headerTextStyle, fontSize: matches ? '30px' : '18px' }}>Staff Purchase Reimbursement</h1>
       </div>
       <div>
       {

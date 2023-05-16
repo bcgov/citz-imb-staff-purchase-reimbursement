@@ -1,4 +1,4 @@
-enum RequestStates {
+export enum RequestStates {
   DELETED,
   DENIED,
   APPROVED,
