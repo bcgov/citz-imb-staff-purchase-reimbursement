@@ -14,6 +14,7 @@ import ItemsPurchasedTable from "../components/custom/tables/ItemsPurchasedTable
 import FileAttachmentTable from "../components/custom/tables/FileAttachmentTable";
 import ActionButton from "../components/bcgov/ActionButton";
 import { buttonStyles } from "../components/bcgov/ButtonStyles";
+import { bcgov } from "../constants/colours";
 
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
@@ -71,18 +72,21 @@ const IndividualRequest = () => {
   return (
     <>
       <Paper sx={{
-        padding: '1em'
+        padding: '1em',
+        marginTop: '75px'
       }}>
         <form>
           <Grid container spacing={2}>
-            <Grid xs={10}>
+            <Grid xs={12} sx={{ justifyContent: 'space-between', display: 'flex' }}>
               <h4>Request ID: {reimbursementRequest?._id || 'No request found'}</h4>
-            </Grid>
-            <Grid xs={2}>
-              <ActionButton style={{
-                ...buttonStyles.primary,
-                float: 'right'
-                }} handler={handleUpdate}>Update</ActionButton>
+              <div style={{ alignContent: 'center', display: 'inline' }}>
+                <ActionButton style={{ ...buttonStyles.secondary, marginTop: '0.75em' }} handler={() => {navigate('/')}}>Back</ActionButton>
+                {
+                  isAdmin
+                  ? <ActionButton style={{ ...buttonStyles.primary, marginLeft: '1em', marginTop: '0.75em' }} handler={handleUpdate}>Update</ActionButton>
+                  : <></>
+                }
+              </div>
             </Grid>
             {/* FIRST ROW */}
             <Grid xs={4}>
@@ -91,7 +95,7 @@ const IndividualRequest = () => {
                 <TextField 
                   id='requestor'
                   name='requestor'
-                  value={reimbursementRequest?.firstName || ''}
+                  value={`${reimbursementRequest?.firstName} ${reimbursementRequest?.lastName}`}
                   disabled={locked}
                 />
               </FormControl>
@@ -229,7 +233,7 @@ const IndividualRequest = () => {
             {/* SIXTH ROW */}
             <Grid xs={12}>
               <FormControl sx={formControlStyle}>
-              <FormLabel htmlFor='additionalComments'>Supplier Email</FormLabel>
+              <FormLabel htmlFor='additionalComments'>Additional Comments</FormLabel>
                 <TextField
                   id="additionalComments"
                   multiline

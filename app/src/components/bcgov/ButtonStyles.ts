@@ -7,7 +7,7 @@ const commonButtonStyle = {
     padding: '12px 24px',
     textAlign: 'center',
     textDecoration: 'none',
-    display: 'block',
+    display: 'inline-block',
     fontSize: '14px',
     fontWeight: '700',
     letterSpacing: '1px',

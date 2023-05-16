@@ -8,11 +8,12 @@ const headerStyle : React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between', 
   height: '65px',
-  width: '100%',
+  width: '100vw',
   top: '0px',
+  left: '0px',
   position: 'fixed',
   padding: '0 1em',
-  zIndex: 100
+  zIndex: 100,
 }
 
 const headerTextStyle : React.CSSProperties = {
@@ -35,7 +36,7 @@ const NavigationBar = () => {
     <header style={headerStyle}>
       <div style={bannerStyle}>
         <a href="https://gov.bc.ca">
-          <img src="/public/logo-banner.svg" alt="Go to the Government of British Columbia website" style={{
+          <img src="/logo-banner.svg" alt="Go to the Government of British Columbia website" style={{
             height: '45px'
           }}/>
         </a>

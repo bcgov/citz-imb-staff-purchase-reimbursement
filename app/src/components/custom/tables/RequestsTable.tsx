@@ -49,7 +49,7 @@ const RequestsTable = (props: RequestTableProps) => {
               <CustomTableCell>{new Date(row.purchaseDate).toLocaleDateString()}</CustomTableCell>
               <CustomTableCell>{new Date(row.submissionDate).toLocaleDateString()}</CustomTableCell>
               <CustomTableCell>{convertStateToStatus(row.state)}</CustomTableCell>
-              <CustomTableCell><LinkButton link={`/request/${row._id}`} style={buttonStyles.primary}>Edit</LinkButton></CustomTableCell>
+              <CustomTableCell><LinkButton link={`/request/${row._id}`} style={buttonStyles.primary}>More</LinkButton></CustomTableCell>
             </TableRow>
           ))}
         </TableBody>
