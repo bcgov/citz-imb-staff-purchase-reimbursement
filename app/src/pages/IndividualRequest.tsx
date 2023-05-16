@@ -14,7 +14,6 @@ import ItemsPurchasedTable from "../components/custom/tables/ItemsPurchasedTable
 import FileAttachmentTable from "../components/custom/tables/FileAttachmentTable";
 import ActionButton from "../components/bcgov/ActionButton";
 import { buttonStyles } from "../components/bcgov/ButtonStyles";
-import { bcgov } from "../constants/colours";
 
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
@@ -64,7 +63,7 @@ const IndividualRequest = () => {
   }
 
   const formControlStyle : React.CSSProperties = {
-    width: '85%',
+    width: '100%',
     marginBottom: '1em',
     ...normalFont
   }
@@ -73,23 +72,25 @@ const IndividualRequest = () => {
     <>
       <Paper sx={{
         padding: '1em',
-        marginTop: '75px'
+        marginTop: '75px',
+        maxWidth: '1000px'
       }}>
         <form>
           <Grid container spacing={2}>
-            <Grid xs={12} sx={{ justifyContent: 'space-between', display: 'flex' }}>
-              <h4>Request ID: {reimbursementRequest?._id || 'No request found'}</h4>
-              <div style={{ alignContent: 'center', display: 'inline' }}>
+            {/* ZERO-TH ROW */}
+            <Grid container xs={12} sx={{ justifyContent: 'space-between', display: 'flex' }}>
+              <Grid xs={12} sm={6}><h4 >Request ID: {reimbursementRequest?._id || 'No request found'}</h4></Grid>
+              <Grid xs={12} sm={4}style={{ alignContent: 'center', display: 'inline', minWidth: '215px' }}>
                 <ActionButton style={{ ...buttonStyles.secondary, marginTop: '0.75em' }} handler={() => {navigate('/')}}>Back</ActionButton>
                 {
                   isAdmin
                   ? <ActionButton style={{ ...buttonStyles.primary, marginLeft: '1em', marginTop: '0.75em' }} handler={handleUpdate}>Update</ActionButton>
                   : <></>
                 }
-              </div>
+              </Grid>
             </Grid>
             {/* FIRST ROW */}
-            <Grid xs={4}>
+            <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='requestor'>Requestor</FormLabel>
                 <TextField 
@@ -100,7 +101,7 @@ const IndividualRequest = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid xs={4}>
+            <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='submissionDate'>Submission Date</FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -111,7 +112,7 @@ const IndividualRequest = () => {
                 </LocalizationProvider>
               </FormControl>
             </Grid>
-            <Grid xs={4}>
+            <Grid xs={12} sm={4}>
             <FormControl sx={formControlStyle}>
               <FormLabel htmlFor='status'>Status</FormLabel>
               <Select
@@ -132,7 +133,7 @@ const IndividualRequest = () => {
             </FormControl>          
             </Grid>
             {/* SECOND ROW */}
-            <Grid xs={4}>
+            <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='employeeID'>Employee ID</FormLabel>
                 <TextField 
@@ -143,7 +144,7 @@ const IndividualRequest = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid xs={4}>
+            <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='purchaseDate'>Purchase Date</FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -154,7 +155,7 @@ const IndividualRequest = () => {
                 </LocalizationProvider>
               </FormControl>
             </Grid>
-            <Grid xs={4}>
+            <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='totalCost'>Total Cost</FormLabel>
                 <TextField 
@@ -166,20 +167,20 @@ const IndividualRequest = () => {
               </FormControl>
             </Grid>
             {/* THIRD ROW */}
-            <Grid xs={8}>
+            <Grid xs={12} md={7}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='itemsPurchased'>Items Purchased</FormLabel>
                 <ItemsPurchasedTable data={reimbursementRequest?.itemsPurchased || []} />
               </FormControl>
             </Grid>
-            <Grid xs={4}>
+            <Grid xs={12} md={5}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='attachReceipts'>Receipts</FormLabel>
                 <FileAttachmentTable data={reimbursementRequest?.attachReceipts || []}/>
               </FormControl>
             </Grid>
             {/* FOURTH ROW */}
-            <Grid xs={4}>
+            <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='approvalDate'>Approval Date</FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -190,14 +191,14 @@ const IndividualRequest = () => {
                 </LocalizationProvider>
               </FormControl>
             </Grid>
-            <Grid xs={8}>
+            <Grid xs={12} sm={8}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='attachApproval'>Approval Files</FormLabel>
                 <FileAttachmentTable data={reimbursementRequest?.attachApproval || []}/>
               </FormControl>
             </Grid>
             {/* FIFTH ROW */}
-            <Grid xs={4}>
+            <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='supplierName'>Supplier Name</FormLabel>
                 <TextField 
@@ -208,7 +209,7 @@ const IndividualRequest = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid xs={4}>
+            <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='supplierPhoneNumber'>Supplier Phone</FormLabel>
                 <TextField 
@@ -219,7 +220,7 @@ const IndividualRequest = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid xs={4}>
+            <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='supplierEmail'>Supplier Email</FormLabel>
                 <TextField 

@@ -1,5 +1,7 @@
 import { bcgov } from "../../constants/colours";
 import { headerFont } from "../../constants/fonts";
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const headerStyle : React.CSSProperties = {
   backgroundColor: bcgov.header,
@@ -21,7 +23,6 @@ const headerTextStyle : React.CSSProperties = {
   fontWeight: 'normal',
   fontFamily: headerFont.fontFamily,
   display: 'inline',
-  fontSize: '30px'
 }
 
 const bannerStyle : React.CSSProperties = {
@@ -32,6 +33,9 @@ const bannerStyle : React.CSSProperties = {
 }
 
 const NavigationBar = () => {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('md'));
+
   return (
     <header style={headerStyle}>
       <div style={bannerStyle}>
@@ -40,7 +44,7 @@ const NavigationBar = () => {
             height: '45px'
           }}/>
         </a>
-        <h1 style={headerTextStyle}>Staff Purchase Reimbursement</h1>
+        <h1 style={{ ...headerTextStyle, fontSize: matches ? '30px' : '18px' }}>Staff Purchase Reimbursement</h1>
       </div>
       <div>
       {
