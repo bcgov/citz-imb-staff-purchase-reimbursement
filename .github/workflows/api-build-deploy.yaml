@@ -64,7 +64,7 @@ jobs:
           OPENSHIFT_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE }}
           APPLICATION_NAME: staff-purchase-reimbursement
           CONTAINER_NAME: spr-api
-          DEPLOYMENT_CONFIG: api-deployment-config.yaml
+          DEPLOYMENT_CONFIG: api-dc-template.yaml
           IMAGE_REPOSITORY: ${{ secrets.IMAGE_REPOSITORY }}
           ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}
         run: |
