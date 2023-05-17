@@ -54,7 +54,7 @@ RUN npm run build
 #########################
 ### PROD IMAGE Part 2 ###
 #########################
-FROM nginx:stable-alpine3.17-slim as prod
+FROM nginx:alpine-slim as prod
 
 ENV NODE_ENV=prod
 ENV VITE_PORT=8080
@@ -65,7 +65,7 @@ RUN apk --update --no-cache add curl
 
 # Copy built files and config file
 COPY --from=prod-part1 /usr/app/dist /usr/share/nginx/html
-COPY --from=prod-part1 /usr/app/nginx.conf /etc/nginx/nginx.conf
+COPY --from=prod-part1 /usr/app/nginx.conf /etc/nginx/conf.d/default.conf
 
 # ngnix needs permissions. Only an issue when not local.
 RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
@@ -74,4 +74,4 @@ RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
 EXPOSE 8080 
 
 # Run the Nginx server
-CMD ["/usr/sbin/nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
