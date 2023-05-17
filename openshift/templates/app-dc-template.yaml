@@ -57,6 +57,13 @@ objects:
               ports:
                 - containerPort: 8080
                   protocol: TCP
+              resources:
+                limits:
+                  cpu: '500'
+                  memory: 250Mi
+                requests:
+                  cpu: 100m
+                  memory: 150Mi
               resources: {}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File

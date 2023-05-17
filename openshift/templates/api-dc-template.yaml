@@ -57,6 +57,13 @@ objects:
               ports:
                 - containerPort: 3004
                   protocol: TCP
+              resources:
+                limits:
+                  cpu: '500'
+                  memory: 250Mi
+                requests:
+                  cpu: 100m
+                  memory: 150Mi
               env:
                 - name: API_PORT
                   valueFrom:
