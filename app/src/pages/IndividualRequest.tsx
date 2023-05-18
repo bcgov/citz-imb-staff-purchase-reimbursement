@@ -149,7 +149,7 @@ const IndividualRequest = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid xs={12} sm={4}>
+            {/* <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='purchaseDate'>Purchase Date</FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -159,14 +159,14 @@ const IndividualRequest = () => {
                   />
                 </LocalizationProvider>
               </FormControl>
-            </Grid>
+            </Grid> */}
             <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='totalCost'>Total Cost</FormLabel>
                 <TextField 
                   id='totalCost'
                   name='totalCost'
-                  value={`$ ${reimbursementRequest?.totalCost || ''}`}
+                  value={`$ ${reimbursementRequest?.totalCost.toFixed(2) || ''}`}
                   disabled={locked}
                 />
               </FormControl>

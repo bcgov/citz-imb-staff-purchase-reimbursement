@@ -25,6 +25,7 @@ const ItemsPurchasedTable = (props: ItemsPurchased) => {
           <TableRow>
             <HeaderCell>#</HeaderCell>
             <HeaderCell>Item Name</HeaderCell>
+            <HeaderCell>Purchase Date</HeaderCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -36,7 +37,8 @@ const ItemsPurchasedTable = (props: ItemsPurchased) => {
               sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
             >
               <CustomTableCell sx={{ width: '40px' }}>{index + 1}</CustomTableCell>
-              <CustomTableCell>{`${item}`}</CustomTableCell>
+              <CustomTableCell>{`${item.itemName}`}</CustomTableCell>
+              <CustomTableCell sx={{ width: '150px' }}>{new Date(item.purchaseDate).toLocaleDateString()}</CustomTableCell>
             </TableRow>
           ))}
         </TableBody>

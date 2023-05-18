@@ -12,7 +12,7 @@ const App = () => {
 
   const container = {
     maxWidth: '90%',
-    minWidth: '50%',
+    minWidth: '70%',
     width: 'fit-content',
     margin: '2em auto'
   }
