@@ -80,8 +80,8 @@ parameters:
     displayName: Container Name
     name: CONTAINER_NAME
     required: true
-  - description: OpenShift Project
-    displayName: OpenShift Project
+  - description: OpenShift Namespace
+    displayName: OpenShift Namespace
     name: OPENSHIFT_NAMESPACE
     required: true
   - description: Application Name
