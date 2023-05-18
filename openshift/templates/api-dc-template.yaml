@@ -59,7 +59,7 @@ objects:
                   protocol: TCP
               resources:
                 limits:
-                  cpu: '500'
+                  cpu: 150m
                   memory: 250Mi
                 requests:
                   cpu: 100m
@@ -135,7 +135,6 @@ objects:
                     secretKeyRef:
                       name: spr-secret
                       key: TESTING
-              resources: {}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               imagePullPolicy: Always

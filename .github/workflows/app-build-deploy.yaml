@@ -1,12 +1,10 @@
 name: Build and Deploy APP
 
 on:
-  # push:
-  #   branches: [ main ]
-  #   paths:
-  #     - "app/**"
-  pull_request:
-    types: [opened, synchronize]
+  push:
+    branches: [ main ]
+    paths:
+      - "app/**"
   workflow_dispatch:
 
 jobs:
