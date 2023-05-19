@@ -15,7 +15,7 @@ import protectedRouter from './routes/protected/index';
 const app: express.Application = express();
 keycloakInit(app);
 
-const { HOSTNAME, API_PORT, TESTING, BACKEND_URL } = Constants;
+const { HOSTNAME, API_PORT, TESTING, BACKEND_URL, FRONTEND_URL } = Constants;
 
 // Swagger Configuration
 const swaggerURL = HOSTNAME.includes('localhost') ? `http://${HOSTNAME}:${API_PORT}/api` : `${BACKEND_URL}/api`;
@@ -42,11 +42,11 @@ const limiter = rateLimit({
 
 // CORS Configuration
 // Localhost does not need to be specified.
-// TODO: Add origin for frontend when available
 const corsOptions = {
   origin: [
     'https://submit.digital.gov.bc.ca', // CHEFS
-    'http://localhost:8080'             // Local frontend testing
+    'http://localhost:8080',            // Local frontend testing
+    FRONTEND_URL                        // Frontend
   ]
 }
 
@@ -56,7 +56,19 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(compression());
 app.use(morgan('dev')); // logging middleware
+
+// Add CORS
 app.use(cors(corsOptions));
+// Set headers for response
+const headerHandler: unknown = (req: Request, res: Response, next: NextFunction) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,PATCH,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
+  next();
+}
+app.use('/api', headerHandler as RequestHandler);
+
+
 if (`${TESTING}`.toLowerCase() === 'true') app.use(limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
@@ -66,7 +78,7 @@ app.use('/api', openRouter.healthRouter);
 
 // Routing Protected Routes
 // Pass the request through with no protection (for testing)
-const falseProtect: unknown = (req: Request, res: Response, next : NextFunction) => { console.warn('Keycloak is off'); next(); }
+const falseProtect: unknown = (req: Request, res: Response, next: NextFunction) => { console.warn('Keycloak is off'); next(); }
 // Allow for removed protection when API testing is enabled, otherwise use Keycloak
 const routeProtector : (RequestHandler | Promise<Response<any, Record<string, any>>>) = `${TESTING}`.toLowerCase() === 'true' ? (falseProtect as RequestHandler) : protect;
 app.use('/api', routeProtector, protectedRouter.requests);

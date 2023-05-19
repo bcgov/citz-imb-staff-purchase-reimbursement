@@ -14,13 +14,18 @@ import ItemsPurchasedTable from "../components/custom/tables/ItemsPurchasedTable
 import FileAttachmentTable from "../components/custom/tables/FileAttachmentTable";
 import ActionButton from "../components/bcgov/ActionButton";
 import { buttonStyles } from "../components/bcgov/ButtonStyles";
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
   const [requestState, setRequestState] = useState<RequestStates>(RequestStates.SUBMITTED);
   const navigate = useNavigate();
   const { id } = useParams();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const locked = true;
+  // TODO: Made this based off the user's keycloak roles
   const isAdmin = true;
 
   useEffect(() => {
@@ -79,8 +84,8 @@ const IndividualRequest = () => {
           <Grid container spacing={2}>
             {/* ZERO-TH ROW */}
             <Grid container xs={12} sx={{ justifyContent: 'space-between', display: 'flex' }}>
-              <Grid xs={12} sm={6}><h4 >Request ID: {reimbursementRequest?._id || 'No request found'}</h4></Grid>
-              <Grid xs={12} sm={4}style={{ alignContent: 'center', display: 'inline', minWidth: '215px' }}>
+              <Grid xs={12} sm={6}><h4>Request ID: {reimbursementRequest?._id || 'No request found'}</h4></Grid>
+              <Grid xs={12} sm={5} alignItems='center' justifyContent={matches ? 'flex-end' : 'flex-start'} style={{  minWidth: '215px', display: 'flex' }}>
                 <ActionButton style={{ ...buttonStyles.secondary, marginTop: '0.75em' }} handler={() => {navigate('/')}}>Back</ActionButton>
                 {
                   isAdmin

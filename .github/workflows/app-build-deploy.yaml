@@ -1,10 +1,10 @@
-name: Build and Deploy API
+name: Build and Deploy APP
 
 on:
   push:
     branches: [ main ]
     paths:
-      - "api/**"
+      - "app/**"
   workflow_dispatch:
 
 jobs:
@@ -20,14 +20,10 @@ jobs:
       - name: Log In to Docker
         run: |
           docker login ${{ secrets.ARTIFACTORY_URL }} -u ${{ secrets.ARTIFACTORY_USERNAME }} -p ${{ secrets.ARTIFACTORY_PASSWORD }}
-
-      - name: Copy env.template
-        run: |
-          cp .env.template .env
       
-      - name: Build API Image
+      - name: Build APP Image
         run: |
-          docker-compose build spr-api
+          docker-compose build spr-app
 
       - name: List Docker Images
         run: |
@@ -35,11 +31,11 @@ jobs:
         
       - name: Tag Image
         run: |
-          docker tag citz-imb-staff-purchasing-reimbursement_spr-api ${{ secrets.ARTIFACTORY_URL }}/${{ secrets.IMAGE_REPOSITORY }}/spr-api:latest
+          docker tag citz-imb-staff-purchasing-reimbursement_spr-app ${{ secrets.ARTIFACTORY_URL }}/${{ secrets.IMAGE_REPOSITORY }}/spr-app:latest
       
       - name: Push Image
         run: |
-          docker push ${{ secrets.ARTIFACTORY_URL }}/${{ secrets.IMAGE_REPOSITORY }}/spr-api:latest
+          docker push ${{ secrets.ARTIFACTORY_URL }}/${{ secrets.IMAGE_REPOSITORY }}/spr-app:latest
   
   deploy:
     name: Deploy to OpenShift
@@ -63,8 +59,8 @@ jobs:
         env:
           OPENSHIFT_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE }}
           APPLICATION_NAME: staff-purchase-reimbursement
-          CONTAINER_NAME: spr-api
-          DEPLOYMENT_CONFIG: api-dc-template.yaml
+          CONTAINER_NAME: spr-app
+          DEPLOYMENT_CONFIG: app-dc-template.yaml
           IMAGE_REPOSITORY: ${{ secrets.IMAGE_REPOSITORY }}
           ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}
         run: |
@@ -87,7 +83,7 @@ jobs:
       
       - name: Check Status of Rollout
         run: |
-          oc rollout status -n ${{ secrets.OPENSHIFT_NAMESPACE }} dc/spr-api --watch
+          oc rollout status -n ${{ secrets.OPENSHIFT_NAMESPACE }} dc/spr-app --watch
   
   cleanup:
     name: Clean Up Old Objects

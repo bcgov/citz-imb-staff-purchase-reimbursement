@@ -13,7 +13,7 @@ objects:
         app.openshift.io/route-disabled: 'false'
         openshift.io/generated-by: OpenShiftWebConsole
       name: ${CONTAINER_NAME}
-      namespace: ${OPENSHIFT_PROJECT}
+      namespace: ${OPENSHIFT_NAMESPACE}
       labels:
         app: ${CONTAINER_NAME}
         app.kubernetes.io/component: ${CONTAINER_NAME}
@@ -21,7 +21,7 @@ objects:
         app.kubernetes.io/name: ${CONTAINER_NAME}
         app.kubernetes.io/part-of: ${APPLICATION_NAME}
         app.openshift.io/runtime: nodejs
-        app.openshift.io/runtime-namespace: ${OPENSHIFT_PROJECT}
+        app.openshift.io/runtime-namespace: ${OPENSHIFT_NAMESPACE}
     spec:
       strategy:
         type: Rolling
@@ -57,6 +57,13 @@ objects:
               ports:
                 - containerPort: 3004
                   protocol: TCP
+              resources:
+                limits:
+                  cpu: 150m
+                  memory: 250Mi
+                requests:
+                  cpu: 100m
+                  memory: 150Mi
               env:
                 - name: API_PORT
                   valueFrom:
@@ -128,7 +135,6 @@ objects:
                     secretKeyRef:
                       name: spr-secret
                       key: TESTING
-              resources: {}
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               imagePullPolicy: Always
@@ -145,9 +151,9 @@ parameters:
     displayName: Container Name
     name: CONTAINER_NAME
     required: true
-  - description: OpenShift Project
-    displayName: OpenShift Project
-    name: OPENSHIFT_PROJECT
+  - description: OpenShift Namespace
+    displayName: OpenShift Namespace
+    name: OPENSHIFT_NAMESPACE
     required: true
   - description: Application Name
     displayName: Application Name
