@@ -149,17 +149,6 @@ const IndividualRequest = () => {
                 />
               </FormControl>
             </Grid>
-            {/* <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='purchaseDate'>Purchase Date</FormLabel>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    value={dayjs(reimbursementRequest?.purchaseDate)}
-                    disabled={locked}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-            </Grid> */}
             <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='totalCost'>Total Cost</FormLabel>
