@@ -14,7 +14,8 @@ const App = () => {
     maxWidth: '90%',
     minWidth: '70%',
     width: 'fit-content',
-    margin: '2em auto'
+    margin: '2em auto',
+    paddingTop: '60px'
   }
   
   return (

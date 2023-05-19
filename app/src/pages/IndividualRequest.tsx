@@ -77,7 +77,7 @@ const IndividualRequest = () => {
     <>
       <Paper sx={{
         padding: '1em',
-        marginTop: '75px',
+        margin: '10px auto',
         maxWidth: '1000px'
       }}>
         <form>
