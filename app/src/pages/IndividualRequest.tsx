@@ -77,7 +77,7 @@ const IndividualRequest = () => {
     <>
       <Paper sx={{
         padding: '1em',
-        marginTop: '75px',
+        margin: '10px auto',
         maxWidth: '1000px'
       }}>
         <form>
@@ -151,22 +151,11 @@ const IndividualRequest = () => {
             </Grid>
             <Grid xs={12} sm={4}>
               <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='purchaseDate'>Purchase Date</FormLabel>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    value={dayjs(reimbursementRequest?.purchaseDate)}
-                    disabled={locked}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='totalCost'>Total Cost</FormLabel>
                 <TextField 
                   id='totalCost'
                   name='totalCost'
-                  value={`$ ${reimbursementRequest?.totalCost || ''}`}
+                  value={`$ ${reimbursementRequest?.totalCost.toFixed(2) || ''}`}
                   disabled={locked}
                 />
               </FormControl>
