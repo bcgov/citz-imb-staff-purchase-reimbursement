@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import IndividualRequest from './pages/IndividualRequest'; 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { KeycloakWrapper } from './keycloak';
 
 const App = () => {
 
@@ -20,15 +21,17 @@ const App = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <BrowserRouter>
-        <div style={{...normalFont}} className='App'>
-          <NavigationBar />
-          <div style={container}>
-            <Routes>
-              <Route index element={<Home/>} />
-              <Route path={'request/:id'} element={<IndividualRequest />}/>
-            </Routes>
+        <KeycloakWrapper>
+          <div style={{...normalFont}} className='App'>
+            <NavigationBar />
+            <div style={container}>
+              <Routes>
+                <Route index element={<Home/>} />
+                <Route path={'request/:id'} element={<IndividualRequest />}/>
+              </Routes>
+            </div>
           </div>
-        </div>
+        </KeycloakWrapper>
       </BrowserRouter>
     </LocalizationProvider>
   )
