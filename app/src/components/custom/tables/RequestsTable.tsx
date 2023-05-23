@@ -5,7 +5,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography
 } from '@mui/material';
 import HeaderCell from './HeaderCell';
 import CustomTableCell from './CustomTableCell';
@@ -29,7 +28,6 @@ const RequestsTable = (props: RequestTableProps) => {
             <HeaderCell>Requestor Name</HeaderCell>
             <HeaderCell>Items Purchased</HeaderCell>
             <HeaderCell>Total</HeaderCell>
-            <HeaderCell>Purchase Date</HeaderCell>
             <HeaderCell>Submission Date</HeaderCell>
             <HeaderCell>Status</HeaderCell>
             <HeaderCell></HeaderCell>
@@ -44,9 +42,8 @@ const RequestsTable = (props: RequestTableProps) => {
               sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
             >
               <CustomTableCell>{`${row.firstName} ${row.lastName}`}</CustomTableCell>
-              <CustomTableCell>{row.itemsPurchased.join('; ')}</CustomTableCell>
-              <CustomTableCell>{`$${row.totalCost}`}</CustomTableCell>
-              <CustomTableCell>{new Date(row.purchaseDate).toLocaleDateString()}</CustomTableCell>
+              <CustomTableCell>{row.itemsPurchased.map(item => item.itemName).join('; ')}</CustomTableCell>
+              <CustomTableCell>{`$${row.totalCost.toFixed(2)}`}</CustomTableCell>
               <CustomTableCell>{new Date(row.submissionDate).toLocaleDateString()}</CustomTableCell>
               <CustomTableCell>{convertStateToStatus(row.state)}</CustomTableCell>
               <CustomTableCell><LinkButton link={`/request/${row._id}`} style={buttonStyles.primary}>More</LinkButton></CustomTableCell>

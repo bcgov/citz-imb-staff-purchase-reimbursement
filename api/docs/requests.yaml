@@ -20,16 +20,17 @@ components:
         itemsPurchased:
           type: array
           items:
-            type: string
-          example:
-            - Toothpaste
-            - Oranges
+            type: object
+            properties:
+              itemName:
+                type: string
+                example: Hot Dogs
+              purchaseDate:
+                type: string
+                example: 2023-05-01T00:00:00-07:00
         totalCost:
           type: number
           example: 34.55
-        purchaseDate:
-          type: string
-          example: 2023-05-01T00:00:00-07:00
         attachReceipts:
           type: array
           items:
