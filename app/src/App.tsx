@@ -14,7 +14,7 @@ import Login from './pages/Login';
 const App = () => {
   const { state: authState } = useAuthService();
   const user = authState.userInfo;
-  console.log(authState)
+
   const container = {
     maxWidth: '90%',
     minWidth: '70%',
