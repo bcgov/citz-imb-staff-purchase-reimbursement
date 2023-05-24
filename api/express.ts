@@ -13,7 +13,6 @@ import openRouter from './routes/open/index';
 import protectedRouter from './routes/protected/index';
 
 const app: express.Application = express();
-keycloakInit(app);
 
 const { HOSTNAME, API_PORT, TESTING, BACKEND_URL, FRONTEND_URL } = Constants;
 
@@ -56,6 +55,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(compression());
 app.use(morgan('dev')); // logging middleware
+keycloakInit(app);
 
 // Add CORS
 app.use(cors(corsOptions));
@@ -63,7 +63,7 @@ app.use(cors(corsOptions));
 const headerHandler: unknown = (req: Request, res: Response, next: NextFunction) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,PATCH,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Accept');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization');
   next();
 }
 app.use('/api', headerHandler as RequestHandler);

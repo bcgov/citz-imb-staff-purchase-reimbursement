@@ -2,6 +2,7 @@ import { bcgov } from "../../constants/colours";
 import { headerFont } from "../../constants/fonts";
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import UserControl from "../custom/login/UserControl";
 
 const headerStyle : React.CSSProperties = {
   backgroundColor: bcgov.header,
@@ -46,10 +47,18 @@ const NavigationBar = () => {
         </a>
         <h1 style={{ ...headerTextStyle, fontSize: matches ? '30px' : '18px' }}>Staff Purchase Reimbursement</h1>
       </div>
-      <div>
+      <div
+      style={{
+        minWidth: '150px',
+        display: 'flex',
+        justifyContent: 'flex-end',
+        marginRight: '2em',
+        padding: '0.8em 0 0.4em 0'
+      }}>
       {
         // This place is for anything that needs to be right aligned within the header.
       }
+        <UserControl/>
       </div>
     </header>
   );
