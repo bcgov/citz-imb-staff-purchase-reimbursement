@@ -35,7 +35,6 @@ const useAuthService = () => {
       const response = await fetch(`${Constants.BACKEND_URL}/oauth/token`, {
         method: 'POST',
         credentials: 'include',
-        mode: 'no-cors',
       });
 
       if (response.ok) {

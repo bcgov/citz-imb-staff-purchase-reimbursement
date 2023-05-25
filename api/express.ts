@@ -46,8 +46,12 @@ const corsOptions = {
     'https://submit.digital.gov.bc.ca', // CHEFS
     'http://localhost:8080',            // Local frontend testing
     FRONTEND_URL                        // Frontend
-  ]
+  ],
+  credentials: true,
 }
+
+// Incoming CORS Filter
+app.use(cors(corsOptions));
 
 // Express middleware
 app.use(express.json());
@@ -57,8 +61,6 @@ app.use(compression());
 app.use(morgan('dev')); // logging middleware
 keycloakInit(app);
 
-// Add CORS
-app.use(cors(corsOptions));
 // Set headers for response
 const headerHandler: unknown = (req: Request, res: Response, next: NextFunction) => {
   res.header('Access-Control-Allow-Origin', '*');
