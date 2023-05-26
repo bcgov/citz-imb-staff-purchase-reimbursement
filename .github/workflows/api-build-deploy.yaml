@@ -59,7 +59,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
 
-      - name: Deploy from DeploymentConfig
+      - name: Apply DeploymentConfig
         env:
           OPENSHIFT_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE }}
           APPLICATION_NAME: staff-purchase-reimbursement
@@ -69,6 +69,10 @@ jobs:
           ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}
         run: |
           ./.github/helpers/deploy.sh
+
+      - name: Rollout Pod
+        run: |
+          oc rollout latest dc/spr-api
 
   healthcheck:
     name: Determine Rollout Success
