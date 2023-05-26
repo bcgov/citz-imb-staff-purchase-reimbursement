@@ -3,15 +3,21 @@ import Constants from '../constants/Constants';
 import axios from 'axios';
 import RequestsTable from '../components/custom/tables/RequestsTable';
 import { headerFont } from '../constants/fonts';
+import { useAuthService } from '../keycloak';
 
 const Home = () => {
   const [data, setData] = useState([]);
   const { BACKEND_URL } = Constants;
+  const { state: authState } = useAuthService();
 
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(`${BACKEND_URL}/api/requests?minimal=true`)
+        const { data } = await axios.get(`${BACKEND_URL}/api/requests?minimal=true`, {
+          headers: {
+            Authorization : `Bearer ${authState.accessToken}`
+          }
+        })
         setData(data);
       } catch (e) {
         console.warn('Server could not be reached.');

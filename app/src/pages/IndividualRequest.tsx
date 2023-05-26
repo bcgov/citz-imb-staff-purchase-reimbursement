@@ -16,6 +16,7 @@ import ActionButton from "../components/bcgov/ActionButton";
 import { buttonStyles } from "../components/bcgov/ButtonStyles";
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useAuthService } from "../keycloak";
 
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
@@ -24,6 +25,7 @@ const IndividualRequest = () => {
   const { id } = useParams();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
+  const { state: authState } = useAuthService();
   const locked = true;
   // TODO: Made this based off the user's keycloak roles
   const isAdmin = true;
@@ -34,6 +36,9 @@ const IndividualRequest = () => {
         const axiosReqConfig = {
           url: `${Constants.BACKEND_URL}/api/requests/${id}`,
           method: `get`,
+          headers: {
+            Authorization : `Bearer ${authState.accessToken}`
+          }
         }
         let response = await axios(axiosReqConfig);
         if (response.status === 200) {
@@ -53,6 +58,9 @@ const IndividualRequest = () => {
       const axiosReqConfig = {
         url: `${Constants.BACKEND_URL}/api/requests/${id}`,
         method: `patch`,
+        headers: {
+          Authorization : `Bearer ${authState.accessToken}`
+        },
         data: {
           state: requestState
         }

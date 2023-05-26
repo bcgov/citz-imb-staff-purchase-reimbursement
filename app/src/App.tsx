@@ -7,8 +7,13 @@ import Home from './pages/Home';
 import IndividualRequest from './pages/IndividualRequest'; 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { KeycloakWrapper } from './keycloak';
+import { useAuthService } from './keycloak';
+import Login from './pages/Login';
 
 const App = () => {
+  const { state: authState } = useAuthService();
+  const user = authState.userInfo;
 
   const container = {
     maxWidth: '90%',
@@ -23,12 +28,16 @@ const App = () => {
       <BrowserRouter>
         <div style={{...normalFont}} className='App'>
           <NavigationBar />
-          <div style={container}>
-            <Routes>
-              <Route index element={<Home/>} />
-              <Route path={'request/:id'} element={<IndividualRequest />}/>
-            </Routes>
-          </div>
+          <KeycloakWrapper>
+            <div style={container}>
+              { user
+              ? <Routes>
+                  <Route index element={<Home/>} />
+                  <Route path={'request/:id'} element={<IndividualRequest />}/>
+                </Routes>
+              : <Login/> }
+            </div>
+          </KeycloakWrapper>
         </div>
       </BrowserRouter>
     </LocalizationProvider>
