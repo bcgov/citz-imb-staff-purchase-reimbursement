@@ -13,8 +13,8 @@ const dependencies = Object.entries(packageJson.dependencies) ?? undefined;
 const devDependencies = Object.entries(packageJson.devDependencies) ?? undefined;
 
 // Results from running checkVersions.
-let dependencyResults = [];
-let devDependencyResults = [];
+const dependencyResults = [];
+const devDependencyResults = [];
 
 // Check the latest version of each dependency.
 const checkVersions = async (dependencyList) => {
@@ -63,7 +63,7 @@ const checkVersions = async (dependencyList) => {
         }
 
         // Save results.
-        const isDevDependencies = dependencyList === devDependencies;
+        const isDevDependencies = JSON.stringify(dependencyList) === JSON.stringify(devDependencies);
         const saveInfo = {
           dependency,
           version,
