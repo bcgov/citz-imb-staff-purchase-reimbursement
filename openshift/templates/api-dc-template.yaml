@@ -85,11 +85,6 @@ objects:
                     secretKeyRef:
                       name: spr-secret
                       key: FRONTEND_URL
-                - name: HOSTNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: spr-secret
-                      key: HOSTNAME
                 - name: MONGO_DATABASE
                   valueFrom:
                     secretKeyRef:
