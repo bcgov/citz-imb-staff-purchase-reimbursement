@@ -23,6 +23,8 @@ services:
       - SSO_CLIENT_ID=${SSO_CLIENT_ID}
       - SSO_CLIENT_SECRET=${SSO_CLIENT_SECRET}
       - SSO_AUTH_SERVER_URL=${SSO_AUTH_SERVER_URL}
+      - GC_NOTIFY_API_KEY=${GC_NOTIFY_API_KEY}
+      - GC_NOTIFY_ADMIN_EMAIL=${GC_NOTIFY_ADMIN_EMAIL}
       - TESTING=${TESTING}
     networks:
       - purchase-net

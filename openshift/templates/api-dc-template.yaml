@@ -125,6 +125,16 @@ objects:
                     secretKeyRef:
                       name: spr-secret
                       key: SSO_CLIENT_SECRET
+                - name: GC_NOTIFY_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: spr-secret
+                      key: GC_NOTIFY_API_KEY
+                - name: GC_NOTIFY_ADMIN_EMAIL
+                  valueFrom:
+                    secretKeyRef:
+                      name: spr-secret
+                      key: GC_NOTIFY_ADMIN_EMAIL
                 - name: TESTING
                   valueFrom:
                     secretKeyRef:
