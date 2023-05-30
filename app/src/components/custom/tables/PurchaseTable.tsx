@@ -5,18 +5,17 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography
 } from '@mui/material';
+import { Purchase } from '../../../interfaces/Purchase';
 import { bcgov } from '../../../constants/colours';
 import CustomTableCell from './CustomTableCell';
 import HeaderCell from './HeaderCell';
-import { AttachedFile } from '../../../interfaces/AttachedFile';
 
-export interface FileAttachments {
-  data: Array<AttachedFile>
+export interface ItemsPurchased {
+  data: Array<Purchase>
 }
 
-const FileAttachmentTable = (props: FileAttachments) => {
+const PurchaseTable = (props: ItemsPurchased) => {
   const { data } = props;
   return (
     <TableContainer component={Paper}>
@@ -24,21 +23,25 @@ const FileAttachmentTable = (props: FileAttachments) => {
       <TableHead>
           <TableRow>
             <HeaderCell>#</HeaderCell>
-            <HeaderCell>File Name</HeaderCell>
-            <HeaderCell>Size</HeaderCell>
+            <HeaderCell>Supplier</HeaderCell>
+            <HeaderCell>Purchase Date</HeaderCell>
+            <HeaderCell>Cost</HeaderCell>
+            <HeaderCell>Receipt</HeaderCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {data.length === 0 || !data
-          ? <TableRow><CustomTableCell>No attachments available.</CustomTableCell></TableRow>
-          : data.map((file, index) => (
+          ? <TableRow><CustomTableCell>No items available.</CustomTableCell></TableRow>
+          : data.map((purchase, index) => (
             <TableRow
               key={index}
               sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
             >
               <CustomTableCell sx={{ width: '40px' }}>{index + 1}</CustomTableCell>
-              <CustomTableCell>{file.originalName}</CustomTableCell>
-              <CustomTableCell sx={{ width: '100px' }}>{`${ file.size / 100 }KB`}</CustomTableCell>
+              <CustomTableCell>{`${purchase.supplier}`}</CustomTableCell>
+              <CustomTableCell sx={{ width: '150px' }}>{new Date(purchase.purchaseDate).toLocaleDateString()}</CustomTableCell>
+              <CustomTableCell>{`$ ${purchase.cost.toFixed(2)}`}</CustomTableCell>
+              <CustomTableCell><a href={purchase.filePath}>{`${purchase.fileName  || 'Receipt Needed'}`}</a></CustomTableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -47,4 +50,4 @@ const FileAttachmentTable = (props: FileAttachments) => {
   );
 }
 
-export default FileAttachmentTable;
+export default PurchaseTable;

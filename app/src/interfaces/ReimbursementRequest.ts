@@ -1,5 +1,5 @@
-import { ItemPurchased } from "./ItemPurchased";
-import { AttachedFile } from './AttachedFile';
+import { Approval } from "./Approval";
+import { Purchase } from "./Purchase";
 
 export interface ReimbursementRequest {
   _id: string,
@@ -7,16 +7,9 @@ export interface ReimbursementRequest {
   lastName: string,
   idir: string,
   employeeId: number,
-  itemsPurchased: Array<ItemPurchased>,
-  totalCost: number,
-  purchaseDate: string,
-  attachReceipts: Array<AttachedFile>,
-  approvalDate: string,
-  attachApproval: Array<AttachedFile>,
-  supplierName?: string,
-  supplierEmail?: string,
-  supplierPhoneNumber?: string,
+  purchases: Array<Purchase>,
   additionalComments?: string,
   submissionDate: string,
-  state: number
+  state: number,
+  attachApproval?: Array<Approval>
 }

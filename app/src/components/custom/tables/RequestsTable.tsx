@@ -26,8 +26,8 @@ const RequestsTable = (props: RequestTableProps) => {
         <TableHead>
           <TableRow>
             <HeaderCell>Requestor Name</HeaderCell>
-            <HeaderCell>Items Purchased</HeaderCell>
-            <HeaderCell>Total</HeaderCell>
+            {/* <HeaderCell>Items Purchased</HeaderCell> */}
+            {/* <HeaderCell>Total</HeaderCell> */}
             <HeaderCell>Submission Date</HeaderCell>
             <HeaderCell>Status</HeaderCell>
             <HeaderCell></HeaderCell>
@@ -42,8 +42,8 @@ const RequestsTable = (props: RequestTableProps) => {
               sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
             >
               <CustomTableCell>{`${row.firstName} ${row.lastName}`}</CustomTableCell>
-              <CustomTableCell>{row.itemsPurchased.map(item => item.itemName).join('; ')}</CustomTableCell>
-              <CustomTableCell>{`$${row.totalCost.toFixed(2)}`}</CustomTableCell>
+              {/* <CustomTableCell>{row.itemsPurchased.map(item => item.itemName).join('; ')}</CustomTableCell> */}
+              {/* <CustomTableCell>{`$${row.totalCost.toFixed(2)}`}</CustomTableCell> */}
               <CustomTableCell>{new Date(row.submissionDate).toLocaleDateString()}</CustomTableCell>
               <CustomTableCell>{convertStateToStatus(row.state)}</CustomTableCell>
               <CustomTableCell><LinkButton link={`/request/${row._id}`} style={buttonStyles.primary}>More</LinkButton></CustomTableCell>

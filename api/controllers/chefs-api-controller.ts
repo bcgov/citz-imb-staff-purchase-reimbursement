@@ -8,7 +8,7 @@ import RequestStates from '../constants/RequestStates';
 interface ChefsRequest extends Request{
   body: Request['body'] & {
     data: object;
-  }
+  },
 }
 
 // Removes keys with a blank string.
@@ -20,7 +20,8 @@ const removeBlankKeys = (obj: object) => {
 }
 
 const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
-  let requestData = { ...req.body.data };
+  console.log(req.body)
+  let requestData = { ...req.body };
   try {
     // Remove properties that may be blank. Otherwise the validation does not pass for optional fields.
     requestData = removeBlankKeys(requestData);

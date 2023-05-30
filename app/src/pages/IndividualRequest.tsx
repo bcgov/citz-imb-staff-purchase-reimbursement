@@ -10,13 +10,13 @@ import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { normalFont } from "../constants/fonts";
-import ItemsPurchasedTable from "../components/custom/tables/ItemsPurchasedTable";
-import FileAttachmentTable from "../components/custom/tables/FileAttachmentTable";
+import PurchaseTable from "../components/custom/tables/PurchaseTable";
 import ActionButton from "../components/bcgov/ActionButton";
 import { buttonStyles } from "../components/bcgov/ButtonStyles";
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAuthService } from "../keycloak";
+import ApprovalTable from "../components/custom/tables/ApprovalTable";
 
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
@@ -26,9 +26,10 @@ const IndividualRequest = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const { state: authState } = useAuthService();
-  const locked = true;
+
   // TODO: Made this based off the user's keycloak roles
   const isAdmin = true;
+  const locked = true;
 
   useEffect(() => {
     (async () => {
@@ -71,7 +72,7 @@ const IndividualRequest = () => {
         navigate('/');
       }
     } catch (e) {
-      console.warn('Record could not be retrieved.');
+      console.warn('Record could not be updated.');
     }
   }
 
@@ -103,7 +104,7 @@ const IndividualRequest = () => {
               </Grid>
             </Grid>
             {/* FIRST ROW */}
-            <Grid xs={12} sm={4}>
+            <Grid xs={12} sm={3}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='requestor'>Requestor</FormLabel>
                 <TextField 
@@ -114,7 +115,18 @@ const IndividualRequest = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid xs={12} sm={4}>
+            <Grid xs={12} sm={3}>
+              <FormControl sx={formControlStyle}>
+                <FormLabel htmlFor='employeeID'>Employee ID</FormLabel>
+                <TextField 
+                  id='employeeID'
+                  name='employeeID'
+                  value={reimbursementRequest?.employeeId || ''}
+                  disabled={locked}
+                />
+              </FormControl>
+            </Grid>
+            <Grid xs={12} sm={3}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='submissionDate'>Submission Date</FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -125,7 +137,7 @@ const IndividualRequest = () => {
                 </LocalizationProvider>
               </FormControl>
             </Grid>
-            <Grid xs={12} sm={4}>
+            <Grid xs={12} sm={3}>
             <FormControl sx={formControlStyle}>
               <FormLabel htmlFor='status'>Status</FormLabel>
               <Select
@@ -146,91 +158,19 @@ const IndividualRequest = () => {
             </FormControl>          
             </Grid>
             {/* SECOND ROW */}
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='employeeID'>Employee ID</FormLabel>
-                <TextField 
-                  id='employeeID'
-                  name='employeeID'
-                  value={reimbursementRequest?.employeeId || ''}
-                  disabled={locked}
-                />
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='totalCost'>Total Cost</FormLabel>
-                <TextField 
-                  id='totalCost'
-                  name='totalCost'
-                  value={`$ ${reimbursementRequest?.totalCost.toFixed(2) || ''}`}
-                  disabled={locked}
-                />
-              </FormControl>
-            </Grid>
+            
             {/* THIRD ROW */}
-            <Grid xs={12} md={7}>
+            <Grid xs={12}>
               <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='itemsPurchased'>Items Purchased</FormLabel>
-                <ItemsPurchasedTable data={reimbursementRequest?.itemsPurchased || []} />
-              </FormControl>
-            </Grid>
-            <Grid xs={12} md={5}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='attachReceipts'>Receipts</FormLabel>
-                <FileAttachmentTable data={reimbursementRequest?.attachReceipts || []}/>
+                <FormLabel htmlFor='itemsPurchased'>Purchases</FormLabel>
+                <PurchaseTable data={reimbursementRequest?.purchases || []} />
               </FormControl>
             </Grid>
             {/* FOURTH ROW */}
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='approvalDate'>Approval Date</FormLabel>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    value={dayjs(reimbursementRequest?.approvalDate)}
-                    disabled={locked}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={8}>
+            <Grid xs={12}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='attachApproval'>Approval Files</FormLabel>
-                <FileAttachmentTable data={reimbursementRequest?.attachApproval || []}/>
-              </FormControl>
-            </Grid>
-            {/* FIFTH ROW */}
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='supplierName'>Supplier Name</FormLabel>
-                <TextField 
-                  id='supplierName'
-                  name='supplierName'
-                  value={reimbursementRequest?.supplierName || ''}
-                  disabled={locked}
-                />
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='supplierPhoneNumber'>Supplier Phone</FormLabel>
-                <TextField 
-                  id='supplierPhoneNumber'
-                  name='supplierPhoneNumber'
-                  value={reimbursementRequest?.supplierPhoneNumber || ''}
-                  disabled={locked}
-                />
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='supplierEmail'>Supplier Email</FormLabel>
-                <TextField 
-                  id='supplierEmail'
-                  name='supplierEmail'
-                  value={reimbursementRequest?.supplierEmail || ''}
-                  disabled={locked}
-                />
+                <ApprovalTable data={reimbursementRequest?.attachApproval || []}/>
               </FormControl>
             </Grid>
             {/* SIXTH ROW */}

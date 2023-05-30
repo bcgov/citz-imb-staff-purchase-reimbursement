@@ -20,11 +20,11 @@ const datePickerSchema =  z.string()
                           .regex(/^\d{4}-\d{2}-\d{2}T00:00:00-07:00$/);
 
 const itemSchema = z.object({
-  itemName: z.string()
-  .min(2)
-  .max(64)
-  .trim(),
-  purchaseDate: datePickerSchema
+  supplier: nameSchema,
+  purchaseDate: datePickerSchema,
+  cost: z.number()
+        .nonnegative()
+        .max(10000),
 });
 
 const chefRequestSchema = z.object({
@@ -38,26 +38,8 @@ const chefRequestSchema = z.object({
               .int()
               .nonnegative()
               .safe(),
-  itemsPurchased: z.array(itemSchema),
-  totalCost:  z.number()
-              .nonnegative()
-              .max(10000),
-  attachReceipts: z.array(
-    fileSchema
-  ),
+  purchases: z.array(itemSchema),
   approvalDate: datePickerSchema,
-  attachApproval: z.array(
-    fileSchema
-  ),
-  supplierName: nameSchema.optional(),
-  supplierPhoneNumber:  z.string()
-                        .trim()
-                        .regex(/^\(\d{3}\) \d{3}-\d{4}$/)
-                        .optional(),
-  supplierEmail:  z.string()
-                  .trim()
-                  .email()
-                  .optional(),
   additionalComments: z.string()
                       .trim()
                       .max(300)

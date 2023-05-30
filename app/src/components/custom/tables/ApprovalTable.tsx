@@ -7,38 +7,41 @@ import {
   Paper,
   Typography
 } from '@mui/material';
-import { ItemPurchased } from '../../../interfaces/ItemPurchased';
 import { bcgov } from '../../../constants/colours';
 import CustomTableCell from './CustomTableCell';
 import HeaderCell from './HeaderCell';
+import { Approval } from '../../../interfaces/Approval';
+import ApprovalUpload from '../uploaders/ApprovalUpload';
+import { useState } from 'react';
 
-export interface ItemsPurchased {
-  data: Array<ItemPurchased>
+export interface Approvals {
+  data: Array<Approval>
 }
 
-const ItemsPurchasedTable = (props: ItemsPurchased) => {
+const ApprovalTable = (props: Approvals) => {
+  const [approvals, setApprovals] = useState<Array<Approval>>([]);
   const { data } = props;
   return (
     <TableContainer component={Paper}>
-      <Table aria-label='items-purchased'>
+      <Table aria-label='approval-files'>
       <TableHead>
           <TableRow>
             <HeaderCell>#</HeaderCell>
-            <HeaderCell>Item Name</HeaderCell>
-            <HeaderCell>Purchase Date</HeaderCell>
+            <HeaderCell>Approved Date</HeaderCell>
+            <HeaderCell>File</HeaderCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {data.length === 0 || !data
-          ? <TableRow><CustomTableCell>No items available.</CustomTableCell></TableRow>
+          ? <TableRow><CustomTableCell>No attachments available.</CustomTableCell></TableRow>
           : data.map((item, index) => (
             <TableRow
               key={index}
               sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
             >
               <CustomTableCell sx={{ width: '40px' }}>{index + 1}</CustomTableCell>
-              <CustomTableCell>{`${item.itemName}`}</CustomTableCell>
-              <CustomTableCell sx={{ width: '150px' }}>{new Date(item.purchaseDate).toLocaleDateString()}</CustomTableCell>
+              <CustomTableCell sx={{ width: '150px' }}>{new Date(item.date).toLocaleDateString()}</CustomTableCell>
+              {item.name ? <CustomTableCell><a href={item.path}>{item.name}</a></CustomTableCell> : <ApprovalUpload {...{ approvals, setApprovals, index }}/>}
             </TableRow>
           ))}
         </TableBody>
@@ -47,4 +50,4 @@ const ItemsPurchasedTable = (props: ItemsPurchased) => {
   );
 }
 
-export default ItemsPurchasedTable;
+export default ApprovalTable;
