@@ -16,12 +16,12 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAuthService } from "../keycloak";
 import ApprovalTable from "../components/custom/tables/ApprovalTable";
-import { Approval } from "../interfaces/Approval";
+import { IFile } from "../interfaces/IFile";
 
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
   const [requestState, setRequestState] = useState<RequestStates>(RequestStates.SUBMITTED);
-  const [approvals, setApprovals] = useState<Array<Approval>>([]);
+  const [approvals, setApprovals] = useState<Array<IFile>>([]);
   const navigate = useNavigate();
   const { id } = useParams();
   const theme = useTheme();
@@ -30,7 +30,7 @@ const IndividualRequest = () => {
 
   // TODO: Made this based off the user's keycloak roles
   const isAdmin = true;
-  const locked = true;
+  const locked = false;
 
   useEffect(() => {
     (async () => {
@@ -60,6 +60,7 @@ const IndividualRequest = () => {
 
   const handleUpdate = async () => {
     console.log('approvals', approvals);
+    // TODO: If approvals or purchases don't change, don't send back that info
     try {
       const axiosReqConfig = {
         url: `${Constants.BACKEND_URL}/api/requests/${id}`,
