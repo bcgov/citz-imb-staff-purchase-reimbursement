@@ -8,7 +8,6 @@ Create a `.env` file in the root of the project. Populate it with values for eac
 | KEY                   | EXAMPLE       | DESCRIPTION                                                 |
 | ---                   | ---           | ---                                                         |
 | API_PORT              | 3004          | The port the API will listen on.                            |
-| HOSTNAME              | localhost     | The hostname for the API.                                   |
 | MONGO_PORT            | 27017         | The port used by MongoDB.                                   |
 | MONGO_USERNAME        | username      | The root admin name for MongoDB.                            |
 | MONGO_PASSWORD        | password      | The root admin password for MongoDB.                        |
@@ -21,6 +20,8 @@ Create a `.env` file in the root of the project. Populate it with values for eac
 | SSO_CLIENT_ID         | my-id-1234    | Keycloak. Client ID.                                        |
 | SSO_CLIENT_SECRET     | somesecret    | Keycloak. Client secret.                                    |
 | SSO_AUTH_SERVER_URL   | https://...   | Keycloak. Authorization URL.                                |
+| GC_NOTIFY_API_KEY     | somesecret    | API Key for GC Notify.                                      |
+| GC_NOTIFY_ADMIN_EMAIL | bob@gmail.com | Email address for admin mailbox.                            |
 | TESTING               | true          | Disables Keycloak for API testing.                          |
 
 ## Running

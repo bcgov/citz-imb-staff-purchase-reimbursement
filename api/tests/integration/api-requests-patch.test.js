@@ -1,5 +1,4 @@
-const endpoint = `${process.env.HOSTNAME}:${process.env.API_PORT}/api`;
-const exp = require('constants');
+const endpoint = process.env.ENVIRONMENT === 'local' ? `http://localhost:${process.env.API_PORT}/api` : `${process.env.BACKEND_URL}/api`;
 const supertest = require('supertest')
 
 const request = supertest(endpoint);

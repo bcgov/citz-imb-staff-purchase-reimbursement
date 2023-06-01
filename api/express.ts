@@ -14,10 +14,10 @@ import protectedRouter from './routes/protected/index';
 
 const app: express.Application = express();
 
-const { HOSTNAME, API_PORT, TESTING, BACKEND_URL, FRONTEND_URL } = Constants;
+const { TESTING, BACKEND_URL, FRONTEND_URL } = Constants;
 
 // Swagger Configuration
-const swaggerURL = HOSTNAME.includes('localhost') ? `http://${HOSTNAME}:${API_PORT}/api` : `${BACKEND_URL}/api`;
+const swaggerURL = `${BACKEND_URL}/api`;
 const OPENAPI_OPTIONS = {
   definition: {
     openapi: '3.0.0',
