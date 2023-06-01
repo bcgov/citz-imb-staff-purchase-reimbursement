@@ -11,6 +11,7 @@ const collection : Collection<RequestRecord> = db.collection<RequestRecord>('req
 const idSchema = z.string().length(24);
 
 // The record expected from the requests collection
+// TODO: Update to reflect new object
 export interface RequestRecord {
   _id: ObjectId,
   lateEntry: boolean,
@@ -33,9 +34,8 @@ export interface RequestRecord {
 const minimalProjection = {
   firstName: 1,
   lastName: 1,
-  itemsPurchased: 1,
   totalCost: 1,
-  purchaseDate: 1,
+  purchases: 1,
   submissionDate: 1,
   state: 1
 }
@@ -117,7 +117,14 @@ export const getRequestByID = async (req: Request, res: Response) => {
 // Also functions as the soft-delete option
 export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { state } = req.body;
+  const { 
+    employeeId,
+    purchases,
+    approvals,
+    additionalComments,
+    state 
+  } = req.body;
+  console.log(approvals)
   // If ID doesn't match schema, return a 400
   try {
     idSchema.parse(id);
@@ -132,6 +139,10 @@ export const updateRequestState = async (req: Request, res: Response) => {
   // Update its state
   const updateDoc = {
     $set: {
+      approvals: approvals,
+      additionalComments: additionalComments,
+      //purchases: purchases,
+      employeeId: employeeId,
       state: state,
     },
   };

@@ -11,5 +11,5 @@ export interface ReimbursementRequest {
   additionalComments?: string,
   submissionDate: string,
   state: number,
-  attachApproval?: Array<Approval>
+  approvals?: Array<Approval>
 }

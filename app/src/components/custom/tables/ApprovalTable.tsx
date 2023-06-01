@@ -5,22 +5,38 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography
+  Button
 } from '@mui/material';
 import { bcgov } from '../../../constants/colours';
 import CustomTableCell from './CustomTableCell';
 import HeaderCell from './HeaderCell';
 import { Approval } from '../../../interfaces/Approval';
 import ApprovalUpload from '../uploaders/ApprovalUpload';
-import { useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers';
 
-export interface Approvals {
-  data: Array<Approval>
+interface $d {
+  toISOString(): string;
 }
 
-const ApprovalTable = (props: Approvals) => {
-  const [approvals, setApprovals] = useState<Array<Approval>>([]);
-  const { data } = props;
+interface Date extends Dayjs {
+  $d: $d
+}
+
+interface ApprovalTableProps {
+  approvals: Array<Approval>,
+  setApprovals: Dispatch<SetStateAction<Array<Approval>>>
+  editable?: boolean
+}
+
+const ApprovalTable = (props: ApprovalTableProps) => {
+  const { approvals, setApprovals, editable } = props;
+
+  const newApproval : Approval = {
+    date: dayjs(Date.now()).toISOString(),
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label='approval-files'>
@@ -32,20 +48,46 @@ const ApprovalTable = (props: Approvals) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.length === 0 || !data
-          ? <TableRow><CustomTableCell>No attachments available.</CustomTableCell></TableRow>
-          : data.map((item, index) => (
+          { approvals.map((item, index) => (
             <TableRow
               key={index}
               sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
             >
               <CustomTableCell sx={{ width: '40px' }}>{index + 1}</CustomTableCell>
-              <CustomTableCell sx={{ width: '150px' }}>{new Date(item.date).toLocaleDateString()}</CustomTableCell>
-              {item.name ? <CustomTableCell><a href={item.path}>{item.name}</a></CustomTableCell> : <ApprovalUpload {...{ approvals, setApprovals, index }}/>}
+              <CustomTableCell sx={{ width: '150px' }}>
+                {
+                !editable
+                  ? new Date(item.date || Date.now()).toLocaleDateString() 
+                  : <DatePicker 
+                      value={dayjs(item.date)}
+                      onChange={(e: unknown) => {
+                        const tempApprovals = [...approvals];
+                        tempApprovals[index].date = (e as Date).$d.toISOString();
+                        setApprovals(tempApprovals);
+                      }}
+                    />
+                }
+              </CustomTableCell>
+              <CustomTableCell>
+              {
+              !editable
+                ? <a download={`approval${index}`} href={item.file}>{item.name!}</a> 
+                : <ApprovalUpload date={item.date} disabled={!editable} {...{ approvals, setApprovals, index }}/>
+              }
+              </CustomTableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      { editable
+        ? <Button 
+            sx={{
+              width: '100%'
+            }} 
+            onClick={() => { setApprovals([...approvals, newApproval ]) }} 
+          >Add Approval</Button>
+        : <></>
+      }
     </TableContainer>
   );
 }

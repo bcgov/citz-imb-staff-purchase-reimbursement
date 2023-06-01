@@ -50,12 +50,15 @@ const corsOptions = {
   credentials: true,
 }
 
+const maxBodySize = '10mb';
+
 // Incoming CORS Filter
 app.use(cors(corsOptions));
 
 // Express middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: maxBodySize }));
+app.use(express.urlencoded({ extended: false, limit: maxBodySize }));
+app.use(express.text({ limit: maxBodySize }))
 app.use(cookieParser());
 app.use(compression());
 app.use(morgan('dev')); // logging middleware
