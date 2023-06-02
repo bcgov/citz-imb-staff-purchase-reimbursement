@@ -194,7 +194,7 @@ const IndividualRequest = () => {
                 onChange={(e) => {
                   setRequestState(parseInt(e.target.value));
                 }}
-                disabled={locked}
+                disabled={!isAdmin}
               >
                 <MenuItem value={RequestStates.SUBMITTED}>Submitted</MenuItem>
                 <MenuItem value={RequestStates.INPROGRESS}>In Progress</MenuItem>
