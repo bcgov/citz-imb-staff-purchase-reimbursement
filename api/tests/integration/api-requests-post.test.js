@@ -1,6 +1,4 @@
-const endpoint = `${process.env.HOSTNAME}:${process.env.API_PORT}/api`;
-const supertest = require('supertest')
-
+const endpoint = process.env.ENVIRONMENT === 'local' ? `http://localhost:${process.env.API_PORT}/api` : `${process.env.BACKEND_URL}/api`;
 const request = supertest(endpoint);
 
 describe("Testing POST route for /requests endpoint", () => {
