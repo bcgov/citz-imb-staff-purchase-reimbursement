@@ -88,7 +88,8 @@ const IndividualRequest = () => {
 
   const handleUpdate = async () => {
     // TODO: If approvals or purchases don't change, don't send back that info
-
+    // TODO: If a purchase or approval is missing a file, mark the request as needing more info. Same if a required field is blank.
+    
     // Apply purchaseFiles to purchases
     const combinedPurchases = [...purchases];
     combinedPurchases.forEach((purchase, index) => {
@@ -146,11 +147,7 @@ const IndividualRequest = () => {
               <Grid xs={12} sm={6}><h4>Request ID: {reimbursementRequest?._id || 'No request found'}</h4></Grid>
               <Grid xs={12} sm={5} alignItems='center' justifyContent={matches ? 'flex-end' : 'flex-start'} style={{  minWidth: '215px', display: 'flex' }}>
                 <ActionButton style={{ ...buttonStyles.secondary, marginTop: '0.75em' }} handler={() => {navigate('/')}}>Back</ActionButton>
-                {
-                  isAdmin
-                  ? <ActionButton style={{ ...buttonStyles.primary, marginLeft: '1em', marginTop: '0.75em' }} handler={handleUpdate}>Update</ActionButton>
-                  : <></>
-                }
+                <ActionButton style={{ ...buttonStyles.primary, marginLeft: '1em', marginTop: '0.75em' }} handler={handleUpdate}>Update</ActionButton>
               </Grid>
             </Grid>
 
@@ -182,7 +179,7 @@ const IndividualRequest = () => {
                 <FormLabel htmlFor='submissionDate'>Submission Date</FormLabel>
                   <DatePicker
                     value={dayjs(reimbursementRequest?.submissionDate)}
-                    disabled={locked}
+                    disabled={true}
                   />
               </FormControl>
             </Grid>

@@ -84,20 +84,20 @@ const ApprovalTable = (props: ApprovalTableProps) => {
                 />
               </CustomTableCell>
               { editable
-                ? <CustomTableCell 
-                    sx={{ display: 'flex' }}
-                  >
+                ? <CustomTableCell sx={{ width: '80px' }}>
                     <Button
                       onClick={(e) => {
+                        // TODO: Double check with user that they want to delete the entry
                         const tempApprovals = [...approvals];
+                        const tempApprovalFiles = [...approvalFiles];
                         tempApprovals.splice(index, 1);
+                        tempApprovalFiles.splice(index, 1);
                         setApprovals(tempApprovals);
+                        setApprovalFiles(tempApprovalFiles);
                       }}    
                       sx={{
-                        position: 'absolute',
-                        right: 0,
-                        marginRight: '1em',
-                        color: bcgov.links
+                        margin: '1em',
+                        color: bcgov.error
                       }}
                     >Remove</Button>
                   </CustomTableCell>
@@ -114,7 +114,9 @@ const ApprovalTable = (props: ApprovalTableProps) => {
               color: bcgov.links
             }} 
             onClick={() => { setApprovals([...approvals, newApproval ]) }} 
-          >Add Approval</Button>
+          >
+            Add Approval
+          </Button>
         : <></>
       }
     </TableContainer>

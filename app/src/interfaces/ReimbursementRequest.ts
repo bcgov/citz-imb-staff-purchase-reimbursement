@@ -1,4 +1,4 @@
-import { Approval } from "./IFile";
+import { Approval } from "./Approval";
 import { Purchase } from "./Purchase";
 
 export interface ReimbursementRequest {

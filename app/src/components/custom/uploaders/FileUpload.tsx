@@ -71,7 +71,7 @@ const FileUpload = (props: FileUploadProps) => {
               padding: 0,
               color: bcgov.error
             }}
-          >X</Button>
+          >X{/* TODO: Double check with user that they want to delete the entry */}</Button>
         </>
       );
     } else {
