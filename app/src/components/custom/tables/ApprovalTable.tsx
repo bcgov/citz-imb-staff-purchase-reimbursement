@@ -15,6 +15,7 @@ import FileUpload from '../uploaders/FileUpload';
 import { Dispatch, SetStateAction } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers';
+import { Approval } from '../../../interfaces/Approval';
 
 interface $d {
   toISOString(): string;
@@ -25,16 +26,18 @@ interface Date extends Dayjs {
 }
 
 interface ApprovalTableProps {
-  approvals: Array<IFile>,
-  setApprovals: Dispatch<SetStateAction<Array<IFile>>>
+  approvals: Array<Approval>,
+  setApprovals: Dispatch<SetStateAction<Array<Approval>>>,
+  approvalFiles: Array<IFile>,
+  setApprovalFiles: Dispatch<SetStateAction<Array<IFile>>>,
   editable?: boolean
 }
 
 const ApprovalTable = (props: ApprovalTableProps) => {
-  const { approvals, setApprovals, editable } = props;
-
-  const newApproval : IFile = {
-    date: dayjs(Date.now()).toISOString(),
+  const { approvals, setApprovals, approvalFiles, setApprovalFiles, editable } = props;
+  
+  const newApproval : Approval = {
+    approvalDate: dayjs(Date.now()).toISOString(),
   };
 
   return (
@@ -61,12 +64,12 @@ const ApprovalTable = (props: ApprovalTableProps) => {
               <CustomTableCell sx={{ width: '150px' }}>
                 {
                 !editable
-                  ? new Date(approval.date || Date.now()).toLocaleDateString() 
+                  ? new Date(approval.approvalDate || Date.now()).toLocaleDateString() 
                   : <DatePicker 
-                      value={dayjs(approval.date)}
+                      value={dayjs(approval.approvalDate)}
                       onChange={(e: unknown) => {
                         const tempApprovals = [...approvals];
-                        tempApprovals[index].date = (e as Date).$d.toISOString();
+                        tempApprovals[index].approvalDate = (e as Date).$d.toISOString();
                         setApprovals(tempApprovals);
                       }}
                     />
@@ -74,10 +77,9 @@ const ApprovalTable = (props: ApprovalTableProps) => {
               </CustomTableCell>
               <CustomTableCell>
                 <FileUpload 
-                  date={approval.date} 
                   disabled={!editable}
-                  files={approvals}
-                  setFiles={setApprovals}
+                  files={approvalFiles}
+                  setFiles={setApprovalFiles}
                   {...{ index }}
                 />
               </CustomTableCell>
@@ -88,13 +90,14 @@ const ApprovalTable = (props: ApprovalTableProps) => {
                     <Button
                       onClick={(e) => {
                         const tempApprovals = [...approvals];
-                        tempApprovals.splice(tempApprovals.findIndex(approval => approval.name === tempApprovals[index].name), 1);
+                        tempApprovals.splice(index, 1);
                         setApprovals(tempApprovals);
                       }}    
                       sx={{
                         position: 'absolute',
                         right: 0,
-                        marginRight: '1em'
+                        marginRight: '1em',
+                        color: bcgov.links
                       }}
                     >Remove</Button>
                   </CustomTableCell>
@@ -107,7 +110,8 @@ const ApprovalTable = (props: ApprovalTableProps) => {
       { editable
         ? <Button 
             sx={{
-              width: '100%'
+              width: '100%',
+              color: bcgov.links
             }} 
             onClick={() => { setApprovals([...approvals, newApproval ]) }} 
           >Add Approval</Button>

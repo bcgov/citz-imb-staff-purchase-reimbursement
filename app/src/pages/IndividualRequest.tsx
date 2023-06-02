@@ -18,11 +18,13 @@ import { useAuthService } from "../keycloak";
 import ApprovalTable from "../components/custom/tables/ApprovalTable";
 import { IFile } from "../interfaces/IFile";
 import { Purchase } from "../interfaces/Purchase";
+import { Approval } from "../interfaces/Approval";
 
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
   const [requestState, setRequestState] = useState<RequestStates>(RequestStates.SUBMITTED);
-  const [approvals, setApprovals] = useState<Array<IFile>>([]);
+  const [approvalFiles, setApprovalFiles] = useState<Array<IFile>>([]);
+  const [approvals, setApprovals] = useState<Array<Approval>>([]);
   const [purchaseFiles, setPurchaseFiles] = useState<Array<IFile>>([]);
   const [purchases, setPurchases] = useState<Array<Purchase>>([]);
   const navigate = useNavigate();
@@ -50,23 +52,32 @@ const IndividualRequest = () => {
           
           // Populate values with existing record
           const reimbursementRequest: ReimbursementRequest = response.data;
-          const fileArray : Array<IFile> = [];
+          const purchaseFileArray : Array<IFile> = [];
+          const approvalFileArray : Array<IFile> = [];
           if (reimbursementRequest.purchases.length > 0){
-            
             reimbursementRequest.purchases.forEach((purchase, index) => {
               if (purchase.fileObj){
-                fileArray.splice(index, 0, purchase.fileObj);
+                purchaseFileArray.splice(index, 0, purchase.fileObj);
               }
-            })
+            });
+          }
+
+          if (reimbursementRequest.approvals){
+            reimbursementRequest.approvals.forEach((approval, index) => {
+              if (approval.fileObj){
+                approvalFileArray.splice(index, 0, approval.fileObj);
+              }
+            });
           }
 
           setReimbursementRequest(reimbursementRequest);
           setRequestState(reimbursementRequest.state);
           setPurchases(reimbursementRequest.purchases);
-          setPurchaseFiles(fileArray);
+          setPurchaseFiles(purchaseFileArray);
           
           if (reimbursementRequest.approvals){
             setApprovals(reimbursementRequest.approvals);
+            setApprovalFiles(approvalFileArray)
           }
         }
       } catch (e) {
@@ -84,6 +95,12 @@ const IndividualRequest = () => {
       combinedPurchases[index].fileObj = purchaseFiles[index];
     });
 
+    // Apply approvalFiles to approvals
+    const combinedApprovals = [...approvals];
+    combinedApprovals.forEach((approval, index) => {
+      combinedApprovals[index].fileObj = approvalFiles[index];
+    });
+
     try {
       const axiosReqConfig = {
         url: `${Constants.BACKEND_URL}/api/requests/${id}`,
@@ -94,7 +111,7 @@ const IndividualRequest = () => {
         data: {
           ...reimbursementRequest,
           purchases: combinedPurchases,
-          approvals: approvals,
+          approvals: combinedApprovals,
           state: requestState
         }
       }
@@ -180,7 +197,7 @@ const IndividualRequest = () => {
                 onChange={(e) => {
                   setRequestState(parseInt(e.target.value));
                 }}
-                disabled={!isAdmin}
+                disabled={locked}
               >
                 <MenuItem value={RequestStates.SUBMITTED}>Submitted</MenuItem>
                 <MenuItem value={RequestStates.INPROGRESS}>In Progress</MenuItem>
@@ -194,12 +211,7 @@ const IndividualRequest = () => {
             <Grid xs={12}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='purchases'>Purchases</FormLabel>
-                <PurchaseTable 
-                  purchases={reimbursementRequest?.purchases || []} 
-                  setPurchases={setPurchases} 
-                  purchaseFiles={purchaseFiles}
-                  setPurchaseFiles={setPurchaseFiles}
-                  editable={!locked}/>
+                <PurchaseTable editable={!locked} {...{ purchases, setPurchases, purchaseFiles, setPurchaseFiles }}/>
               </FormControl>
             </Grid>
 
@@ -207,7 +219,7 @@ const IndividualRequest = () => {
             <Grid xs={12}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='approvals'>Approval Files</FormLabel>
-                <ApprovalTable editable={!locked} {...{approvals, setApprovals}}/>
+                <ApprovalTable editable={!locked} {...{ approvals, setApprovals, approvalFiles, setApprovalFiles }}/>
               </FormControl>
             </Grid>
 

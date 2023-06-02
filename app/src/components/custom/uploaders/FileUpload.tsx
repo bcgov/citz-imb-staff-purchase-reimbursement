@@ -3,6 +3,7 @@ import { IFile } from '../../../interfaces/IFile';
 import { Dispatch, SetStateAction } from "react";
 import { buttonStyles } from '../../bcgov/ButtonStyles';
 import { bcgov } from '../../../constants/colours';
+import { normalFont } from '../../../constants/fonts';
 
 interface FileUploadProps {
   files: Array<IFile>,
@@ -48,7 +49,7 @@ const FileUpload = (props: FileUploadProps) => {
   if (disabled){
     // If file exists already, show link
     if (files[index] && files[index].name && files[index].file){
-      return (<a download={files[index].name} href={files[index].file}>{`${files[index].name}`}</a>);
+      return (<a download={files[index].name} href={files[index].file} style={{...normalFont, color: bcgov.links}}>{`${files[index].name}`}</a>);
     } else {
       // Otherwise, give plain text response
       return (<>No File Available</>);
@@ -58,7 +59,7 @@ const FileUpload = (props: FileUploadProps) => {
     if (files[index] && files[index].name && files[index].file){
       return (
         <>
-          <a download={files[index].name} href={files[index].file}>{`${files[index].name}`}</a>
+          <a download={files[index].name} href={files[index].file} style={{...normalFont, color: bcgov.links}}>{`${files[index].name}`}</a>
           <Button
             onClick={(e) => {
               const tempFiles = [...files];
