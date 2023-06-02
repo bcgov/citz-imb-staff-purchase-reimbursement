@@ -1,7 +1,8 @@
+import { IFile } from "./IFile";
+
 export interface Purchase {
   supplier: string,
   purchaseDate: string,
   cost: number,
-  fileName?: string,
-  filePath?: string
+  fileObj?: IFile
 }

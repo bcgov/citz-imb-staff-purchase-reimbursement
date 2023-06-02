@@ -10,13 +10,26 @@ import { Purchase } from '../../../interfaces/Purchase';
 import { bcgov } from '../../../constants/colours';
 import CustomTableCell from './CustomTableCell';
 import HeaderCell from './HeaderCell';
+import FileUpload from '../uploaders/FileUpload';
+import { Dispatch, SetStateAction } from 'react';
+import { IFile } from '../../../interfaces/IFile';
 
-export interface ItemsPurchased {
-  data: Array<Purchase>
+export interface PurchaseTableProps {
+  purchases: Array<Purchase>,
+  setPurchases: Dispatch<SetStateAction<Array<Purchase>>>
+  purchaseFiles: Array<IFile>,
+  setPurchaseFiles: Dispatch<SetStateAction<Array<IFile>>>,
+  editable?: boolean
 }
 
-const PurchaseTable = (props: ItemsPurchased) => {
-  const { data } = props;
+const PurchaseTable = (props: PurchaseTableProps) => {
+  const { 
+    purchases, 
+    setPurchases,
+    purchaseFiles,
+    setPurchaseFiles,
+    editable 
+  } = props;
   return (
     <TableContainer component={Paper}>
       <Table aria-label='items-purchased'>
@@ -30,9 +43,9 @@ const PurchaseTable = (props: ItemsPurchased) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.length === 0 || !data
+          {purchases.length === 0 || !purchases
           ? <TableRow><CustomTableCell>No items available.</CustomTableCell></TableRow>
-          : data.map((purchase, index) => (
+          : purchases.map((purchase, index) => (
             <TableRow
               key={index}
               sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
@@ -41,7 +54,14 @@ const PurchaseTable = (props: ItemsPurchased) => {
               <CustomTableCell>{`${purchase.supplier}`}</CustomTableCell>
               <CustomTableCell sx={{ width: '150px' }}>{new Date(purchase.purchaseDate).toLocaleDateString()}</CustomTableCell>
               <CustomTableCell>{`$ ${purchase.cost.toFixed(2)}`}</CustomTableCell>
-              <CustomTableCell><a href={purchase.filePath}>{`${purchase.fileName  || 'Receipt Needed'}`}</a></CustomTableCell>
+              <CustomTableCell>
+                <FileUpload 
+                  disabled={!editable}
+                  files={purchaseFiles}
+                  setFiles={setPurchaseFiles}
+                  {...{ index }}
+                />
+              </CustomTableCell>
             </TableRow>
           ))}
         </TableBody>

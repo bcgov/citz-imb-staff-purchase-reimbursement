@@ -52,7 +52,7 @@ const ApprovalTable = (props: ApprovalTableProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          { approvals.map((item, index) => (
+          { approvals.map((approval, index) => (
             <TableRow
               key={index}
               sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
@@ -61,9 +61,9 @@ const ApprovalTable = (props: ApprovalTableProps) => {
               <CustomTableCell sx={{ width: '150px' }}>
                 {
                 !editable
-                  ? new Date(item.date || Date.now()).toLocaleDateString() 
+                  ? new Date(approval.date || Date.now()).toLocaleDateString() 
                   : <DatePicker 
-                      value={dayjs(item.date)}
+                      value={dayjs(approval.date)}
                       onChange={(e: unknown) => {
                         const tempApprovals = [...approvals];
                         tempApprovals[index].date = (e as Date).$d.toISOString();
@@ -73,17 +73,13 @@ const ApprovalTable = (props: ApprovalTableProps) => {
                 }
               </CustomTableCell>
               <CustomTableCell>
-              {
-              !editable || item.file
-                ? <a download={`${item.name}`} href={item.file}>{item.name!}</a> 
-                : <FileUpload 
-                    date={item.date} 
-                    disabled={!editable}
-                    files={approvals}
-                    setFiles={setApprovals}
-                    {...{ index }}
-                  />
-              }
+                <FileUpload 
+                  date={approval.date} 
+                  disabled={!editable}
+                  files={approvals}
+                  setFiles={setApprovals}
+                  {...{ index }}
+                />
               </CustomTableCell>
               { editable
                 ? <CustomTableCell 
@@ -100,7 +96,7 @@ const ApprovalTable = (props: ApprovalTableProps) => {
                         right: 0,
                         marginRight: '1em'
                       }}
-                    >X</Button>
+                    >Remove</Button>
                   </CustomTableCell>
                 : <></>
               }

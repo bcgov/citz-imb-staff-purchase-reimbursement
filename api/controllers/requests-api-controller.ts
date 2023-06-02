@@ -124,7 +124,7 @@ export const updateRequestState = async (req: Request, res: Response) => {
     additionalComments,
     state 
   } = req.body;
-  console.log(approvals)
+
   // If ID doesn't match schema, return a 400
   try {
     idSchema.parse(id);
@@ -141,7 +141,7 @@ export const updateRequestState = async (req: Request, res: Response) => {
     $set: {
       approvals: approvals,
       additionalComments: additionalComments,
-      //purchases: purchases,
+      purchases: purchases,
       employeeId: employeeId,
       state: state,
     },
