@@ -20,7 +20,6 @@ const removeBlankKeys = (obj: object) => {
 }
 
 const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
-  console.log(req.body)
   let requestData = { ...req.body };
   try {
     // Remove properties that may be blank. Otherwise the validation does not pass for optional fields.

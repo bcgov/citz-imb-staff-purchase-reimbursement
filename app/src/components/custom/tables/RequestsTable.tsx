@@ -26,15 +26,15 @@ const RequestsTable = (props: RequestTableProps) => {
         <TableHead>
           <TableRow>
             <HeaderCell>Requestor Name</HeaderCell>
-            {/* <HeaderCell>Items Purchased</HeaderCell> */}
-            {/* <HeaderCell>Total</HeaderCell> */}
+            <HeaderCell>Suppliers</HeaderCell>
+            <HeaderCell>Total Cost</HeaderCell>
             <HeaderCell>Submission Date</HeaderCell>
             <HeaderCell>Status</HeaderCell>
             <HeaderCell></HeaderCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.length === 0 || !data
+          { !data || data.length === 0
           ? <TableRow><CustomTableCell>No requests available.</CustomTableCell></TableRow>
           : data.map((row, index) => (
             <TableRow
@@ -42,8 +42,8 @@ const RequestsTable = (props: RequestTableProps) => {
               sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
             >
               <CustomTableCell>{`${row.firstName} ${row.lastName}`}</CustomTableCell>
-              {/* <CustomTableCell>{row.itemsPurchased.map(item => item.itemName).join('; ')}</CustomTableCell> */}
-              {/* <CustomTableCell>{`$${row.totalCost.toFixed(2)}`}</CustomTableCell> */}
+              <CustomTableCell><span style={{whiteSpace: 'pre-line'}}>{row.purchases.map(purchase => purchase.supplier).join(',\n')}</span></CustomTableCell>
+              <CustomTableCell>{`$${row.purchases.reduce((total, purchase) => total + purchase.cost, 0).toFixed(2)}`}</CustomTableCell>
               <CustomTableCell>{new Date(row.submissionDate).toLocaleDateString()}</CustomTableCell>
               <CustomTableCell>{convertStateToStatus(row.state)}</CustomTableCell>
               <CustomTableCell><LinkButton link={`/request/${row._id}`} style={buttonStyles.primary}>More</LinkButton></CustomTableCell>

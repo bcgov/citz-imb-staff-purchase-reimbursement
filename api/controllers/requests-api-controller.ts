@@ -11,7 +11,6 @@ const collection : Collection<RequestRecord> = db.collection<RequestRecord>('req
 const idSchema = z.string().length(24);
 
 // The record expected from the requests collection
-// TODO: Update to reflect new object
 export interface RequestRecord {
   _id: ObjectId,
   lateEntry: boolean,
@@ -19,12 +18,8 @@ export interface RequestRecord {
   lastName: string,
   employeeId: number,
   idir: string,
-  itemsPurchased: Array<string>,
-  totalCost: number,
-  purchaseDate: string,
-  attachReceipts: Array<object>,
-  approvalDate: string,
-  attachApproval: Array<object>,
+  purchases: Array<object>,
+  approvals: Array<object>,
   submit: boolean,
   submissionDate: string,
   state: RequestStates
@@ -34,8 +29,8 @@ export interface RequestRecord {
 const minimalProjection = {
   firstName: 1,
   lastName: 1,
-  totalCost: 1,
-  purchases: 1,
+  "purchases.cost": 1, // Format for getting specific properties of objects in an array
+  "purchases.supplier": 1,
   submissionDate: 1,
   state: 1
 }
