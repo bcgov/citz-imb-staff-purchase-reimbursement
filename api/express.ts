@@ -58,7 +58,6 @@ app.use(cors(corsOptions));
 // Express middleware
 app.use(express.json({ limit: maxBodySize }));
 app.use(express.urlencoded({ extended: false, limit: maxBodySize }));
-app.use(express.text({ limit: maxBodySize }))
 app.use(cookieParser());
 app.use(compression());
 app.use(morgan('dev')); // logging middleware
