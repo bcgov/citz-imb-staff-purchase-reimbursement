@@ -73,8 +73,7 @@ const headerHandler: unknown = (req: Request, res: Response, next: NextFunction)
 }
 app.use('/api', headerHandler as RequestHandler);
 
-
-if (`${TESTING}`.toLowerCase() === 'true') app.use(limiter);
+if (`${TESTING}`.toLowerCase() !== 'true') app.use(limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
 // Routing Open Routes

@@ -1,49 +1,29 @@
 const endpoint = process.env.ENVIRONMENT === 'local' ? `http://localhost:${process.env.API_PORT}/api` : `${process.env.BACKEND_URL}/api`;
+const supertest = require('supertest')
+
 const request = supertest(endpoint);
 
 describe("Testing POST route for /requests endpoint", () => {
   test("API returns code 201 on successful submission", async () => {
     const response = await request.post("/requests").send({
-      data: {
-        lateEntry: false,
-        idir: "W0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0",
-        firstName: "John",
-        lastName: "Smith",
-        employeeId: 234567,
-        itemsPurchased: [
-          "Dogs"
-        ],
-        totalCost: 45.46,
-        purchaseDate: "2023-04-05T00:00:00-07:00",
-        attachReceipts: [
-          {
-            storage: 'chefs',
-            url: 'some/link',
-            size: 9001,
-            data: {
-              id: 'fe0000'
-            },
-            originalName: 'file.pdf'
-          }
-        ],
-        approvalDate: "2023-04-13T00:00:00-07:00",
-        attachApproval: [
-          {
-            storage: 'chefs',
-            url: 'some/link',
-            size: 9001,
-            data: {
-              id: 'fe0000'
-            },
-            originalName: 'file.pdf'
-          }
-        ],
-        supplierName: "Jimmy's Dogs",
-        supplierPhoneNumber: "(324) 324-2342",
-        supplierEmail: "jimmys@yahoo.com",
-        additionalComments: "Great purchase!",
-        submit: true,
-      }
+      idir: "W0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A3",
+      firstName: "Fred",
+      lastName: "Rick",
+      employeeId: 999999,
+      purchases: [
+        {
+          "supplier": "Office Snacks",
+          "purchaseDate": "2023-05-17T00:00:00-07:00",
+          "cost": 432.34,
+        },
+        {
+          "supplier": "Desk Chair",
+          "purchaseDate": "2023-05-18T00:00:00-07:00",
+          "cost": 333
+        }
+      ],
+      additionalComments: "More snacks and a comfy chair for the home office.",
+      submit: true
     });
     expect(response.ok).toBe(true);
     expect(response.status).toBe(201);

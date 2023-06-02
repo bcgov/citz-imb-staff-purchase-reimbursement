@@ -9,46 +9,24 @@ describe("Testing GET routes for /requests endpoint", () => {
   // Insert an entry so there's something to get
   beforeAll(async () => {
     const response = await request.post("/requests").send({
-      data: {
-        lateEntry: false,
-        idir: "W0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A2",
-        firstName: "John",
-        lastName: "Smith",
-        employeeId: uniqueID,
-        itemsPurchased: [
-          "Dogs"
-        ],
-        totalCost: 45.46,
-        purchaseDate: "2023-04-05T00:00:00-07:00",
-        attachReceipts: [
-          {
-            storage: 'chefs',
-            url: 'some/link',
-            size: 9001,
-            data: {
-              id: 'fe0000'
-            },
-            originalName: 'file.pdf'
-          }
-        ],
-        approvalDate: "2023-04-13T00:00:00-07:00",
-        attachApproval: [
-          {
-            storage: 'chefs',
-            url: 'some/link',
-            size: 9001,
-            data: {
-              id: 'fe0000'
-            },
-            originalName: 'file.pdf'
-          }
-        ],
-        supplierName: "Jimmy's Dogs",
-        supplierPhoneNumber: "(324) 324-2342",
-        supplierEmail: "jimmys@yahoo.com",
-        additionalComments: "Great purchase!",
-        submit: true,
-      }
+      idir: "W0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A2",
+      firstName: "Fred",
+      lastName: "Rick",
+      employeeId: uniqueID,
+      purchases: [
+        {
+          "supplier": "Office Snacks",
+          "purchaseDate": "2023-05-17T00:00:00-07:00",
+          "cost": 432.34,
+        },
+        {
+          "supplier": "Desk Chair",
+          "purchaseDate": "2023-05-18T00:00:00-07:00",
+          "cost": 333
+        }
+      ],
+      additionalComments: "More snacks and a comfy chair for the home office.",
+      submit: true
     });
     documentID = response.body._id;
   })
