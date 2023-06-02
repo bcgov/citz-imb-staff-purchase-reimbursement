@@ -1,15 +1,5 @@
 import { z } from 'zod';
 
-const fileSchema = z.object({
-  storage: z.literal('chefs'),
-  url: z.string(),
-  size: z.number().int().nonnegative(),
-  data: z.object({
-    id: z.string()
-  }),
-  originalName: z.string().endsWith('.pdf')
-});
-
 const nameSchema =  z.string()
                     .min(2)
                     .max(64)

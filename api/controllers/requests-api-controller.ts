@@ -131,7 +131,7 @@ export const updateRequestState = async (req: Request, res: Response) => {
   if ( state < 0 || state >= RequestStates.__LENGTH) return res.status(403).send('An invalid state was requested.');
   // Establish that id is used to find document
   const filter = { _id: { $eq: new ObjectId(id) } };
-  // Update its state
+  // Update the document
   const updateDoc = {
     $set: {
       approvals: approvals,
