@@ -39,7 +39,6 @@ const chefRequestSchema = z.object({
               .nonnegative()
               .safe(),
   purchases: z.array(itemSchema),
-  approvalDate: datePickerSchema,
   additionalComments: z.string()
                       .trim()
                       .max(300)
