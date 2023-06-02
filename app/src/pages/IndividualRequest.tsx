@@ -6,29 +6,36 @@ import Constants from "../constants/Constants";
 import { ReimbursementRequest } from "../interfaces/ReimbursementRequest";
 import { Paper, TextField, Select, FormControl, FormLabel, MenuItem } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { normalFont } from "../constants/fonts";
-import ItemsPurchasedTable from "../components/custom/tables/ItemsPurchasedTable";
-import FileAttachmentTable from "../components/custom/tables/FileAttachmentTable";
+import PurchaseTable from "../components/custom/tables/PurchaseTable";
 import ActionButton from "../components/bcgov/ActionButton";
 import { buttonStyles } from "../components/bcgov/ButtonStyles";
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAuthService } from "../keycloak";
+import ApprovalTable from "../components/custom/tables/ApprovalTable";
+import { IFile } from "../interfaces/IFile";
+import { Purchase } from "../interfaces/Purchase";
+import { Approval } from "../interfaces/Approval";
 
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
   const [requestState, setRequestState] = useState<RequestStates>(RequestStates.SUBMITTED);
+  const [approvalFiles, setApprovalFiles] = useState<Array<IFile>>([]);
+  const [approvals, setApprovals] = useState<Array<Approval>>([]);
+  const [purchaseFiles, setPurchaseFiles] = useState<Array<IFile>>([]);
+  const [purchases, setPurchases] = useState<Array<Purchase>>([]);
   const navigate = useNavigate();
   const { id } = useParams();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const { state: authState } = useAuthService();
-  const locked = true;
-  // TODO: Made this based off the user's keycloak roles
+
+  // TODO: Make this based off the user's keycloak roles
   const isAdmin = true;
+  const locked = false;
 
   useEffect(() => {
     (async () => {
@@ -42,10 +49,36 @@ const IndividualRequest = () => {
         }
         let response = await axios(axiosReqConfig);
         if (response.status === 200) {
+          
           // Populate values with existing record
           const reimbursementRequest: ReimbursementRequest = response.data;
+          const purchaseFileArray : Array<IFile> = [];
+          const approvalFileArray : Array<IFile> = [];
+          if (reimbursementRequest.purchases.length > 0){
+            reimbursementRequest.purchases.forEach((purchase, index) => {
+              if (purchase.fileObj){
+                purchaseFileArray.splice(index, 0, purchase.fileObj);
+              }
+            });
+          }
+
+          if (reimbursementRequest.approvals){
+            reimbursementRequest.approvals.forEach((approval, index) => {
+              if (approval.fileObj){
+                approvalFileArray.splice(index, 0, approval.fileObj);
+              }
+            });
+          }
+
           setReimbursementRequest(reimbursementRequest);
           setRequestState(reimbursementRequest.state);
+          setPurchases(reimbursementRequest.purchases);
+          setPurchaseFiles(purchaseFileArray);
+          
+          if (reimbursementRequest.approvals){
+            setApprovals(reimbursementRequest.approvals);
+            setApprovalFiles(approvalFileArray)
+          }
         }
       } catch (e) {
         console.warn('Record could not be retrieved.');
@@ -54,6 +87,21 @@ const IndividualRequest = () => {
   }, []);
 
   const handleUpdate = async () => {
+    // TODO: If approvals or purchases don't change, don't send back that info
+    // TODO: If a purchase or approval is missing a file, mark the request as needing more info. Same if a required field is blank.
+    
+    // Apply purchaseFiles to purchases
+    const combinedPurchases = [...purchases];
+    combinedPurchases.forEach((purchase, index) => {
+      combinedPurchases[index].fileObj = purchaseFiles[index];
+    });
+
+    // Apply approvalFiles to approvals
+    const combinedApprovals = [...approvals];
+    combinedApprovals.forEach((approval, index) => {
+      combinedApprovals[index].fileObj = approvalFiles[index];
+    });
+
     try {
       const axiosReqConfig = {
         url: `${Constants.BACKEND_URL}/api/requests/${id}`,
@@ -62,6 +110,9 @@ const IndividualRequest = () => {
           Authorization : `Bearer ${authState.accessToken}`
         },
         data: {
+          ...reimbursementRequest,
+          purchases: combinedPurchases,
+          approvals: combinedApprovals,
           state: requestState
         }
       }
@@ -71,7 +122,7 @@ const IndividualRequest = () => {
         navigate('/');
       }
     } catch (e) {
-      console.warn('Record could not be retrieved.');
+      console.warn('Record could not be updated.');
     }
   }
 
@@ -90,42 +141,49 @@ const IndividualRequest = () => {
       }}>
         <form>
           <Grid container spacing={2}>
+
             {/* ZERO-TH ROW */}
             <Grid container xs={12} sx={{ justifyContent: 'space-between', display: 'flex' }}>
               <Grid xs={12} sm={6}><h4>Request ID: {reimbursementRequest?._id || 'No request found'}</h4></Grid>
               <Grid xs={12} sm={5} alignItems='center' justifyContent={matches ? 'flex-end' : 'flex-start'} style={{  minWidth: '215px', display: 'flex' }}>
                 <ActionButton style={{ ...buttonStyles.secondary, marginTop: '0.75em' }} handler={() => {navigate('/')}}>Back</ActionButton>
-                {
-                  isAdmin
-                  ? <ActionButton style={{ ...buttonStyles.primary, marginLeft: '1em', marginTop: '0.75em' }} handler={handleUpdate}>Update</ActionButton>
-                  : <></>
-                }
+                <ActionButton style={{ ...buttonStyles.primary, marginLeft: '1em', marginTop: '0.75em' }} handler={handleUpdate}>Update</ActionButton>
               </Grid>
             </Grid>
+
             {/* FIRST ROW */}
-            <Grid xs={12} sm={4}>
+            <Grid xs={12} sm={3}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='requestor'>Requestor</FormLabel>
                 <TextField 
                   id='requestor'
                   name='requestor'
                   value={`${reimbursementRequest?.firstName} ${reimbursementRequest?.lastName}`}
+                  disabled
+                />
+              </FormControl>
+            </Grid>
+            <Grid xs={12} sm={3}>
+              <FormControl sx={formControlStyle}>
+                <FormLabel htmlFor='employeeID'>Employee ID</FormLabel>
+                <TextField 
+                  id='employeeID'
+                  name='employeeID'
+                  value={reimbursementRequest?.employeeId || ''}
                   disabled={locked}
                 />
               </FormControl>
             </Grid>
-            <Grid xs={12} sm={4}>
+            <Grid xs={12} sm={3}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='submissionDate'>Submission Date</FormLabel>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     value={dayjs(reimbursementRequest?.submissionDate)}
-                    disabled={locked}
+                    disabled={true}
                   />
-                </LocalizationProvider>
               </FormControl>
             </Grid>
-            <Grid xs={12} sm={4}>
+            <Grid xs={12} sm={3}>
             <FormControl sx={formControlStyle}>
               <FormLabel htmlFor='status'>Status</FormLabel>
               <Select
@@ -145,95 +203,24 @@ const IndividualRequest = () => {
               </Select>
             </FormControl>          
             </Grid>
+
             {/* SECOND ROW */}
-            <Grid xs={12} sm={4}>
+            <Grid xs={12}>
               <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='employeeID'>Employee ID</FormLabel>
-                <TextField 
-                  id='employeeID'
-                  name='employeeID'
-                  value={reimbursementRequest?.employeeId || ''}
-                  disabled={locked}
-                />
+                <FormLabel htmlFor='purchases'>Purchases</FormLabel>
+                <PurchaseTable editable={!locked} {...{ purchases, setPurchases, purchaseFiles, setPurchaseFiles }}/>
               </FormControl>
             </Grid>
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='totalCost'>Total Cost</FormLabel>
-                <TextField 
-                  id='totalCost'
-                  name='totalCost'
-                  value={`$ ${reimbursementRequest?.totalCost.toFixed(2) || ''}`}
-                  disabled={locked}
-                />
-              </FormControl>
-            </Grid>
+
             {/* THIRD ROW */}
-            <Grid xs={12} md={7}>
+            <Grid xs={12}>
               <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='itemsPurchased'>Items Purchased</FormLabel>
-                <ItemsPurchasedTable data={reimbursementRequest?.itemsPurchased || []} />
+                <FormLabel htmlFor='approvals'>Approval Files</FormLabel>
+                <ApprovalTable editable={!locked} {...{ approvals, setApprovals, approvalFiles, setApprovalFiles }}/>
               </FormControl>
             </Grid>
-            <Grid xs={12} md={5}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='attachReceipts'>Receipts</FormLabel>
-                <FileAttachmentTable data={reimbursementRequest?.attachReceipts || []}/>
-              </FormControl>
-            </Grid>
+
             {/* FOURTH ROW */}
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='approvalDate'>Approval Date</FormLabel>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    value={dayjs(reimbursementRequest?.approvalDate)}
-                    disabled={locked}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={8}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='attachApproval'>Approval Files</FormLabel>
-                <FileAttachmentTable data={reimbursementRequest?.attachApproval || []}/>
-              </FormControl>
-            </Grid>
-            {/* FIFTH ROW */}
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='supplierName'>Supplier Name</FormLabel>
-                <TextField 
-                  id='supplierName'
-                  name='supplierName'
-                  value={reimbursementRequest?.supplierName || ''}
-                  disabled={locked}
-                />
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='supplierPhoneNumber'>Supplier Phone</FormLabel>
-                <TextField 
-                  id='supplierPhoneNumber'
-                  name='supplierPhoneNumber'
-                  value={reimbursementRequest?.supplierPhoneNumber || ''}
-                  disabled={locked}
-                />
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={4}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='supplierEmail'>Supplier Email</FormLabel>
-                <TextField 
-                  id='supplierEmail'
-                  name='supplierEmail'
-                  value={reimbursementRequest?.supplierEmail || ''}
-                  disabled={locked}
-                />
-              </FormControl>
-            </Grid>
-            {/* SIXTH ROW */}
             <Grid xs={12}>
               <FormControl sx={formControlStyle}>
               <FormLabel htmlFor='additionalComments'>Additional Comments</FormLabel>

@@ -50,12 +50,14 @@ const corsOptions = {
   credentials: true,
 }
 
+const maxBodySize = '10mb';
+
 // Incoming CORS Filter
 app.use(cors(corsOptions));
 
 // Express middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: maxBodySize }));
+app.use(express.urlencoded({ extended: false, limit: maxBodySize }));
 app.use(cookieParser());
 app.use(compression());
 app.use(morgan('dev')); // logging middleware
@@ -70,8 +72,7 @@ const headerHandler: unknown = (req: Request, res: Response, next: NextFunction)
 }
 app.use('/api', headerHandler as RequestHandler);
 
-
-if (`${TESTING}`.toLowerCase() === 'true') app.use(limiter);
+if (`${TESTING}`.toLowerCase() !== 'true') app.use(limiter);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
 // Routing Open Routes

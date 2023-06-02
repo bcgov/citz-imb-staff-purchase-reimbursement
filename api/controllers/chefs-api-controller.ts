@@ -10,7 +10,7 @@ import Constants from '../constants/Constants';
 interface ChefsRequest extends Request{
   body: Request['body'] & {
     data: object;
-  }
+  },
 }
 
 // Removes keys with a blank string.
@@ -25,7 +25,7 @@ const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
   const { GC_NOTIFY_ADMIN_EMAIL } = process.env;
   const { TESTING, FRONTEND_URL } = Constants;
   
-  let requestData = { ...req.body.data };
+  let requestData = { ...req.body };
   try {
     // Remove properties that may be blank. Otherwise the validation does not pass for optional fields.
     requestData = removeBlankKeys(requestData);

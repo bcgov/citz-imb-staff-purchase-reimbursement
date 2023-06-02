@@ -18,12 +18,8 @@ export interface RequestRecord {
   lastName: string,
   employeeId: number,
   idir: string,
-  itemsPurchased: Array<string>,
-  totalCost: number,
-  purchaseDate: string,
-  attachReceipts: Array<object>,
-  approvalDate: string,
-  attachApproval: Array<object>,
+  purchases: Array<object>,
+  approvals: Array<object>,
   submit: boolean,
   submissionDate: string,
   state: RequestStates
@@ -33,9 +29,8 @@ export interface RequestRecord {
 const minimalProjection = {
   firstName: 1,
   lastName: 1,
-  itemsPurchased: 1,
-  totalCost: 1,
-  purchaseDate: 1,
+  "purchases.cost": 1, // Format for getting specific properties of objects in an array
+  "purchases.supplier": 1,
   submissionDate: 1,
   state: 1
 }
@@ -117,7 +112,14 @@ export const getRequestByID = async (req: Request, res: Response) => {
 // Also functions as the soft-delete option
 export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { state } = req.body;
+  const { 
+    employeeId,
+    purchases,
+    approvals,
+    additionalComments,
+    state 
+  } = req.body;
+
   // If ID doesn't match schema, return a 400
   try {
     idSchema.parse(id);
@@ -129,9 +131,13 @@ export const updateRequestState = async (req: Request, res: Response) => {
   if ( state < 0 || state >= RequestStates.__LENGTH) return res.status(403).send('An invalid state was requested.');
   // Establish that id is used to find document
   const filter = { _id: { $eq: new ObjectId(id) } };
-  // Update its state
+  // Update the document
   const updateDoc = {
     $set: {
+      approvals: approvals,
+      additionalComments: additionalComments,
+      purchases: purchases,
+      employeeId: employeeId,
       state: state,
     },
   };
