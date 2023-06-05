@@ -72,8 +72,13 @@ const headerHandler: unknown = (req: Request, res: Response, next: NextFunction)
 }
 app.use('/api', headerHandler as RequestHandler);
 
-if (`${TESTING}`.toLowerCase() !== 'true') app.use(limiter);
+// Use rate limiter if not testing
+if (TESTING) app.use(limiter);
+
+// Swagger service route
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
+// Swagger redirect service routes
+app.use('/api', openRouter.swaggerRouter);
 
 // Routing Open Routes
 app.use('/api', openRouter.chefsRouter);
@@ -83,7 +88,7 @@ app.use('/api', openRouter.healthRouter);
 // Pass the request through with no protection (for testing)
 const falseProtect: unknown = (req: Request, res: Response, next: NextFunction) => { console.warn('Keycloak is off'); next(); }
 // Allow for removed protection when API testing is enabled, otherwise use Keycloak
-const routeProtector : (RequestHandler | Promise<Response<any, Record<string, any>>>) = `${TESTING}`.toLowerCase() === 'true' ? (falseProtect as RequestHandler) : protect;
+const routeProtector : (RequestHandler | Promise<Response<any, Record<string, any>>>) = TESTING ? (falseProtect as RequestHandler) : protect;
 app.use('/api', routeProtector, protectedRouter.requests);
 
 
