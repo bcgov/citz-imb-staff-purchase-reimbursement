@@ -71,6 +71,7 @@ jobs:
           ./.github/helpers/deploy.sh
 
       - name: Rollout Pod
+        continue-on-error: true
         run: |
           oc rollout latest dc/spr-api
 
