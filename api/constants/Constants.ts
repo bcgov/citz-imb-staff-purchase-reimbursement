@@ -22,7 +22,7 @@ if (ENVIRONMENT && ENVIRONMENT === 'local') {
  */
 const Constants = {
   API_PORT: API_PORT || 3004,
-  TESTING: `${TESTING}`.toLowerCase() !== 'true',
+  TESTING: `${TESTING}`.toLowerCase() === 'true',
   BACKEND_URL: backendUrl,
   FRONTEND_URL: frontendUrl
 };
