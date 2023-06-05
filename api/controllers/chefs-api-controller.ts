@@ -6,14 +6,23 @@ import RequestStates from '../constants/RequestStates';
 import { sendNewRequestNotification } from '../helpers/useGCNotify';
 import Constants from '../constants/Constants';
 
-// Extend the request to include data object from CHEFS
+/**
+ * @interface
+ * @description Extend the request to include data object from CHEFS
+ * @property {object} data - The data object that contains info from CHEFS submission.
+ */
 interface ChefsRequest extends Request{
   body: Request['body'] & {
     data: object;
   },
 }
 
-// Removes keys with a blank string.
+/**
+ * 
+ * @param obj Any JS object
+ * @returns The same object stripped of blank keys.
+ * @description Removes keys with a blank string.
+ */
 const removeBlankKeys = (obj: object) => {
   Object.keys(obj).forEach((key: keyof object) => {
     if (obj[key] === '') delete obj[key];
@@ -21,6 +30,12 @@ const removeBlankKeys = (obj: object) => {
   return obj;
 }
 
+/**
+ * @description Takes requests from the CHEFS service and submits them to the database.
+ * @param req The incoming CHEFS request
+ * @param res The outgoing response
+ * @returns Response with status code and either text or JSON data
+ */
 const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
   const { GC_NOTIFY_ADMIN_EMAIL } = process.env;
   const { TESTING, FRONTEND_URL } = Constants;

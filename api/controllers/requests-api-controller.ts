@@ -10,7 +10,21 @@ const collection : Collection<RequestRecord> = db.collection<RequestRecord>('req
 // Schema to check for document id when coming in as url params
 const idSchema = z.string().length(24);
 
-// The record expected from the requests collection
+/**
+ * @interface
+ * @description The expected request stored in the 'requests' collection
+ * @property {ObjectId}       _id             - The unique ID of a request record.
+ * @property {boolean}        lateEntry       - Supplied by CHEFS. Only important if the CHEFS form has a due date.
+ * @property {string}         firstName       - The first name of the requestor.
+ * @property {string}         lastName        - The last name of the requestor.
+ * @property {number}         employeeId      - The requestor's employee ID.
+ * @property {string}         idir            - The requestor's IDIR code.
+ * @property {Array}          purchases       - A list of Purchase items.
+ * @property {Array}          approvals       -  A list of Approval items.
+ * @property {boolean}        submit          - Supplied by CHEFS. True if submitted. Only important if CHEFS stores drafts.
+ * @property {string}         submissionDate  - The date of the reimbursement submission.
+ * @property {RequestStates}  state           - The current state of the request.
+ */
 export interface RequestRecord {
   _id: ObjectId,
   lateEntry: boolean,
@@ -25,7 +39,10 @@ export interface RequestRecord {
   state: RequestStates
 }
 
-// Allows for a reduced version of each document to be returned from Mongo
+/**
+ * @constant
+ * @description Allows for a reduced version of each document to be returned from Mongo. A true or 1 signifies that property will be included.
+ */
 const minimalProjection = {
   firstName: 1,
   lastName: 1,
@@ -35,7 +52,12 @@ const minimalProjection = {
   state: 1
 }
 
-// Get all request records
+/**
+ * @description Gets all request records. Includes an option to retrieve records with projection.
+ * @param req Incoming Request
+ * @param res Outgoing Response
+ * @returns 200 status with array of records or 404 if no records are found.
+ */
 export const getAllRequests = async (req: Request, res: Response) => {
   const { minimal } = req.query;
   try {
@@ -59,7 +81,12 @@ export const getAllRequests = async (req: Request, res: Response) => {
   }
 }
 
-// Get any request records matching a specific IDIR GUID
+/**
+ * @description Get any request records matching a specific IDIR GUID. Includes an option to retrieve records with projection.
+ * @param req Incoming Request
+ * @param res Outgoing Response
+ * @returns 200 status with array of records or 404 if no records are found.
+ */
 export const getRequestsByIDIR = async (req: Request, res: Response) => {
   const { minimal, idir } = req.query;
   try {
@@ -83,7 +110,12 @@ export const getRequestsByIDIR = async (req: Request, res: Response) => {
   }
 }
 
-// Get a single request record by ID
+/**
+ * @description Get a single request record by ID. Includes an option to retrieve records with projection.
+ * @param req Incoming Request
+ * @param res Outgoing Response
+ * @returns 200 status with array of records or 404 if no records are found.
+ */
 export const getRequestByID = async (req: Request, res: Response) => {
   const { id } = req.params;
   // If ID doesn't match schema, return a 400
@@ -108,8 +140,12 @@ export const getRequestByID = async (req: Request, res: Response) => {
   }  
 }
 
-// Update the state of a specific request record
-// Also functions as the soft-delete option
+/**
+ * @description Updates the state of a specific request record. Also functions as the soft-delete option.
+ * @param req Incoming Request
+ * @param res Outgoing Response
+ * @returns 200 status with a string indicating updated status.
+ */
 export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { 

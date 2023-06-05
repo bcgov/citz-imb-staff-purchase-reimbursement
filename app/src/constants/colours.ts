@@ -1,3 +1,7 @@
+/**
+ * @constant
+ * @description Colours that match the BCGOV style guide.
+ */
 const colours = {
   darkBlue: '#003366',
   yellow: '#FCBA19',
@@ -11,6 +15,10 @@ const colours = {
   white: '#fff'
 }
 
+/**
+ * @constant
+ * @description Object containing uses of colours, mapped to appropriate colour.
+ */
 export const bcgov = {
   primary: colours.darkBlue,
   header: colours.darkBlue,

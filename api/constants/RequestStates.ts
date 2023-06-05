@@ -1,4 +1,8 @@
-// Defines possible states for reimbursement requests.
+/**
+ * @constant
+ * @enum
+ * @description Defines possible states for reimbursement requests.
+ */
 enum RequestStates {
   DELETED,
   DENIED,

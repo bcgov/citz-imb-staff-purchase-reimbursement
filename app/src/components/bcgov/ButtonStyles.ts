@@ -1,6 +1,10 @@
 import { bcgov } from "../../constants/colours";
 import { normalFont } from "../../constants/fonts";
 
+/**
+ * @constant
+ * @description The common button styling.
+ */
 const commonButtonStyle = {
   ...normalFont,
   borderRadius: '4px',
@@ -19,6 +23,10 @@ const commonButtonStyle = {
   }
 }
 
+/**
+ * @constant
+ * @description Button styles that build off of commonButtonStyle. Contains a .primary and .secondary styling.
+ */
 export const buttonStyles = {
   primary: {
     ...commonButtonStyle,      

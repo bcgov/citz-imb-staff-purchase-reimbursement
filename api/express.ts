@@ -50,6 +50,7 @@ const corsOptions = {
   credentials: true,
 }
 
+// Maximum size of body data. Primarily used to limit incoming files.
 const maxBodySize = '10mb';
 
 // Incoming CORS Filter

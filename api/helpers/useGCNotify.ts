@@ -1,6 +1,11 @@
 import axios from "axios";
 import Templates from "../constants/GCNotifyTemplates";
 
+/**
+ * @description Sends an email notifying the recipient of a new request.
+ * @param email The email address for the recipient mailbox.
+ * @param link The URL needed to access the new request submission.
+ */
 export const sendNewRequestNotification = async (email: string, link: string) => {
   const { GC_NOTIFY_API_KEY } = process.env;
   try {

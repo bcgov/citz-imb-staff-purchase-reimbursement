@@ -5,11 +5,16 @@ import RequestsTable from '../components/custom/tables/RequestsTable';
 import { headerFont } from '../constants/fonts';
 import { useAuthService } from '../keycloak';
 
+/**
+ * @description The Home page, showing a list of reimbursement requests. 
+ * @returns A React element
+ */
 const Home = () => {
   const [data, setData] = useState([]);
   const { BACKEND_URL } = Constants;
   const { state: authState } = useAuthService();
 
+  // Fires on page load.
   useEffect(() => {
     (async () => {
       try {

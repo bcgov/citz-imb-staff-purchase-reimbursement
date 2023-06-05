@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import UserControl from "../custom/login/UserControl";
 
+// Styles the header bar
 const headerStyle : React.CSSProperties = {
   backgroundColor: bcgov.header,
   borderBottom: `2px solid ${bcgov.primaryHighlight}`,
@@ -19,6 +20,7 @@ const headerStyle : React.CSSProperties = {
   zIndex: 100,
 }
 
+//  Styles the header text
 const headerTextStyle : React.CSSProperties = {
   margin: '5px 5px 0 18px',
   fontWeight: 'normal',
@@ -26,6 +28,7 @@ const headerTextStyle : React.CSSProperties = {
   display: 'inline',
 }
 
+// Styles the logo (banner)
 const bannerStyle : React.CSSProperties = {
   display: 'flex',
   justifyContent: 'flex-start',
@@ -33,6 +36,10 @@ const bannerStyle : React.CSSProperties = {
   margin: '0 10px 0 0'
 }
 
+/**
+ * @description The navigation bar displayed at the top of every page.
+ * @returns A React element.
+ */
 const NavigationBar = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('md'));
