@@ -54,9 +54,9 @@ const minimalProjection = {
 
 /**
  * @description Gets all request records. Includes an option to retrieve records with projection.
- * @param req Incoming Request
- * @param res Outgoing Response
- * @returns 200 status with array of records or 404 if no records are found.
+ * @param {Request}   req Incoming Request
+ * @param {Response}  res Outgoing Response
+ * @returns {Response}    200 status with array of records or 404 if no records are found.
  */
 export const getAllRequests = async (req: Request, res: Response) => {
   const { minimal } = req.query;
@@ -83,9 +83,9 @@ export const getAllRequests = async (req: Request, res: Response) => {
 
 /**
  * @description Get any request records matching a specific IDIR GUID. Includes an option to retrieve records with projection.
- * @param req Incoming Request
- * @param res Outgoing Response
- * @returns 200 status with array of records or 404 if no records are found.
+ * @param {Request}   req Incoming Request
+ * @param {Response}  res Outgoing Response
+ * @returns {Response}    200 status with array of records or 404 if no records are found.
  */
 export const getRequestsByIDIR = async (req: Request, res: Response) => {
   const { minimal, idir } = req.query;
@@ -112,9 +112,9 @@ export const getRequestsByIDIR = async (req: Request, res: Response) => {
 
 /**
  * @description Get a single request record by ID. Includes an option to retrieve records with projection.
- * @param req Incoming Request
- * @param res Outgoing Response
- * @returns 200 status with array of records or 404 if no records are found.
+ * @param {Request}   req Incoming Request
+ * @param {Response}  res Outgoing Response
+ * @returns {Response}    200 status with array of records or 404 if no records are found.
  */
 export const getRequestByID = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -142,9 +142,9 @@ export const getRequestByID = async (req: Request, res: Response) => {
 
 /**
  * @description Updates the state of a specific request record. Also functions as the soft-delete option.
- * @param req Incoming Request
- * @param res Outgoing Response
- * @returns 200 status with a string indicating updated status.
+ * @param {Request}   req Incoming Request
+ * @param {Response}  res Outgoing Response
+ * @returns {Response}    200 status with a string indicating updated status.
  */
 export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;

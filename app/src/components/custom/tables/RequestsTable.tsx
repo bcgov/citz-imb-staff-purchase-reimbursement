@@ -25,7 +25,7 @@ interface RequestTableProps {
 
 /**
  * @description A table containing a series of reimbursement requests.
- * @param props Properties passed to RequestsTable. 
+ * @param {RequestTableProps} props Properties passed to RequestsTable. 
  * @returns A React table element.
  */
 const RequestsTable = (props: RequestTableProps) => {

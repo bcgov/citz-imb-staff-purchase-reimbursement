@@ -21,7 +21,7 @@ interface LinkButtonProps {
 
 /**
  * @description A button that redirects to a supplied link.
- * @param props Properties matching the LinkButtonProps interface.
+ * @param {LinkButtonProps} props Properties matching the LinkButtonProps interface.
  * @returns A React Button element.
  */
 const LinkButton = (props: LinkButtonProps) => {

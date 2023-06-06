@@ -33,7 +33,7 @@ export interface PurchaseTableProps {
 
 /**
  * @description A table containing all of the purchases in a reimbursement request.
- * @param props Properties passed to PurchaseTable. 
+ * @param {PurchaseTableProps} props Properties passed to PurchaseTable. 
  * @returns A React table element.
  */
 const PurchaseTable = (props: PurchaseTableProps) => {

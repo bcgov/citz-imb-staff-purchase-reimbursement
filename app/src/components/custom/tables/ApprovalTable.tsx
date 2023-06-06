@@ -52,7 +52,7 @@ interface ApprovalTableProps {
 
 /**
  * @description A table of all stored approvals for this request. 
- * @param props See interface ApprovalTableProps
+ * @param {ApprovalTableProps} props See interface ApprovalTableProps
  * @returns React table element. 
  */
 const ApprovalTable = (props: ApprovalTableProps) => {

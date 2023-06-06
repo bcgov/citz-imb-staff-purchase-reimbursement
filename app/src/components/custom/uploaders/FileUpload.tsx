@@ -24,7 +24,7 @@ interface FileUploadProps {
 
 /**
  * @description An element that provides options to upload or download files.
- * @param props Properties passed to FileUpload. Follows FileUploadProps interface.
+ * @param {FileUploadProps} props Properties passed to FileUpload. Follows FileUploadProps interface.
  * @returns A React element. Potentially a file link or upload button depending on file status.
  */
 const FileUpload = (props: FileUploadProps) => {

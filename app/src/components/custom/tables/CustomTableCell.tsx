@@ -4,7 +4,7 @@ import { normalFont } from '../../../constants/fonts';
 
 /**
  * @description A stylized table cell.
- * @param props Properties for this element following the ChildProps interface. 
+ * @param {ChildProps} props Properties for this element following the ChildProps interface. 
  * @returns A React table cell element.
  */
 const CustomTableCell = ({ children, ...props }: ChildProps) => {

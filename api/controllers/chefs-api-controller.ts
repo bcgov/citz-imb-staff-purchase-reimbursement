@@ -18,9 +18,8 @@ interface ChefsRequest extends Request{
 }
 
 /**
- * 
- * @param obj Any JS object
- * @returns The same object stripped of blank keys.
+ * @param {object} obj  Any JS object
+ * @returns {object}    The same object stripped of blank keys.
  * @description Removes keys with a blank string.
  */
 const removeBlankKeys = (obj: object) => {
@@ -32,9 +31,9 @@ const removeBlankKeys = (obj: object) => {
 
 /**
  * @description Takes requests from the CHEFS service and submits them to the database.
- * @param req The incoming CHEFS request
- * @param res The outgoing response
- * @returns Response with status code and either text or JSON data
+ * @param {ChefsRequest}  req The incoming CHEFS request
+ * @param {Response}      res The outgoing response
+ * @returns {Response}        Response with status code and either text or JSON data
  */
 const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
   const { GC_NOTIFY_ADMIN_EMAIL } = process.env;

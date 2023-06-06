@@ -20,7 +20,7 @@ interface ActionButtonProps {
 
 /**
  * @description A button that executes a supplied handler function.
- * @param props Properties matching the ActionButtonProps interface.
+ * @param {ActionButtonProps} props Properties matching the ActionButtonProps interface.
  * @returns A React Button element.
  */
 const ActionButton = (props: ActionButtonProps) => {
