@@ -17,14 +17,31 @@ import dayjs, { Dayjs } from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Approval } from '../../../interfaces/Approval';
 
+/**
+ * @interface
+ * @description A date string, because Dayjs doesn't seem to recognise its own properties.
+ */
 interface $d {
   toISOString(): string;
 }
 
+/**
+ * @interface
+ * @description A Date interface that uses the $d property expected from Dayjs
+ */
 interface Date extends Dayjs {
   $d: $d
 }
 
+/**
+ * @interface
+ * @description Properties passed to the ApprovalTable element.
+ * @property {Array<Approval>}  approvals         - A list of Approval objects.
+ * @property {Dispatch}         setApprovals      - Function to set the approvals list.
+ * @property {Array<IFile>}     approvalFiles     - A list of IFile objects.
+ * @property {Dispatch}         setApprovalFiles  - Function to set approvalFiles list.
+ * @property {boolean}          editable          - Optional: Whether editing should be permitted. Default false. 
+ */
 interface ApprovalTableProps {
   approvals: Array<Approval>,
   setApprovals: Dispatch<SetStateAction<Array<Approval>>>,
@@ -33,9 +50,18 @@ interface ApprovalTableProps {
   editable?: boolean
 }
 
+/**
+ * @description A table of all stored approvals for this request. 
+ * @param {ApprovalTableProps} props See interface ApprovalTableProps
+ * @returns React table element. 
+ */
 const ApprovalTable = (props: ApprovalTableProps) => {
   const { approvals, setApprovals, approvalFiles, setApprovalFiles, editable } = props;
   
+  /**
+   * @description A base for new approvals. Automatically assigned the date at time of creation.
+   * @constant
+   */
   const newApproval : Approval = {
     approvalDate: dayjs(Date.now()).toISOString(),
   };

@@ -5,6 +5,15 @@ import { buttonStyles } from '../../bcgov/ButtonStyles';
 import { bcgov } from '../../../constants/colours';
 import { normalFont } from '../../../constants/fonts';
 
+/**
+ * @interface
+ * @description Properties provided to the FileUpload element.
+ * @property {Array}    files     - A list of files of type IFile.
+ * @property {Dispatch} setFiles  - Sets the list of files.
+ * @property {number}   index     - The index of the element in files being used.
+ * @property {string}   date      - Optional: The date the file was uploaded.
+ * @property {boolean}  disabled  - Optional: Whether the element is disabled.
+ */
 interface FileUploadProps {
   files: Array<IFile>,
   setFiles: Dispatch<SetStateAction<Array<IFile>>>,
@@ -13,6 +22,11 @@ interface FileUploadProps {
   disabled?: boolean,
 }
 
+/**
+ * @description An element that provides options to upload or download files.
+ * @param {FileUploadProps} props Properties passed to FileUpload. Follows FileUploadProps interface.
+ * @returns A React element. Potentially a file link or upload button depending on file status.
+ */
 const FileUpload = (props: FileUploadProps) => {
   const { files, setFiles, index, disabled } = props;
   const uid = Math.random().toString();
@@ -25,6 +39,7 @@ const FileUpload = (props: FileUploadProps) => {
     reader.onerror = reject;
   });
 
+  // When a file is uploaded. Checks size and updates file list.
   const handleFilesChange = async (e: any) => {
     if (e.target.files[0].size > 10485760){
       // TODO: Replace with error text for user.

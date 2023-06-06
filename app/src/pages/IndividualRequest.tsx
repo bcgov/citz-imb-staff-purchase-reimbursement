@@ -20,6 +20,10 @@ import { IFile } from "../interfaces/IFile";
 import { Purchase } from "../interfaces/Purchase";
 import { Approval } from "../interfaces/Approval";
 
+/**
+ * @description A page showing an individual reimbursement requests and all its fields.
+ * @returns A React element
+ */
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
   const [requestState, setRequestState] = useState<RequestStates>(RequestStates.SUBMITTED);
@@ -37,6 +41,7 @@ const IndividualRequest = () => {
   const isAdmin = true;
   const locked = false;
 
+  // Fired when page is loaded. 
   useEffect(() => {
     (async () => {
       try {
@@ -54,6 +59,7 @@ const IndividualRequest = () => {
           const reimbursementRequest: ReimbursementRequest = response.data;
           const purchaseFileArray : Array<IFile> = [];
           const approvalFileArray : Array<IFile> = [];
+
           if (reimbursementRequest.purchases.length > 0){
             reimbursementRequest.purchases.forEach((purchase, index) => {
               if (purchase.fileObj){
@@ -70,6 +76,7 @@ const IndividualRequest = () => {
             });
           }
 
+          // Set new states
           setReimbursementRequest(reimbursementRequest);
           setRequestState(reimbursementRequest.state);
           setPurchases(reimbursementRequest.purchases);
@@ -86,6 +93,7 @@ const IndividualRequest = () => {
     })();
   }, []);
 
+  // Fired when the record is updated (i.e. User selects UPDATE.)
   const handleUpdate = async () => {
     // TODO: If approvals or purchases don't change, don't send back that info
     // TODO: If a purchase or approval is missing a file, mark the request as needing more info. Same if a required field is blank.
@@ -126,6 +134,7 @@ const IndividualRequest = () => {
     }
   }
 
+  // General styling for form elements.
   const formControlStyle : React.CSSProperties = {
     width: '100%',
     marginBottom: '1em',

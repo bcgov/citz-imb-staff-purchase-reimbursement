@@ -14,10 +14,20 @@ import { bcgov } from '../../../constants/colours';
 import LinkButton from '../../bcgov/LinkButton';
 import { buttonStyles } from '../../bcgov/ButtonStyles';
 
+/**
+ * @interface
+ * @description Properties passed to the RequestsTable component.
+ * @property {Array} data - An array of ReimbursementRequests. See the ReimbursementRequest interface.
+ */
 interface RequestTableProps {
   data: Array<ReimbursementRequest>
 }
 
+/**
+ * @description A table containing a series of reimbursement requests.
+ * @param {RequestTableProps} props Properties passed to RequestsTable. 
+ * @returns A React table element.
+ */
 const RequestsTable = (props: RequestTableProps) => {
   const { data } = props;
   return (

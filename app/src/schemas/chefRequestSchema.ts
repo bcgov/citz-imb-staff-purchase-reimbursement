@@ -1,32 +1,31 @@
 import { z } from 'zod';
 
-const fileSchema = z.object({
-  storage: z.literal('chefs'),
-  url: z.string(),
-  size: z.number().int().nonnegative(),
-  data: z.object({
-    id: z.string()
-  }),
-  originalName: z.string().endsWith('.pdf')
-});
-
 const nameSchema =  z.string()
                     .min(2)
                     .max(64)
                     .regex(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/)
                     .trim();
 
+
 const datePickerSchema =  z.string()
                           .regex(/^\d{4}-\d{2}-\d{2}T00:00:00-07:00$/);
 
+/**
+ * @constant
+ * @description The schema that matches an incoming purchase item.
+ */
 const itemSchema = z.object({
-  itemName: z.string()
-  .min(2)
-  .max(64)
-  .trim(),
-  purchaseDate: datePickerSchema
+  supplier: nameSchema,
+  purchaseDate: datePickerSchema,
+  cost: z.number()
+        .nonnegative()
+        .max(10000),
 });
 
+/**
+ * @constant
+ * @description The schema that all CHEFS incoming requests should conform to.
+ */
 const chefRequestSchema = z.object({
   lateEntry:  z.boolean()
               .optional(),
@@ -38,26 +37,7 @@ const chefRequestSchema = z.object({
               .int()
               .nonnegative()
               .safe(),
-  itemsPurchased: z.array(itemSchema),
-  totalCost:  z.number()
-              .nonnegative()
-              .max(10000),
-  attachReceipts: z.array(
-    fileSchema
-  ),
-  approvalDate: datePickerSchema,
-  attachApproval: z.array(
-    fileSchema
-  ),
-  supplierName: nameSchema.optional(),
-  supplierPhoneNumber:  z.string()
-                        .trim()
-                        .regex(/^\(\d{3}\) \d{3}-\d{4}$/)
-                        .optional(),
-  supplierEmail:  z.string()
-                  .trim()
-                  .email()
-                  .optional(),
+  purchases: z.array(itemSchema),
   additionalComments: z.string()
                       .trim()
                       .max(300)

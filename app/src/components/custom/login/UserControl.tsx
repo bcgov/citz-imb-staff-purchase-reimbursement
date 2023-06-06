@@ -12,17 +12,23 @@ import { useAuthService } from '../../../keycloak';
 import * as React from 'react';
 import { buttonStyles } from '../../bcgov/ButtonStyles';
 
-// Component based off MUI Menu: https://mui.com/material-ui/react-menu/
+/**
+ * @description Component based off MUI Menu: https://mui.com/material-ui/react-menu/
+ * @link https://mui.com/material-ui/react-menu/
+ * @returns A React element that handles the user name, logout, login. Usually in Navigation Bar.
+ */
 const UserControl = () => {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
   const { state: authState, getLoginURL, getLogoutURL } = useAuthService();
   const user = authState.userInfo;
 
+  // Opens/closes dropdown
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
 
+  // Closes dropdown when item selected.
   const handleClose = (event: Event | React.SyntheticEvent) => {
     if (
       anchorRef.current &&
@@ -34,7 +40,8 @@ const UserControl = () => {
     setOpen(false);
   };
 
-  function handleListKeyDown(event: React.KeyboardEvent) {
+  // If keys are pressed when dropdown is open
+  const handleListKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Tab') {
       event.preventDefault();
       setOpen(false);

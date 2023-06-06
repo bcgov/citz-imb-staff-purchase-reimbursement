@@ -4,6 +4,10 @@ import LinkButton from "../components/bcgov/LinkButton";
 import { buttonStyles } from "../components/bcgov/ButtonStyles";
 import Constants from "../constants/Constants";
 
+/**
+ * @description The page displayed for unauthenticated users. Provides a login button.
+ * @returns A React element.
+ */
 const Login = () => {
   const { BACKEND_URL } = Constants;
 

@@ -11,6 +11,9 @@ import { KeycloakWrapper } from './keycloak';
 import { useAuthService } from './keycloak';
 import Login from './pages/Login';
 
+/**
+ * @returns Main element containing various providers and routes.
+ */
 const App = () => {
   const { state: authState } = useAuthService();
   const user = authState.userInfo;

@@ -3,7 +3,7 @@ components:
   schemas:
     ReimbursementRequestObject:
       type: object
-      description: A single request entry
+      description: The base reimbursement request. All requests should have these properties.
       properties: 
         firstName:
           type: string
@@ -17,78 +17,32 @@ components:
         idir:
           type: string
           example: W0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0
-        itemsPurchased:
+        purchases:
           type: array
           items:
             type: object
             properties:
-              itemName:
+              supplier:
                 type: string
-                example: Hot Dogs
+                example: Walmart
               purchaseDate:
                 type: string
                 example: 2023-05-01T00:00:00-07:00
-        totalCost:
-          type: number
-          example: 34.55
-        attachReceipts:
-          type: array
-          items:
-            type: object
-            properties:
-              storage:
-                type: string
-                example: chefs
-              url:
-                type: string
-                example: /app/api/v1/files/fd667f16-bd58-416d-bf74-2011a53361a8
-              size:
-                type: integer
-                example: 9234
-              data:
+              cost:
+                type: number
+                example: 49.99
+              fileObj:
                 type: object
                 properties:
-                  id:
+                  name:
                     type: string
-                    example: fd667f16-bd58-416d-bf74-2011a53361a8
-              originalName:
-                type: string
-                example: myfile.pdf              
-        approvalDate:
-          type: string
-          example: 2023-05-01T00:00:00-07:00
-        attachApproval:
-          type: array
-          items:
-            type: object
-            properties:
-              storage:
-                type: string
-                example: chefs
-              url:
-                type: string
-                example: /app/api/v1/files/fd667f16-bd58-416d-bf74-2011a53361a8
-              size:
-                type: integer
-                example: 9234
-              data:
-                type: object
-                properties:
-                  id:
+                    example: my_receipt.pdf
+                  size:
+                    type: number
+                    example: 94702
+                  file: 
                     type: string
-                    example: fd667f16-bd58-416d-bf74-2011a53361a8
-              originalName:
-                type: string
-                example: myfile.pdf
-        supplierName: 
-          type: string
-          example: Walmart
-        supplierPhoneNumber:
-          type: string
-          example: (234) 234-2345
-        supplierEmail:
-          type: string
-          example: joesmith@gmail.com
+                    example: base64EncodedFile
         additionalComments:
           type: string
           example: Have a good day!
@@ -96,11 +50,9 @@ components:
         - firstName
         - lastName
         - employeeId
-        - itemsPurchased
-        - purchaseDate
-        - attachReceipts
+        - purchases
+        - idir
         - approvalDate
-        - attachApproval
 
     ReimbursementRequestReceived:
       type: object
@@ -133,6 +85,29 @@ components:
         _id:
           type: string
           example: 64480513a30c8be7b83d9593
+        approvals:
+          type: array
+          items:
+            type: object
+            properties:
+              approvalDate: 
+                type: string
+                example: '2023-05-24T20:08:34.000Z'
+              fileObj:
+                type: object
+                properties:
+                  name: 
+                    type: string
+                    example: my_approval.pdf
+                  size: 
+                    type: number
+                    example: 94702
+                  date: 
+                    type: string
+                    example: '2023-06-05T20:08:38.709Z'
+                  file: 
+                    type: string
+                    example: base64EncodedFile
   responses:
     400BadRequestID:
       description: Bad request response.
@@ -286,6 +261,61 @@ paths:
             schema:
               type: object
               properties:
+                approvals:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      approvalDate: 
+                        type: string
+                        example: '2023-05-24T20:08:34.000Z'
+                      fileObj:
+                        type: object
+                        properties:
+                          name: 
+                            type: string
+                            example: my_approval.pdf
+                          size: 
+                            type: number
+                            example: 94702
+                          date: 
+                            type: string
+                            example: '2023-06-05T20:08:38.709Z'
+                          file: 
+                            type: string
+                            example: base64EncodedFile
+                purchases:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      supplier:
+                        type: string
+                        example: Walmart
+                      purchaseDate:
+                        type: string
+                        example: 2023-05-01T00:00:00-07:00
+                      cost:
+                        type: number
+                        example: 49.99
+                      fileObj:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: my_receipt.pdf
+                          size:
+                            type: number
+                            example: 94702
+                          file: 
+                            type: string
+                            example: base64EncodedFile
+                additionalComments:
+                  type: string
+                  example: These are the updated comments.
+                employeeId:
+                  type: number
+                  example: 123456
                 state:
                   type: number
                   example: 1

@@ -14,6 +14,15 @@ import FileUpload from '../uploaders/FileUpload';
 import { Dispatch, SetStateAction } from 'react';
 import { IFile } from '../../../interfaces/IFile';
 
+/**
+ * @interface
+ * @description Properties passed to the PurchaseTable component.
+ * @property {Array<Purchase>}  purchases         - A list of Purchase objects.
+ * @property {Dispatch}         setPurchases      - Function to set the purchases list.
+ * @property {Array<IFile>}     purchaseFiles     - A list of IFile objects.
+ * @property {Dispatch}         setPurchaseFiles  - Function to set purchaseFiles list.
+ * @property {boolean}          editable          - Optional: Whether editing should be permitted. Default false. 
+ */
 export interface PurchaseTableProps {
   purchases: Array<Purchase>,
   setPurchases: Dispatch<SetStateAction<Array<Purchase>>>
@@ -22,6 +31,11 @@ export interface PurchaseTableProps {
   editable?: boolean
 }
 
+/**
+ * @description A table containing all of the purchases in a reimbursement request.
+ * @param {PurchaseTableProps} props Properties passed to PurchaseTable. 
+ * @returns A React table element.
+ */
 const PurchaseTable = (props: PurchaseTableProps) => {
   const { 
     purchases, 
