@@ -3,6 +3,7 @@ import { headerFont, normalFont } from "../constants/fonts";
 import LinkButton from "../components/bcgov/LinkButton";
 import { buttonStyles } from "../components/bcgov/ButtonStyles";
 import Constants from "../constants/Constants";
+import { useLocation } from "react-router-dom";
 
 /**
  * @description The page displayed for unauthenticated users. Provides a login button.
@@ -10,6 +11,10 @@ import Constants from "../constants/Constants";
  */
 const Login = () => {
   const { BACKEND_URL } = Constants;
+  // Set the target page for redirect after login, but not if it's the root
+  if (useLocation().pathname !== '/'){
+    sessionStorage.setItem('target-page', useLocation().pathname)
+  }
 
   return (
     <Paper elevation={3} sx={{
