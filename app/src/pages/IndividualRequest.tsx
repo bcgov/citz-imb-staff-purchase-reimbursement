@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RequestStates } from "../utils/convertState";
+import { RequestStates, convertStateToStatus } from "../utils/convertState";
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Constants from "../constants/Constants";
@@ -205,10 +205,10 @@ const IndividualRequest = () => {
                 }}
                 disabled={!isAdmin}
               >
-                <MenuItem value={RequestStates.SUBMITTED}>Submitted</MenuItem>
-                <MenuItem value={RequestStates.INPROGRESS}>In Progress</MenuItem>
-                <MenuItem value={RequestStates.DENIED}>Denied</MenuItem>
-                <MenuItem value={RequestStates.APPROVED}>Approved</MenuItem>
+                <MenuItem value={RequestStates.SUBMITTED}>{convertStateToStatus(RequestStates.SUBMITTED)}</MenuItem>
+                <MenuItem value={RequestStates.INPROGRESS}>{convertStateToStatus(RequestStates.INPROGRESS)}</MenuItem>
+                <MenuItem value={RequestStates.INCOMPLETE}>{convertStateToStatus(RequestStates.INCOMPLETE)}</MenuItem>
+                <MenuItem value={RequestStates.COMPLETE}>{convertStateToStatus(RequestStates.COMPLETE)}</MenuItem>
               </Select>
             </FormControl>          
             </Grid>

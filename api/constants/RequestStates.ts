@@ -5,8 +5,8 @@
  */
 enum RequestStates {
   DELETED,
-  DENIED,
-  APPROVED,
+  INCOMPLETE,
+  COMPLETE,
   INPROGRESS,
   SUBMITTED,
   __LENGTH
