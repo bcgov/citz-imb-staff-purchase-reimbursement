@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Constants from '../constants/Constants';
 import axios from 'axios';
 import RequestsTable from '../components/custom/tables/RequestsTable';
@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
  * @returns A React element
  */
 const Home = () => {
-  const [data, setData] = useState([]);
+  const [requests, setRequests] = useState([]);
   const { BACKEND_URL, FRONTEND_URL } = Constants;
   const { state: authState } = useAuthService();
   const navigate = useNavigate();
@@ -23,25 +23,28 @@ const Home = () => {
       sessionStorage.clear()
       navigate(targetPage);
     } else {
-      (async () => {
-        try {
-          const { data } = await axios.get(`${BACKEND_URL}/api/requests?minimal=true`, {
-            headers: {
-              Authorization : `Bearer ${authState.accessToken}`
-            }
-          })
-          setData(data);
-        } catch (e) {
-          console.warn('Server could not be reached.');
+      getRequests();
+    }
+  }, []);
+
+  // Retrieves a list of reimbursement requests and updates state.
+  const getRequests = useCallback(async () => {
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/api/requests?minimal=true`, {
+        headers: {
+          Authorization : `Bearer ${authState.accessToken}`
         }
-      })();
+      })
+      setRequests(data);
+    } catch (e) {
+      console.warn('Server could not be reached.');
     }
   }, []);
 
   return (
     <>
       <h2 style={headerFont}>Reimbursement Requests</h2>
-      <RequestsTable data={data} />
+      <RequestsTable data={requests} />
     </>
   );
 }
