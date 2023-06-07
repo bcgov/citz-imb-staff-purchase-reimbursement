@@ -118,7 +118,8 @@ const IndividualRequest = () => {
         data: {
           ...reimbursementRequest,
           purchases: combinedPurchases,
-          approvals: combinedApprovals
+          approvals: combinedApprovals,
+          isAdmin: isAdmin
         }
       }
       let response = await axios(axiosReqConfig);

@@ -154,7 +154,8 @@ export const updateRequestState = async (req: Request, res: Response) => {
     purchases,
     approvals,
     additionalComments,
-    state 
+    state,
+    isAdmin
   } = req.body;
 
   // If ID doesn't match schema, return a 400
@@ -174,16 +175,20 @@ export const updateRequestState = async (req: Request, res: Response) => {
   const existingRequest : WithId<RequestRecord> = await collection.findOne(filter);
 
   let refinedState = state;
-  // If request has all required fields and files
-  if (checkForCompleteRequest({employeeId, purchases, approvals})){
-    // If previous state was Incomplete, change it to Submitted
-    if (existingRequest.state == RequestStates.INCOMPLETE){
-      refinedState = RequestStates.SUBMITTED;
+
+  // If user isn't an admin, take control of the state update
+  if (!isAdmin){
+    // If request has all required fields and files
+    if (checkForCompleteRequest({employeeId, purchases, approvals})){
+      // If previous state was Incomplete, change it to Submitted
+      if (existingRequest.state == RequestStates.INCOMPLETE){
+        refinedState = RequestStates.SUBMITTED;
+      }
+    } else {
+      // Otherwise, submission should be marked as Incomplete
+      refinedState = RequestStates.INCOMPLETE;
     }
-  } else {
-    // Otherwise, submission should be marked as Incomplete
-    refinedState = RequestStates.INCOMPLETE;
-  }
+  } 
 
   // Update the document
   const updateDoc = {
