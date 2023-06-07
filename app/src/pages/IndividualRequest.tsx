@@ -26,7 +26,6 @@ import { Approval } from "../interfaces/Approval";
  */
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
-  const [requestState, setRequestState] = useState<RequestStates>(RequestStates.SUBMITTED);
   const [approvalFiles, setApprovalFiles] = useState<Array<IFile>>([]);
   const [approvals, setApprovals] = useState<Array<Approval>>([]);
   const [purchaseFiles, setPurchaseFiles] = useState<Array<IFile>>([]);
