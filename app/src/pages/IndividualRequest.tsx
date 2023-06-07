@@ -78,7 +78,6 @@ const IndividualRequest = () => {
 
           // Set new states
           setReimbursementRequest(reimbursementRequest);
-          setRequestState(reimbursementRequest.state);
           setPurchases(reimbursementRequest.purchases);
           setPurchaseFiles(purchaseFileArray);
           
@@ -96,7 +95,6 @@ const IndividualRequest = () => {
   // Fired when the record is updated (i.e. User selects UPDATE.)
   const handleUpdate = async () => {
     // TODO: If approvals or purchases don't change, don't send back that info
-    // TODO: If a purchase or approval is missing a file, mark the request as needing more info. Same if a required field is blank.
     
     // Apply purchaseFiles to purchases
     const combinedPurchases = [...purchases];
@@ -120,8 +118,7 @@ const IndividualRequest = () => {
         data: {
           ...reimbursementRequest,
           purchases: combinedPurchases,
-          approvals: combinedApprovals,
-          state: requestState
+          approvals: combinedApprovals
         }
       }
       let response = await axios(axiosReqConfig);
@@ -179,6 +176,9 @@ const IndividualRequest = () => {
                   id='employeeID'
                   name='employeeID'
                   value={reimbursementRequest?.employeeId || ''}
+                  onChange={(e) => {
+                    setReimbursementRequest({...reimbursementRequest, employeeId: parseInt(e.target.value)} as ReimbursementRequest)
+                  }}
                   disabled={locked}
                 />
               </FormControl>
@@ -198,10 +198,10 @@ const IndividualRequest = () => {
               <Select
                 id='status'
                 name='status'
-                value={requestState.toString()}
-                defaultValue={requestState.toString()}
+                value={reimbursementRequest?.state.toString() || ''}
+                defaultValue={reimbursementRequest?.state.toString() || ''}
                 onChange={(e) => {
-                  setRequestState(parseInt(e.target.value));
+                  setReimbursementRequest({...reimbursementRequest, state: parseInt(e.target.value)} as ReimbursementRequest)
                 }}
                 disabled={!isAdmin}
               >
@@ -238,6 +238,9 @@ const IndividualRequest = () => {
                   multiline
                   rows={4}
                   value={reimbursementRequest?.additionalComments || ''}
+                  onChange={(e) => {
+                    setReimbursementRequest({...reimbursementRequest, additionalComments: e.target.value} as ReimbursementRequest)
+                  }}
                   disabled={locked}
                 />
               </FormControl> 

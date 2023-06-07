@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { Collection, WithId, ObjectId } from 'mongodb';
 import RequestStates from '../constants/RequestStates';
 import { z } from 'zod';
+import { checkForCompleteRequest } from './../helpers/checkForCompleteRequest';
 
 // All functions use requests collection
 const collection : Collection<RequestRecord> = db.collection<RequestRecord>('requests');
@@ -163,10 +164,27 @@ export const updateRequestState = async (req: Request, res: Response) => {
     return res.status(400).send('ID was malformed. Cannot complete request.');
   }
 
+  // Establish the id that is used to find document
+  const filter = { _id: { $eq: new ObjectId(id) } };
+
   // Check that state is a valid option
   if ( state < 0 || state >= RequestStates.__LENGTH) return res.status(403).send('An invalid state was requested.');
-  // Establish that id is used to find document
-  const filter = { _id: { $eq: new ObjectId(id) } };
+
+  // Get previous state of request
+  const existingRequest : WithId<RequestRecord> = await collection.findOne(filter);
+
+  let refinedState = state;
+  // If request has all required fields and files
+  if (checkForCompleteRequest({employeeId, purchases, approvals})){
+    // If previous state was Incomplete, change it to Submitted
+    if (existingRequest.state == RequestStates.INCOMPLETE){
+      refinedState = RequestStates.SUBMITTED;
+    }
+  } else {
+    // Otherwise, submission should be marked as Incomplete
+    refinedState = RequestStates.INCOMPLETE;
+  }
+
   // Update the document
   const updateDoc = {
     $set: {
@@ -174,7 +192,7 @@ export const updateRequestState = async (req: Request, res: Response) => {
       additionalComments: additionalComments,
       purchases: purchases,
       employeeId: employeeId,
-      state: state,
+      state: refinedState,
     },
   };
 
