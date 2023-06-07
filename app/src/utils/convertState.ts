@@ -4,8 +4,8 @@
  */
 export enum RequestStates {
   DELETED,
-  DENIED,
-  APPROVED,
+  INCOMPLETE,
+  COMPLETE,
   INPROGRESS,
   SUBMITTED,
   __LENGTH
@@ -20,10 +20,10 @@ export const convertStateToStatus = (state: RequestStates) => {
   switch(state){
     case RequestStates.DELETED:
       return 'Deleted';
-    case RequestStates.DENIED:
-      return 'Denied';
-    case RequestStates.APPROVED:
-      return 'Approved';
+    case RequestStates.INCOMPLETE:
+      return 'Incomplete';
+    case RequestStates.COMPLETE:
+      return 'Complete';
     case RequestStates.INPROGRESS:
       return 'In Progress';
     case RequestStates.SUBMITTED:
