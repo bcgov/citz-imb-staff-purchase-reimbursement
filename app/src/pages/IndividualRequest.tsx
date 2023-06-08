@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RequestStates } from "../utils/convertState";
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -37,66 +37,72 @@ const IndividualRequest = () => {
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const { state: authState } = useAuthService();
 
-  // TODO: Make this based off the user's keycloak roles
-  const isAdmin = true;
-  const locked = false;
+  // Page permissions
+  const isAdmin = authState.userInfo.client_roles?.includes('admin') || false;
+  const [locked, setLocked] = useState<boolean>(false);
 
   // Fired when page is loaded. 
   useEffect(() => {
-    (async () => {
-      try {
-        const axiosReqConfig = {
-          url: `${Constants.BACKEND_URL}/api/requests/${id}`,
-          method: `get`,
-          headers: {
-            Authorization : `Bearer ${authState.accessToken}`
-          }
+    getReimbursementRequest();
+  }, []);
+
+  const getReimbursementRequest = useCallback(async () => {
+    try {
+      const axiosReqConfig = {
+        url: `${Constants.BACKEND_URL}/api/requests/${id}`,
+        method: `get`,
+        headers: {
+          Authorization : `Bearer ${authState.accessToken}`
         }
-        let response = await axios(axiosReqConfig);
-        if (response.status === 200) {
-          
-          // Populate values with existing record
-          const reimbursementRequest: ReimbursementRequest = response.data;
-          const purchaseFileArray : Array<IFile> = [];
-          const approvalFileArray : Array<IFile> = [];
-
-          if (reimbursementRequest.purchases.length > 0){
-            reimbursementRequest.purchases.forEach((purchase, index) => {
-              if (purchase.fileObj){
-                purchaseFileArray.splice(index, 0, purchase.fileObj);
-              }
-            });
-          }
-
-          if (reimbursementRequest.approvals){
-            reimbursementRequest.approvals.forEach((approval, index) => {
-              if (approval.fileObj){
-                approvalFileArray.splice(index, 0, approval.fileObj);
-              }
-            });
-          }
-
-          // Set new states
-          setReimbursementRequest(reimbursementRequest);
-          setRequestState(reimbursementRequest.state);
-          setPurchases(reimbursementRequest.purchases);
-          setPurchaseFiles(purchaseFileArray);
-          
-          if (reimbursementRequest.approvals){
-            setApprovals(reimbursementRequest.approvals);
-            setApprovalFiles(approvalFileArray)
-          }
-        }
-      } catch (e) {
-        console.warn('Record could not be retrieved.');
       }
-    })();
+      let response = await axios(axiosReqConfig);
+      if (response.status === 200) {
+        
+        // Populate values with existing record
+        const reimbursementRequest: ReimbursementRequest = response.data;
+        const purchaseFileArray : Array<IFile> = [];
+        const approvalFileArray : Array<IFile> = [];
+
+        if (reimbursementRequest.purchases.length > 0){
+          reimbursementRequest.purchases.forEach((purchase, index) => {
+            if (purchase.fileObj){
+              purchaseFileArray.splice(index, 0, purchase.fileObj);
+            }
+          });
+        }
+
+        if (reimbursementRequest.approvals){
+          reimbursementRequest.approvals.forEach((approval, index) => {
+            if (approval.fileObj){
+              approvalFileArray.splice(index, 0, approval.fileObj);
+            }
+          });
+        }
+
+        // Set new states
+        setReimbursementRequest(reimbursementRequest);
+        setRequestState(reimbursementRequest.state);
+        setPurchases(reimbursementRequest.purchases);
+        setPurchaseFiles(purchaseFileArray);
+        
+        if (reimbursementRequest.approvals){
+          setApprovals(reimbursementRequest.approvals);
+          setApprovalFiles(approvalFileArray)
+        }
+
+        // Determine locked status of fields. If not admin and the state of request is not INCOMPLETE, lock the fields.
+        if (!isAdmin && reimbursementRequest.state !== RequestStates.INCOMPLETE){
+          setLocked(true);
+        }
+      }
+    } catch (e) {
+      console.warn('Record could not be retrieved.');
+    }
   }, []);
 
   // Fired when the record is updated (i.e. User selects UPDATE.)
   const handleUpdate = async () => {
     // TODO: If approvals or purchases don't change, don't send back that info
-    // TODO: If a purchase or approval is missing a file, mark the request as needing more info. Same if a required field is blank.
     
     // Apply purchaseFiles to purchases
     const combinedPurchases = [...purchases];
@@ -168,7 +174,7 @@ const IndividualRequest = () => {
                   id='requestor'
                   name='requestor'
                   value={`${reimbursementRequest?.firstName} ${reimbursementRequest?.lastName}`}
-                  disabled
+                  disabled={true}
                 />
               </FormControl>
             </Grid>
