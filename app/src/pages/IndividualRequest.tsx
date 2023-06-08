@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { RequestStates } from "../utils/convertState";
+import { RequestStates, convertStateToStatus } from "../utils/convertState";
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Constants from "../constants/Constants";
@@ -26,7 +26,6 @@ import { Approval } from "../interfaces/Approval";
  */
 const IndividualRequest = () => {
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
-  const [requestState, setRequestState] = useState<RequestStates>(RequestStates.SUBMITTED);
   const [approvalFiles, setApprovalFiles] = useState<Array<IFile>>([]);
   const [approvals, setApprovals] = useState<Array<Approval>>([]);
   const [purchaseFiles, setPurchaseFiles] = useState<Array<IFile>>([]);
@@ -81,7 +80,6 @@ const IndividualRequest = () => {
 
         // Set new states
         setReimbursementRequest(reimbursementRequest);
-        setRequestState(reimbursementRequest.state);
         setPurchases(reimbursementRequest.purchases);
         setPurchaseFiles(purchaseFileArray);
         
@@ -127,7 +125,7 @@ const IndividualRequest = () => {
           ...reimbursementRequest,
           purchases: combinedPurchases,
           approvals: combinedApprovals,
-          state: requestState
+          isAdmin: isAdmin
         }
       }
       let response = await axios(axiosReqConfig);
@@ -185,6 +183,9 @@ const IndividualRequest = () => {
                   id='employeeID'
                   name='employeeID'
                   value={reimbursementRequest?.employeeId || ''}
+                  onChange={(e) => {
+                    setReimbursementRequest({...reimbursementRequest, employeeId: parseInt(e.target.value)} as ReimbursementRequest)
+                  }}
                   disabled={locked}
                 />
               </FormControl>
@@ -204,17 +205,17 @@ const IndividualRequest = () => {
               <Select
                 id='status'
                 name='status'
-                value={requestState.toString()}
-                defaultValue={requestState.toString()}
+                value={reimbursementRequest?.state.toString() || ''}
+                defaultValue={reimbursementRequest?.state.toString() || ''}
                 onChange={(e) => {
-                  setRequestState(parseInt(e.target.value));
+                  setReimbursementRequest({...reimbursementRequest, state: parseInt(e.target.value)} as ReimbursementRequest)
                 }}
                 disabled={!isAdmin}
               >
-                <MenuItem value={RequestStates.SUBMITTED}>Submitted</MenuItem>
-                <MenuItem value={RequestStates.INPROGRESS}>In Progress</MenuItem>
-                <MenuItem value={RequestStates.DENIED}>Denied</MenuItem>
-                <MenuItem value={RequestStates.APPROVED}>Approved</MenuItem>
+                <MenuItem value={RequestStates.SUBMITTED}>{convertStateToStatus(RequestStates.SUBMITTED)}</MenuItem>
+                <MenuItem value={RequestStates.INPROGRESS}>{convertStateToStatus(RequestStates.INPROGRESS)}</MenuItem>
+                <MenuItem value={RequestStates.INCOMPLETE}>{convertStateToStatus(RequestStates.INCOMPLETE)}</MenuItem>
+                <MenuItem value={RequestStates.COMPLETE}>{convertStateToStatus(RequestStates.COMPLETE)}</MenuItem>
               </Select>
             </FormControl>          
             </Grid>
@@ -244,6 +245,9 @@ const IndividualRequest = () => {
                   multiline
                   rows={4}
                   value={reimbursementRequest?.additionalComments || ''}
+                  onChange={(e) => {
+                    setReimbursementRequest({...reimbursementRequest, additionalComments: e.target.value} as ReimbursementRequest)
+                  }}
                   disabled={locked}
                 />
               </FormControl> 
