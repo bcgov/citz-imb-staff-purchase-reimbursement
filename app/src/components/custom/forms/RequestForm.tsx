@@ -19,11 +19,19 @@ import { Approval } from "../../../interfaces/Approval";
 
 /**
  * @interface
- * @property {boolean} locked Whether the form should be considered locked.
- * @property {boolean} isAdmin Whether the user has an admin role.
- * @property {() => Promise<void>} handleUpdate Event handler for when form is submitted.
- * @property {ReimbursementRequest | undefined} reimbursementRequest The request viewed in this form.
- * @property {Dispatch<SetStateAction<ReimbursementRequest | undefined>>} setReimbursementRequest State setter for reimbursement request.
+ * @property {boolean}                          locked                  - Whether the form should be considered locked.
+ * @property {boolean}                          isAdmin                 - Whether the user has an admin role.
+ * @property {() => Promise<void>}              handleUpdate            - Event handler for when form is submitted.
+ * @property {ReimbursementRequest | undefined} reimbursementRequest    - The request viewed in this form.
+ * @property {Dispatch}                         setReimbursementRequest - State setter for reimbursement request.
+ * @property {Array<Purchase>}                  purchases               - A list of Purchase objects.
+ * @property {Dispatch}                         setPurchases            - Function to set the purchases list.
+ * @property {Array<IFile>}                     purchaseFiles           - A list of IFile objects.
+ * @property {Dispatch}                         setPurchaseFiles        - Function to set purchaseFiles list.
+ * @property {Array<Approval>}                  approvals               - A list of Approval objects.
+ * @property {Dispatch}                         setApprovals            - Function to set the approvals list.
+ * @property {Array<IFile>}                     approvalFiles           - A list of IFile objects.
+ * @property {Dispatch}                         setApprovalFiles        - Function to set approvalFiles list.
  */
 interface RequestFormProps {
   locked: boolean,
@@ -42,9 +50,9 @@ interface RequestFormProps {
 }
 
 /**
- * @description The form portion showing an individual request.
- * @param {RequestFormProps} props 
- * @returns A React form element.
+ * @description                     - The form portion showing an individual request.
+ * @param {RequestFormProps} props  - The properties passed to the Request Form.
+ * @returns                         - A React form element.
  */
 const RequestForm = (props: RequestFormProps) => {
   const {
