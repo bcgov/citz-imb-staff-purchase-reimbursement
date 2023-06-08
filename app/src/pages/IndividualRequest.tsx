@@ -19,22 +19,22 @@ import ApprovalTable from "../components/custom/tables/ApprovalTable";
 import { IFile } from "../interfaces/IFile";
 import { Purchase } from "../interfaces/Purchase";
 import { Approval } from "../interfaces/Approval";
+import RequestForm from "../components/custom/forms/RequestForm";
 
 /**
  * @description A page showing an individual reimbursement requests and all its fields.
  * @returns A React element
  */
 const IndividualRequest = () => {
+  // TODO: Consolidate these states into a single state
   const [reimbursementRequest, setReimbursementRequest] = useState<ReimbursementRequest | undefined>(undefined);
   const [approvalFiles, setApprovalFiles] = useState<Array<IFile>>([]);
   const [approvals, setApprovals] = useState<Array<Approval>>([]);
   const [purchaseFiles, setPurchaseFiles] = useState<Array<IFile>>([]);
   const [purchases, setPurchases] = useState<Array<Purchase>>([]);
-  const navigate = useNavigate();
   const { id } = useParams();
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const { state: authState } = useAuthService();
+  const navigate = useNavigate();
 
   // Page permissions
   const isAdmin = authState.userInfo.client_roles?.includes('admin') || false;
@@ -45,6 +45,7 @@ const IndividualRequest = () => {
     getReimbursementRequest();
   }, []);
 
+  // Retrieves a single request's info
   const getReimbursementRequest = useCallback(async () => {
     try {
       const axiosReqConfig = {
@@ -138,124 +139,22 @@ const IndividualRequest = () => {
     }
   }
 
-  // General styling for form elements.
-  const formControlStyle : React.CSSProperties = {
-    width: '100%',
-    marginBottom: '1em',
-    ...normalFont
-  }
-
   return (
-    <>
-      <Paper sx={{
-        padding: '1em',
-        margin: '10px auto',
-        maxWidth: '1000px'
-      }}>
-        <form>
-          <Grid container spacing={2}>
-
-            {/* ZERO-TH ROW */}
-            <Grid container xs={12} sx={{ justifyContent: 'space-between', display: 'flex' }}>
-              <Grid xs={12} sm={6}><h4>Request ID: {reimbursementRequest?._id || 'No request found'}</h4></Grid>
-              <Grid xs={12} sm={5} alignItems='center' justifyContent={matches ? 'flex-end' : 'flex-start'} style={{  minWidth: '215px', display: 'flex' }}>
-                <ActionButton style={{ ...buttonStyles.secondary, marginTop: '0.75em' }} handler={() => {navigate('/')}}>Back</ActionButton>
-                <ActionButton style={{ ...buttonStyles.primary, marginLeft: '1em', marginTop: '0.75em' }} handler={handleUpdate}>Update</ActionButton>
-              </Grid>
-            </Grid>
-
-            {/* FIRST ROW */}
-            <Grid xs={12} sm={3}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='requestor'>Requestor</FormLabel>
-                <TextField 
-                  id='requestor'
-                  name='requestor'
-                  value={`${reimbursementRequest?.firstName} ${reimbursementRequest?.lastName}`}
-                  disabled={true}
-                />
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={3}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='employeeID'>Employee ID</FormLabel>
-                <TextField 
-                  id='employeeID'
-                  name='employeeID'
-                  value={reimbursementRequest?.employeeId || ''}
-                  onChange={(e) => {
-                    setReimbursementRequest({...reimbursementRequest, employeeId: parseInt(e.target.value)} as ReimbursementRequest)
-                  }}
-                  disabled={locked}
-                />
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={3}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='submissionDate'>Submission Date</FormLabel>
-                  <DatePicker
-                    value={dayjs(reimbursementRequest?.submissionDate)}
-                    disabled={true}
-                  />
-              </FormControl>
-            </Grid>
-            <Grid xs={12} sm={3}>
-            <FormControl sx={formControlStyle}>
-              <FormLabel htmlFor='status'>Status</FormLabel>
-              <Select
-                id='status'
-                name='status'
-                value={reimbursementRequest?.state.toString() || ''}
-                defaultValue={reimbursementRequest?.state.toString() || ''}
-                onChange={(e) => {
-                  setReimbursementRequest({...reimbursementRequest, state: parseInt(e.target.value)} as ReimbursementRequest)
-                }}
-                disabled={!isAdmin}
-              >
-                <MenuItem value={RequestStates.SUBMITTED}>{convertStateToStatus(RequestStates.SUBMITTED)}</MenuItem>
-                <MenuItem value={RequestStates.INPROGRESS}>{convertStateToStatus(RequestStates.INPROGRESS)}</MenuItem>
-                <MenuItem value={RequestStates.INCOMPLETE}>{convertStateToStatus(RequestStates.INCOMPLETE)}</MenuItem>
-                <MenuItem value={RequestStates.COMPLETE}>{convertStateToStatus(RequestStates.COMPLETE)}</MenuItem>
-              </Select>
-            </FormControl>          
-            </Grid>
-
-            {/* SECOND ROW */}
-            <Grid xs={12}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='purchases'>Purchases</FormLabel>
-                <PurchaseTable editable={!locked} {...{ purchases, setPurchases, purchaseFiles, setPurchaseFiles }}/>
-              </FormControl>
-            </Grid>
-
-            {/* THIRD ROW */}
-            <Grid xs={12}>
-              <FormControl sx={formControlStyle}>
-                <FormLabel htmlFor='approvals'>Approval Files</FormLabel>
-                <ApprovalTable editable={!locked} {...{ approvals, setApprovals, approvalFiles, setApprovalFiles }}/>
-              </FormControl>
-            </Grid>
-
-            {/* FOURTH ROW */}
-            <Grid xs={12}>
-              <FormControl sx={formControlStyle}>
-              <FormLabel htmlFor='additionalComments'>Additional Comments</FormLabel>
-                <TextField
-                  id="additionalComments"
-                  multiline
-                  rows={4}
-                  value={reimbursementRequest?.additionalComments || ''}
-                  onChange={(e) => {
-                    setReimbursementRequest({...reimbursementRequest, additionalComments: e.target.value} as ReimbursementRequest)
-                  }}
-                  disabled={locked}
-                />
-              </FormControl> 
-            </Grid>
-          </Grid>
-        </form>
-      </Paper>
-    </>
+    <RequestForm {...{
+      locked,
+      isAdmin,
+      handleUpdate,
+      reimbursementRequest,
+      setReimbursementRequest,
+      purchases,
+      setPurchases,
+      purchaseFiles,
+      setPurchaseFiles,
+      approvals,
+      setApprovals,
+      approvalFiles,
+      setApprovalFiles
+    }}/>
   );
 }
 
