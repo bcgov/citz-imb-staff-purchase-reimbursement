@@ -3,6 +3,7 @@ import { headerFont } from "../../constants/fonts";
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import UserControl from "../custom/login/UserControl";
+import { useNavigate } from "react-router-dom";
 
 // Styles the header bar
 const headerStyle : React.CSSProperties = {
@@ -43,6 +44,7 @@ const bannerStyle : React.CSSProperties = {
 const NavigationBar = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('md'));
+  const navigate = useNavigate();
 
   return (
     <header style={headerStyle}>
@@ -52,7 +54,9 @@ const NavigationBar = () => {
             height: '45px'
           }}/>
         </a>
-        <h1 style={{ ...headerTextStyle, fontSize: matches ? '30px' : '18px' }}>Staff Purchase Reimbursement</h1>
+        <h1 onClick={() => {
+          navigate('/');
+        }} style={{ ...headerTextStyle, fontSize: matches ? '30px' : '18px', cursor: 'pointer' }}>Staff Purchase Reimbursement</h1>
       </div>
       <div
       style={{
