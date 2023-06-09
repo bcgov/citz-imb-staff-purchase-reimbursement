@@ -1,25 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-import { RequestStates, convertStateToStatus } from "../utils/convertState";
+import { RequestStates } from "../utils/convertState";
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Constants from "../constants/Constants";
 import { ReimbursementRequest } from "../interfaces/ReimbursementRequest";
-import { Paper, TextField, Select, FormControl, FormLabel, MenuItem } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2/Grid2';
-import { DatePicker } from '@mui/x-date-pickers';
-import dayjs from 'dayjs';
-import { normalFont } from "../constants/fonts";
-import PurchaseTable from "../components/custom/tables/PurchaseTable";
-import ActionButton from "../components/bcgov/ActionButton";
 import { buttonStyles } from "../components/bcgov/ButtonStyles";
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAuthService } from "../keycloak";
-import ApprovalTable from "../components/custom/tables/ApprovalTable";
 import { IFile } from "../interfaces/IFile";
 import { Purchase } from "../interfaces/Purchase";
 import { Approval } from "../interfaces/Approval";
 import RequestForm from "../components/custom/forms/RequestForm";
+import LinkButton from "../components/bcgov/LinkButton";
 
 /**
  * @description A page showing an individual reimbursement requests and all its fields.
@@ -39,6 +30,7 @@ const IndividualRequest = () => {
   // Page permissions
   const isAdmin = authState.userInfo.client_roles?.includes('admin') || false;
   const [locked, setLocked] = useState<boolean>(false);
+  const [showRecord, setShowRecord] = useState<boolean>(true);
 
   // Fired when page is loaded. 
   useEffect(() => {
@@ -96,6 +88,8 @@ const IndividualRequest = () => {
       }
     } catch (e) {
       console.warn('Record could not be retrieved.');
+      // Request was not a success. User didn't get a record back, so don't show the form.
+      setShowRecord(false);   
     }
   }, []);
 
@@ -139,8 +133,9 @@ const IndividualRequest = () => {
     }
   }
 
-  return (
-    <RequestForm {...{
+  return(
+    showRecord 
+    ? <RequestForm {...{
       locked,
       isAdmin,
       handleUpdate,
@@ -155,6 +150,11 @@ const IndividualRequest = () => {
       approvalFiles,
       setApprovalFiles
     }}/>
+    : <>
+        <h1>You do not have access to this record.</h1>
+        <p>If you think you are seeing this by mistake, contact your administrator.</p>
+        <LinkButton link="/" style={buttonStyles.secondary}>Back</LinkButton>
+      </>
   );
 }
 

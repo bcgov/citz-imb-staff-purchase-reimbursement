@@ -4,6 +4,7 @@ import { Collection, WithId, ObjectId } from 'mongodb';
 import RequestStates from '../constants/RequestStates';
 import { z } from 'zod';
 import { checkForCompleteRequest } from './../helpers/checkForCompleteRequest';
+import { getUserInfo } from '../keycloak/utils';
 
 // All functions use requests collection
 const collection : Collection<RequestRecord> = db.collection<RequestRecord>('requests');
@@ -132,6 +133,8 @@ export const getRequestByID = async (req: Request, res: Response) => {
       return res.status(404).send('No record with that ID found.');
     }
     if (record){
+      const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
+      if (userInfo.idir_user_guid !== record.idir && !userInfo.client_roles?.includes('admin')) return res.status(403).send('Forbidden: User does not match requested record.');
       return res.status(200).json(record);
     }
   } catch (e) {
