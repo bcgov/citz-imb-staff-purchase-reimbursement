@@ -126,7 +126,7 @@ const IndividualRequest = () => {
       let response = await axios(axiosReqConfig);
       if (response.status === 200) {
         // Return to home page
-        navigate('/');
+        navigate(-1);
       }
     } catch (e) {
       console.warn('Record could not be updated.');

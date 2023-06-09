@@ -13,6 +13,7 @@ import { convertStateToStatus } from '../../../utils/convertState';
 import { bcgov } from '../../../constants/colours';
 import LinkButton from '../../bcgov/LinkButton';
 import { buttonStyles } from '../../bcgov/ButtonStyles';
+import { useParams } from 'react-router-dom';
 
 /**
  * @interface
@@ -30,6 +31,7 @@ interface RequestTableProps {
  */
 const RequestsTable = (props: RequestTableProps) => {
   const { data } = props;
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label='simple table'>

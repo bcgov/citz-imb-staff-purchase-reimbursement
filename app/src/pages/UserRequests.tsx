@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom';
 
 const UserRequests = () => {
   const [requests, setRequests] = useState([]);
-  const { BACKEND_URL, FRONTEND_URL } = Constants;
+  const { BACKEND_URL } = Constants;
   const { state: authState } = useAuthService();
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
   const { idir } = useParams();

@@ -32,7 +32,6 @@ const Home = () => {
 
   // Retrieves a list of all reimbursement requests and updates state.
   const getRequests = useCallback(async () => {
-    console.log(isAdmin)
     const targetURL = adminView
                       ? `${BACKEND_URL}/api/requests?minimal=true`
                       : `${BACKEND_URL}/api/requests/idir?minimal=true&idir=${authState.userInfo.idir_user_guid}`;
