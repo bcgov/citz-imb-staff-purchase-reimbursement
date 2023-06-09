@@ -116,6 +116,13 @@ components:
           schema:
             type: string
             example: 'ID was malformed. Cannot complete request.'
+    403ForbiddenRecord:
+      description: The record was called for by a user who does not own the record or is not an admin.
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: 'Forbidden: User does not match requested record.'
     404NoRecords:
       description: No records were found.
       content:
@@ -237,6 +244,8 @@ paths:
                 $ref: '#/components/schemas/ReimbursementRequest'
         '400':
           $ref: '#/components/responses/400BadRequestID'
+        '403':
+          $ref: '#/components/responses/403ForbiddenRecord'
         '404':
           $ref: '#/components/responses/404NoRecords'
         '429':
