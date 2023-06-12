@@ -36,6 +36,7 @@ export interface RequestRecord {
   idir: string,
   purchases: Array<object>,
   approvals: Array<object>,
+  additionalComments: string,
   submit: boolean,
   submissionDate: string,
   state: RequestStates
@@ -203,15 +204,18 @@ export const updateRequestState = async (req: Request, res: Response) => {
     }
   } 
 
+  // Create setting object
+  let newProperties = {
+    approvals: approvals || existingRequest.approvals,
+    additionalComments: additionalComments || existingRequest.additionalComments,
+    purchases: purchases || existingRequest.purchases,
+    employeeId: employeeId || existingRequest.employeeId,
+    state: refinedState === undefined || refinedState === null ? existingRequest.state : refinedState,
+  }
+
   // Update the document
   const updateDoc = {
-    $set: {
-      approvals: approvals,
-      additionalComments: additionalComments,
-      purchases: purchases,
-      employeeId: employeeId,
-      state: refinedState,
-    },
+    $set: newProperties,
   };
 
   try {
