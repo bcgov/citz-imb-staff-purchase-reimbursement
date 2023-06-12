@@ -16,7 +16,7 @@ const Home = () => {
   const { BACKEND_URL, FRONTEND_URL } = Constants;
   const { state: authState } = useAuthService();
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
-  const [adminView, setAdminView] = useState<boolean>(isAdmin);
+  const [adminView, setAdminView] = useState<boolean>(isAdmin && sessionStorage.getItem('adminView') === 'true');
   const navigate = useNavigate();
 
   // Fires on page load.
@@ -64,6 +64,7 @@ const Home = () => {
               <Switch 
                 checked={adminView} 
                 onChange={(e) => {
+                  sessionStorage.setItem('adminView', `${!adminView}`)
                   setAdminView(!adminView);
                 }}
               />
