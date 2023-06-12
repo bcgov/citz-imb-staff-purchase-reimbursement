@@ -91,6 +91,13 @@ export const getAllRequests = async (req: Request, res: Response) => {
  */
 export const getRequestsByIDIR = async (req: Request, res: Response) => {
   const { minimal, idir } = req.query;
+
+  // If neither the IDIR matches nor the user is admin, return the 403
+  const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
+  const idirMatches = userInfo.idir_user_guid === idir;
+  const isAdmin = userInfo.client_roles?.includes('admin');
+  if (!idirMatches && !isAdmin) return res.status(403).send('Forbidden: User does not match requested IDIR.');
+
   try {
     const cursor = minimal === 'true'
                   ? collection.find({ idir: { $eq: idir as string }}).sort({submissionDate: -1}).project(minimalProjection)
@@ -133,8 +140,11 @@ export const getRequestByID = async (req: Request, res: Response) => {
       return res.status(404).send('No record with that ID found.');
     }
     if (record){
+      // If neither the IDIR matches nor the user is admin, return the 403      
       const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
-      if (userInfo.idir_user_guid !== record.idir && !userInfo.client_roles?.includes('admin')) return res.status(403).send('Forbidden: User does not match requested record.');
+      const idirMatches = userInfo.idir_user_guid === record.idir;
+      const isAdmin = userInfo.client_roles?.includes('admin');
+      if (!idirMatches && !isAdmin) return res.status(403).send('Forbidden: User does not match requested record.');
       return res.status(200).json(record);
     }
   } catch (e) {
@@ -176,6 +186,14 @@ export const updateRequestState = async (req: Request, res: Response) => {
 
   // Get previous state of request
   const existingRequest : WithId<RequestRecord> = await collection.findOne(filter);
+
+  if (existingRequest){
+    // If neither the IDIR matches nor the user is admin, return the 403
+    const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
+    const idirMatches = userInfo.idir_user_guid === existingRequest.idir;
+    const isAdmin = userInfo.client_roles?.includes('admin');
+    if (!idirMatches && !isAdmin) return res.status(403).send('Forbidden: User does not match requested record.');
+  }
 
   let refinedState = state;
 

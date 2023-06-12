@@ -30,6 +30,7 @@ interface RequestTableProps {
  */
 const RequestsTable = (props: RequestTableProps) => {
   const { data } = props;
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label='simple table'>

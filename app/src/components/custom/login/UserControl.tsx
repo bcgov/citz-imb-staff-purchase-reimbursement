@@ -99,9 +99,6 @@ const UserControl = () => {
                       aria-labelledby="composition-button"
                       onKeyDown={handleListKeyDown}
                     >
-                      { // TODO: Use this item to redirect to IDIR-filtered requests when implemented
-                      /* <MenuItem onClick={handleClose}>My Requests</MenuItem> */
-                      }
                       <MenuItem onClick={() => {window.location.href = getLogoutURL();}} >Logout</MenuItem>
                     </MenuList>
                   </ClickAwayListener>
