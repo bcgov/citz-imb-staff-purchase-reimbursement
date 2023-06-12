@@ -91,6 +91,11 @@ export const getAllRequests = async (req: Request, res: Response) => {
  */
 export const getRequestsByIDIR = async (req: Request, res: Response) => {
   const { minimal, idir } = req.query;
+
+  // Check if user's IDIR matches
+  const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
+  if (userInfo.idir_user_guid !== idir && !userInfo.client_roles?.includes('admin')) return res.status(403).send('Forbidden: User does not match requested IDIR.');
+
   try {
     const cursor = minimal === 'true'
                   ? collection.find({ idir: { $eq: idir as string }}).sort({submissionDate: -1}).project(minimalProjection)
@@ -176,6 +181,11 @@ export const updateRequestState = async (req: Request, res: Response) => {
 
   // Get previous state of request
   const existingRequest : WithId<RequestRecord> = await collection.findOne(filter);
+
+  if (existingRequest){
+    const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
+      if (userInfo.idir_user_guid !== existingRequest.idir && !userInfo.client_roles?.includes('admin')) return res.status(403).send('Forbidden: User does not match requested record.');
+  }
 
   let refinedState = state;
 
