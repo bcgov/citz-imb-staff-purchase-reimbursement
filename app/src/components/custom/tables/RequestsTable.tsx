@@ -48,8 +48,8 @@ const RequestsTable = (props: RequestTableProps) => {
     },
     submissionDate: {
       filter: {
-        startDate: '',
-        endDate: ''
+        startDate: undefined,
+        endDate: undefined
       },
       sort: 0
     }, 
@@ -64,7 +64,7 @@ const RequestsTable = (props: RequestTableProps) => {
   useEffect(() => {
     const newData = filterData(props.data) || props.data;
     setData(newData);
-  }, [dataManipulator, showDeleted]);
+  }, [props.data, dataManipulator, showDeleted]);
 
   const filterData = (data: Array<ReimbursementRequest>) => {
     console.log(dataManipulator)
@@ -107,6 +107,7 @@ const RequestsTable = (props: RequestTableProps) => {
       const endDate = dataManipulator.submissionDate.filter.endDate;
       const dateMatch = () => {
         const recordDate = new Date(request.submissionDate).getTime();
+        if (!startDate && !endDate) return true;
         if (
           startDate && 
           endDate &&
@@ -170,6 +171,14 @@ const RequestsTable = (props: RequestTableProps) => {
                   display: 'block',
                   maxWidth: '14em',
                   marginTop: '5px'
+                }}
+                onClean={(e) => {
+                  if (e){
+                    let tempManipulator = { ...dataManipulator };
+                    tempManipulator.submissionDate.filter.startDate = undefined; // From the beginning of this day
+                    tempManipulator.submissionDate.filter.endDate = undefined; // To the end of this day
+                    setDataManipulator(tempManipulator);
+                  }
                 }}
                 onChange={(e) => {
                   if (e){
