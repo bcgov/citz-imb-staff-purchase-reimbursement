@@ -72,8 +72,8 @@ components:
 
     ReimbursementRequest:
       allOf:
-          - $ref: '#/components/schemas/ReimbursementRequestObject'
-          - type: object
+        - $ref: '#/components/schemas/ReimbursementRequestObject'
+        - type: object
       description: The received form data.
       properties:
         submissionDate:
@@ -215,6 +215,13 @@ paths:
                   $ref: '#/components/schemas/ReimbursementRequest'
         '400':
           $ref: '#/components/responses/400BadRequest'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'Forbidden: User does not match requested IDIR.'
         '404':
           $ref: '#/components/responses/404NoRecords'
         '429':
@@ -339,11 +346,11 @@ paths:
         '400':
           $ref: '#/components/responses/400BadRequestID'
         '403':
-          #description: Forbidden
-            content:
-              text/plain:
-                schema:
-                  type: string
-                  example: 'An invalid state was requested.'
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'An invalid state was requested. || Forbidden: User does not match requested record.' 
         '429':
           $ref: '#/components/responses/429TooManyRequests'

@@ -5,6 +5,7 @@ import RequestsTable from '../components/custom/tables/RequestsTable';
 import { headerFont } from '../constants/fonts';
 import { useAuthService } from '../keycloak';
 import { useNavigate } from 'react-router-dom';
+import { Switch } from '@mui/material';
 
 /**
  * @description The Home page, showing a list of reimbursement requests. 
@@ -14,6 +15,8 @@ const Home = () => {
   const [requests, setRequests] = useState([]);
   const { BACKEND_URL, FRONTEND_URL } = Constants;
   const { state: authState } = useAuthService();
+  const isAdmin = authState.userInfo.client_roles?.includes('admin');
+  const [adminView, setAdminView] = useState<boolean>(isAdmin && sessionStorage.getItem('adminView') === 'true');
   const navigate = useNavigate();
 
   // Fires on page load.
@@ -25,12 +28,15 @@ const Home = () => {
     } else {
       getRequests();
     }
-  }, []);
+  }, [adminView]);
 
-  // Retrieves a list of reimbursement requests and updates state.
+  // Retrieves a list of all reimbursement requests and updates state.
   const getRequests = useCallback(async () => {
+    const targetURL = adminView
+                      ? `${BACKEND_URL}/api/requests?minimal=true`
+                      : `${BACKEND_URL}/api/requests/idir?minimal=true&idir=${authState.userInfo.idir_user_guid}`;
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/requests?minimal=true`, {
+      const { data } = await axios.get(targetURL, {
         headers: {
           Authorization : `Bearer ${authState.accessToken}`
         }
@@ -39,11 +45,33 @@ const Home = () => {
     } catch (e) {
       console.warn('Server could not be reached.');
     }
-  }, []);
+  }, [adminView]);
 
   return (
     <>
-      <h2 style={headerFont}>Reimbursement Requests</h2>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end'
+      }}>
+        <h2 style={headerFont}>Reimbursement Requests</h2>
+        {
+          isAdmin
+          ? <div style={{
+                margin: '1em 0 1em 1em'
+              }}>
+              <span style={headerFont}>Admin View</span>
+              <Switch 
+                checked={adminView} 
+                onChange={(e) => {
+                  sessionStorage.setItem('adminView', `${!adminView}`)
+                  setAdminView(!adminView);
+                }}
+              />
+            </div>   
+          : <></>
+        }
+      </div>  
       <RequestsTable data={requests} />
     </>
   );

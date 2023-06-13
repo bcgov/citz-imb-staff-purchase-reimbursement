@@ -10,6 +10,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { KeycloakWrapper } from './keycloak';
 import { useAuthService } from './keycloak';
 import Login from './pages/Login';
+import UserRequests from './pages/UserRequests';
 
 /**
  * @returns Main element containing various providers and routes.
@@ -37,6 +38,7 @@ const App = () => {
               ? <Routes>
                   <Route index element={<Home/>} />
                   <Route path={'request/:id'} element={<IndividualRequest />}/>
+                  <Route path={'user/:idir'} element={<UserRequests />}/>
                 </Routes>
               : <Login/> }
             </div>
