@@ -14,11 +14,13 @@ import { RequestStates, convertStateToStatus } from '../../../utils/convertState
 import { bcgov } from '../../../constants/colours';
 import LinkButton from '../../bcgov/LinkButton';
 import { buttonStyles } from '../../bcgov/ButtonStyles';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuthService } from '../../../keycloak';
+import { Symbols } from '../searchFields/CurrencyComparer';
 // Date Picker 
 import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.css';
+import CurrencyComparer from '../searchFields/CurrencyComparer';
 
 /**
  * @interface
@@ -46,6 +48,13 @@ const RequestsTable = (props: RequestTableProps) => {
       filter: '',
       sort: 0
     },
+    cost: {
+      filter: {
+        symbol: Symbols.GT,
+        value: ''
+      },
+      sort: 0
+    },
     submissionDate: {
       filter: {
         startDate: undefined,
@@ -58,6 +67,7 @@ const RequestsTable = (props: RequestTableProps) => {
       sort: 0
     }
   });
+  const costSymbol = useRef('>=');
   const { state: authState } = useAuthService();
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
 
@@ -67,7 +77,6 @@ const RequestsTable = (props: RequestTableProps) => {
   }, [props.data, dataManipulator, showDeleted]);
 
   const filterData = (data: Array<ReimbursementRequest>) => {
-    console.log(dataManipulator)
     // If every filter is default, return data as is.
     if (dataManipulator.requestor.filter === '' &&
         dataManipulator.suppliers.filter === '' &&
@@ -101,11 +110,32 @@ const RequestsTable = (props: RequestTableProps) => {
         return false;
       }
 
+      // Check if the currency value matches the filter
+      const costMatch = () => {
+        const costValue: string = dataManipulator.cost.filter.value;
+        const costSymbol: Symbols = dataManipulator.cost.filter.symbol;
+        if (costValue === '') return true; // Always include if no value
+        if (!parseFloat(costValue)) return true; // Always return if it's NaN. (Junk entered in filter)
+
+        const costValueInt = parseFloat(costValue);
+       
+        if (costSymbol === Symbols.GT){
+           // If comparing for greater than
+          if (parseFloat(request.purchases.reduce((acc, curr) => acc + curr.cost, 0).toFixed(2)) >= costValueInt) return true;
+          else return false;
+        } else if (costSymbol === Symbols.LT){
+           // If comparing for less than
+          if (parseFloat(request.purchases.reduce((acc, curr) => acc + curr.cost, 0).toFixed(2)) <= costValueInt) return true;
+          else return false;
+        }
+        return false;
+      }
+
       // Check if date falls on or between the start and end date selected
       // Dates from the date picker are in UTC, but so are the submissionDates.
-      const startDate = dataManipulator.submissionDate.filter.startDate;
-      const endDate = dataManipulator.submissionDate.filter.endDate;
       const dateMatch = () => {
+        const startDate = dataManipulator.submissionDate.filter.startDate;
+        const endDate = dataManipulator.submissionDate.filter.endDate;
         const recordDate = new Date(request.submissionDate).getTime();
         if (!startDate && !endDate) return true;
         if (
@@ -119,7 +149,7 @@ const RequestsTable = (props: RequestTableProps) => {
       }
 
       // Decide if this record is included in filter
-      if (requestorMatch() && suppliersMatch() && dateMatch()) return true;
+      if (requestorMatch() && suppliersMatch() && costMatch() && dateMatch()) return true;
 
       // If not matching any of the above, don't include
       return false;
@@ -127,11 +157,64 @@ const RequestsTable = (props: RequestTableProps) => {
     return filteredData;
   };
 
+  const updateCostFilter = (e: any) => {
+    const regex = /^[0-9\.]*$/;
+    if (regex.test(e.target.value)){
+      setDataManipulator({
+        ...dataManipulator,
+        cost: {
+          ...dataManipulator.cost,
+          filter: {
+            ...dataManipulator.cost.filter,
+            value: e.target.value
+          }
+        }
+      });
+    }
+  }
+
+  const changeSymbol = () => {
+    const symbolDiv = document.getElementById('symbol');
+    if (symbolDiv){
+      if (dataManipulator.cost.filter.symbol === Symbols.GT){
+        setDataManipulator({
+          ...dataManipulator,
+          cost: {
+            ...dataManipulator.cost,
+            filter: {
+              ...dataManipulator.cost.filter,
+              symbol: Symbols.LT
+            }
+          }
+        });
+        symbolDiv.innerHTML = '<=';
+      } else {
+        setDataManipulator({
+          ...dataManipulator,
+          cost: {
+            ...dataManipulator.cost,
+            filter: {
+              ...dataManipulator.cost.filter,
+              symbol: Symbols.GT
+            }
+          }
+        });
+        symbolDiv.innerHTML = '>=';
+      }
+    }
+  }
+
   const updateManipulator = (e: any) => {
     let tempManipulator = { ...dataManipulator };
     tempManipulator[e.target.id].filter = e.target.value;
     setDataManipulator(tempManipulator);
   }
+
+  const filterStyle = {
+    display: 'block',
+    maxWidth: '14em',
+    marginTop: '5px'
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -144,7 +227,7 @@ const RequestsTable = (props: RequestTableProps) => {
                 id='requestor'
                 variant='standard' 
                 sx={{
-                  display: 'block'
+                  ...filterStyle
                 }}
                 value={dataManipulator.requestor.filter}
                 onChange={updateManipulator}
@@ -156,21 +239,27 @@ const RequestsTable = (props: RequestTableProps) => {
                 id='suppliers'
                 variant='standard' 
                 sx={{
-                  display: 'block'
+                  ...filterStyle
                 }}
                 onChange={updateManipulator}
               />
             </HeaderCell>
-            <HeaderCell>Total Cost</HeaderCell>
+            <HeaderCell>
+              Total Cost
+              <CurrencyComparer 
+                sx={{...filterStyle}}
+                onChange={updateCostFilter}
+                {...{changeSymbol}}
+              />
+            </HeaderCell>
             <HeaderCell>
               Submission Date
               <DateRangePicker
                 id='submissionDate'
                 editable={false}
+                placeholder='Select Range'
                 style={{
-                  display: 'block',
-                  maxWidth: '14em',
-                  marginTop: '5px'
+                  ...filterStyle
                 }}
                 onClean={(e) => {
                   if (e){
