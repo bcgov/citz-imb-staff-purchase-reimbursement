@@ -40,6 +40,39 @@ interface RequestTableProps {
 }
 
 /**
+ * @interface
+ * @description Defines the properties of the DataManipulator Record
+ */
+interface DataManipulatorObject extends Record<string, any> {
+  requestor: {
+    filter: string,
+    sort: number
+  },
+  suppliers: {
+    filter: string,
+    sort: number
+  },
+  cost: {
+    filter: {
+      symbol: Symbols,
+      value: string
+    },
+    sort: number
+  },
+  submissionDate: {
+    filter: {
+      startDate: number,
+      endDate:  number
+    },
+    sort: number
+  }, 
+  status: {
+    filter: RequestStates[],
+    sort: number
+  }
+}
+
+/**
  * @description A table containing a series of reimbursement requests.
  * @param {RequestTableProps} props Properties passed to RequestsTable. 
  * @returns A React table element.
@@ -50,7 +83,7 @@ const RequestsTable = (props: RequestTableProps) => {
   const defaultSelectItems = [RequestStates.INCOMPLETE, RequestStates.INPROGRESS, RequestStates.SUBMITTED]; // Default selected items for filter
   const weekOfMilliseconds = 604800000; // One week of milliseconds. 
   // The default state for data manipulation. Used for filtering and sorting.
-  const defaultManipulator = {
+  const defaultManipulator: DataManipulatorObject = {
     requestor: {
       filter: '',
       sort: 0
@@ -78,7 +111,7 @@ const RequestsTable = (props: RequestTableProps) => {
       sort: 0
     }
   };
-  const [dataManipulator, setDataManipulator] = useState<Record<string, any>>(defaultManipulator); // Data manipulation state. Filtering and sorting.
+  const [dataManipulator, setDataManipulator] = useState<DataManipulatorObject>(defaultManipulator); // Data manipulation state. Filtering and sorting.
   const { state: authState } = useAuthService(); 
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
 
