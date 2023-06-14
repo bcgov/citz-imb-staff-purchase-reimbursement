@@ -6,6 +6,11 @@ import {
   TableRow,
   Paper,
   TextField,
+  Select,
+  MenuItem,
+  ListItemText,
+  Checkbox,
+  Button
 } from '@mui/material';
 import HeaderCell from './HeaderCell';
 import CustomTableCell from './CustomTableCell';
@@ -17,10 +22,11 @@ import { buttonStyles } from '../../bcgov/ButtonStyles';
 import { useEffect, useRef, useState } from 'react';
 import { useAuthService } from '../../../keycloak';
 import { Symbols } from '../searchFields/CurrencyComparer';
+import CurrencyComparer from '../searchFields/CurrencyComparer';
+
 // Date Picker 
 import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.css';
-import CurrencyComparer from '../searchFields/CurrencyComparer';
 
 /**
  * @interface
@@ -39,7 +45,10 @@ interface RequestTableProps {
 const RequestsTable = (props: RequestTableProps) => {
   const [data, setData] = useState<Array<ReimbursementRequest>>(props.data);
   const [showDeleted, setShowDeleted] = useState<boolean>(false);
-  const [dataManipulator, setDataManipulator] = useState<Record<string, any>>({
+  const selectItems = [RequestStates.INCOMPLETE, RequestStates.INPROGRESS, RequestStates.SUBMITTED, RequestStates.COMPLETE, RequestStates.DELETED];
+  const defaultSelectItems = [RequestStates.INCOMPLETE, RequestStates.INPROGRESS, RequestStates.SUBMITTED];
+  const weekOfMilliseconds = 604800000;
+  const defaultManipulator = {
     requestor: {
       filter: '',
       sort: 0
@@ -57,17 +66,17 @@ const RequestsTable = (props: RequestTableProps) => {
     },
     submissionDate: {
       filter: {
-        startDate: undefined,
-        endDate: undefined
+        startDate: Date.now() - weekOfMilliseconds,
+        endDate:  Date.now() + weekOfMilliseconds
       },
       sort: 0
     }, 
     status: {
-      filter: undefined,
+      filter: defaultSelectItems,
       sort: 0
     }
-  });
-  const costSymbol = useRef('>=');
+  };
+  const [dataManipulator, setDataManipulator] = useState<Record<string, any>>(defaultManipulator);
   const { state: authState } = useAuthService();
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
 
@@ -86,11 +95,6 @@ const RequestsTable = (props: RequestTableProps) => {
         }
 
     let filteredData: Array<ReimbursementRequest> = data.filter(request => {
-      // Remove deleted entries
-      if (!showDeleted && request.state === RequestStates.DELETED){
-        return false;
-      }
-
       // Check if requestor matches
       const requestorMatch = () => {
         if (
@@ -148,8 +152,17 @@ const RequestsTable = (props: RequestTableProps) => {
         return false;
       }
 
+      // Check if record matches one of the selected statuses
+      const statusMatch = () => {
+        const currentSelection = dataManipulator.status.filter;
+        if (currentSelection.includes(request.state)){
+          return true;
+        }
+        return false;
+      }
+
       // Decide if this record is included in filter
-      if (requestorMatch() && suppliersMatch() && costMatch() && dateMatch()) return true;
+      if (requestorMatch() && suppliersMatch() && costMatch() && dateMatch() && statusMatch()) return true;
 
       // If not matching any of the above, don't include
       return false;
@@ -204,10 +217,24 @@ const RequestsTable = (props: RequestTableProps) => {
     }
   }
 
+  const updateStatusFilter = (e: any) => {
+    setDataManipulator({
+      ...dataManipulator,
+      status: {
+        ...dataManipulator.status,
+        filter: e.target.value
+      }
+    });
+  }
+
   const updateManipulator = (e: any) => {
     let tempManipulator = { ...dataManipulator };
     tempManipulator[e.target.id].filter = e.target.value;
     setDataManipulator(tempManipulator);
+  }
+
+  const resetFilter = () => {
+    setDataManipulator(defaultManipulator);
   }
 
   const filterStyle = {
@@ -242,12 +269,14 @@ const RequestsTable = (props: RequestTableProps) => {
                   ...filterStyle
                 }}
                 onChange={updateManipulator}
+                value={dataManipulator.suppliers.filter}
               />
             </HeaderCell>
             <HeaderCell>
               Total Cost
               <CurrencyComparer 
                 sx={{...filterStyle}}
+                value={dataManipulator.cost.filter.value}
                 onChange={updateCostFilter}
                 {...{changeSymbol}}
               />
@@ -258,14 +287,18 @@ const RequestsTable = (props: RequestTableProps) => {
                 id='submissionDate'
                 editable={false}
                 placeholder='Select Range'
+                cleanable={false}
+                showOneCalendar
+                value={[new Date(dataManipulator.submissionDate.filter.startDate), new Date(dataManipulator.submissionDate.filter.endDate)]}
                 style={{
-                  ...filterStyle
+                  ...filterStyle,
+                  color: bcgov.text
                 }}
                 onClean={(e) => {
                   if (e){
                     let tempManipulator = { ...dataManipulator };
-                    tempManipulator.submissionDate.filter.startDate = undefined; // From the beginning of this day
-                    tempManipulator.submissionDate.filter.endDate = undefined; // To the end of this day
+                    tempManipulator.submissionDate.filter.startDate = defaultManipulator.submissionDate.filter.startDate; 
+                    tempManipulator.submissionDate.filter.endDate = defaultManipulator.submissionDate.filter.endDate; 
                     setDataManipulator(tempManipulator);
                   }
                 }}
@@ -279,8 +312,42 @@ const RequestsTable = (props: RequestTableProps) => {
                 }}
               />
             </HeaderCell>
-            <HeaderCell>Status</HeaderCell>
-            <HeaderCell></HeaderCell>
+            <HeaderCell>
+              Status
+              <Select
+                labelId="status"
+                id="status"
+                multiple
+                variant='standard'
+                value={dataManipulator.status.filter}
+                onChange={updateStatusFilter}
+                renderValue={(selected) => {
+                  if (selected.length === selectItems.length){
+                    return 'All';
+                  }
+                  return 'Filtered';
+                }}
+                sx={{
+                  ...filterStyle
+                }}
+              >
+                {selectItems.map((name) => {
+                  // Don't show deleted as an option unless you're the admin
+                  if (name === RequestStates.DELETED && !isAdmin){
+                    return;
+                  }
+                  return (
+                    <MenuItem key={name} value={name}>
+                      <Checkbox checked={dataManipulator.status.filter.indexOf(name) > -1} />
+                      <ListItemText primary={convertStateToStatus(name)} />
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </HeaderCell>
+            <HeaderCell>
+              <Button sx={{...buttonStyles.secondary}} onClick={resetFilter}>Reset Filter</Button>
+            </HeaderCell>
           </TableRow>
         </TableHead>
         <TableBody>

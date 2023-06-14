@@ -6,6 +6,7 @@ import styled from "@emotion/styled";
 
 interface CurrencyComparerProps {
   sx: React.CSSProperties,
+  value: string,
   changeSymbol: (e: any) => void,
   onChange: (e: any) => void,
 
@@ -26,8 +27,8 @@ export enum Symbols {
 // }));
 
 const CurrencyComparer = (props: CurrencyComparerProps) => {
-  const { sx, changeSymbol, onChange } = props;
-  const [value, setValue] = useState<string>('');
+  const { sx, value, changeSymbol, onChange } = props;
+  //const [value, setValue] = useState<string>('');
 
 
   return (
@@ -50,12 +51,11 @@ const CurrencyComparer = (props: CurrencyComparerProps) => {
       <TextField 
         variant='standard'
         id='costInput'
-        defaultValue={0}
         value={value}
         onChange={(e) => {
           const regex = /^[0-9\.]*$/;
           if (regex.test(e.target.value)){
-            setValue(e.target.value);
+            //setValue(e.target.value);
             onChange(e);
           }
         }}
