@@ -2,3 +2,12 @@
   width: 100%;
   padding: 0;
 }
+
+/* This is to target the inner text on the data-picker filter component. It didn't provide a natural styling prop. */
+.rs-picker-has-value .rs-btn .rs-picker-toggle-value, .rs-picker-has-value .rs-picker-toggle .rs-picker-toggle-value {
+  color: darkslategrey !important;
+}
+
+#statusFilter {
+  color: darkslategrey !important;
+}
