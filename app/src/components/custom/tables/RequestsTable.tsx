@@ -68,8 +68,8 @@ const RequestsTable = (props: RequestTableProps) => {
     },
     submissionDate: {
       filter: {
-        startDate: Date.now() - weekOfMilliseconds,
-        endDate:  Date.now() + weekOfMilliseconds
+        startDate: Date.now() - (weekOfMilliseconds * 2),
+        endDate:  Date.now()
       },
       sort: 0
     }, 

@@ -20,7 +20,8 @@ const App = () => {
   const user = authState.userInfo;
 
   const container = {
-    minWidth: '1000px',
+    minWidth: '1200px',
+    maxWidth: '1600px',
     width: '90%',
     margin: '2em auto',
     paddingTop: '60px'
