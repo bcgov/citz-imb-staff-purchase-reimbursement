@@ -127,18 +127,11 @@ const RequestsTable = (props: RequestTableProps) => {
    * @returns {Array<ReimbursementRequest>} Sorted data.
    */
   const filterData = (data: Array<ReimbursementRequest>) => {
-    // If every filter is default, return data as is.
-    if (dataManipulator.requestor.filter === '' &&
-        dataManipulator.suppliers.filter === '' &&
-        dataManipulator.submissionDate.filter === undefined &&
-        dataManipulator.status.filter === undefined){
-          return data;
-        }
-
     const filteredData: Array<ReimbursementRequest> = data.filter(request => {
       // Check if requestor matches
       const requestorMatch = () => {
         if (
+          dataManipulator.requestor.filter === '' || // Don't filter out if field is blank
           request.firstName.toLowerCase().includes(dataManipulator.requestor.filter.toLowerCase().trim()) ||
           request.lastName.toLowerCase().includes(dataManipulator.requestor.filter.toLowerCase().trim())){
           return true;
@@ -149,6 +142,7 @@ const RequestsTable = (props: RequestTableProps) => {
       // Check if any suppliers match
       const suppliersMatch = () => {
         if (
+          dataManipulator.suppliers.filter === '' ||  // Don't filter out if field is blank
           request.purchases.some(purchase => purchase.supplier.toLowerCase().includes(dataManipulator.suppliers.filter.toLowerCase().trim()))){
           return true;
         }
@@ -159,7 +153,7 @@ const RequestsTable = (props: RequestTableProps) => {
       const costMatch = () => {
         const costValue: string = dataManipulator.cost.filter.value;
         const costSymbol: Symbols = dataManipulator.cost.filter.symbol;
-        if (costValue === '') return true; // Always include if no value
+        if (costValue === '') return true; // Don't filter out if field is blank
         if (!parseFloat(costValue)) return true; // Always return if it's NaN. (Junk entered in filter) Shouldn't happen, but just in case.
 
         const costValueInt = parseFloat(costValue);
