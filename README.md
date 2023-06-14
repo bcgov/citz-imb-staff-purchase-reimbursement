@@ -1,6 +1,8 @@
 # CITZ IMB Staff Purchasing Reimbursement
 Citizen Services Capstone Project A for 2023
 
+[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
+
 ## Setup
 Create a `.env` file in the root of the project. Populate it with values for each key specified in `.env.template`. 
 
