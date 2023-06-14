@@ -10,7 +10,8 @@ import {
   MenuItem,
   ListItemText,
   Checkbox,
-  Button
+  Button,
+  InputAdornment
 } from '@mui/material';
 import HeaderCell from './HeaderCell';
 import CustomTableCell from './CustomTableCell';
@@ -19,7 +20,7 @@ import { RequestStates, convertStateToStatus } from '../../../utils/convertState
 import { bcgov } from '../../../constants/colours';
 import LinkButton from '../../bcgov/LinkButton';
 import { buttonStyles } from '../../bcgov/ButtonStyles';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthService } from '../../../keycloak';
 import { Symbols } from '../searchFields/CurrencyComparer';
 import CurrencyComparer from '../searchFields/CurrencyComparer';
@@ -27,6 +28,7 @@ import CurrencyComparer from '../searchFields/CurrencyComparer';
 // Date Picker 
 import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.css';
+import { FilterAlt } from '@mui/icons-material';
 
 /**
  * @interface
@@ -43,11 +45,11 @@ interface RequestTableProps {
  * @returns A React table element.
  */
 const RequestsTable = (props: RequestTableProps) => {
-  const [data, setData] = useState<Array<ReimbursementRequest>>(props.data);
-  const [showDeleted, setShowDeleted] = useState<boolean>(false);
-  const selectItems = [RequestStates.INCOMPLETE, RequestStates.INPROGRESS, RequestStates.SUBMITTED, RequestStates.COMPLETE, RequestStates.DELETED];
-  const defaultSelectItems = [RequestStates.INCOMPLETE, RequestStates.INPROGRESS, RequestStates.SUBMITTED];
-  const weekOfMilliseconds = 604800000;
+  const [data, setData] = useState<Array<ReimbursementRequest>>(props.data); // Main data state
+  const selectItems = [RequestStates.INCOMPLETE, RequestStates.INPROGRESS, RequestStates.SUBMITTED, RequestStates.COMPLETE, RequestStates.DELETED]; // Possible selection items for filter
+  const defaultSelectItems = [RequestStates.INCOMPLETE, RequestStates.INPROGRESS, RequestStates.SUBMITTED]; // Default selected items for filter
+  const weekOfMilliseconds = 604800000; // One week of milliseconds. 
+  // The default state for data manipulation. Used for filtering and sorting.
   const defaultManipulator = {
     requestor: {
       filter: '',
@@ -76,15 +78,21 @@ const RequestsTable = (props: RequestTableProps) => {
       sort: 0
     }
   };
-  const [dataManipulator, setDataManipulator] = useState<Record<string, any>>(defaultManipulator);
-  const { state: authState } = useAuthService();
+  const [dataManipulator, setDataManipulator] = useState<Record<string, any>>(defaultManipulator); // Data manipulation state. Filtering and sorting.
+  const { state: authState } = useAuthService(); 
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
 
+  // Resets data if the prop updates or if the filter/sort params change.
   useEffect(() => {
     const newData = filterData(props.data) || props.data;
     setData(newData);
-  }, [props.data, dataManipulator, showDeleted]);
+  }, [props.data, dataManipulator]);
 
+  /**
+   * @description Filters data based on the dataManipulator state and returns
+   * @param {Array<ReimbursementRequest>} data The data to be sorted.
+   * @returns {Array<ReimbursementRequest>} Sorted data.
+   */
   const filterData = (data: Array<ReimbursementRequest>) => {
     // If every filter is default, return data as is.
     if (dataManipulator.requestor.filter === '' &&
@@ -94,12 +102,12 @@ const RequestsTable = (props: RequestTableProps) => {
           return data;
         }
 
-    let filteredData: Array<ReimbursementRequest> = data.filter(request => {
+    const filteredData: Array<ReimbursementRequest> = data.filter(request => {
       // Check if requestor matches
       const requestorMatch = () => {
         if (
-          request.firstName.toLowerCase().includes(dataManipulator.requestor.filter.toLowerCase()) ||
-          request.lastName.toLowerCase().includes(dataManipulator.requestor.filter.toLowerCase())){
+          request.firstName.toLowerCase().includes(dataManipulator.requestor.filter.toLowerCase().trim()) ||
+          request.lastName.toLowerCase().includes(dataManipulator.requestor.filter.toLowerCase().trim())){
           return true;
         }
         return false;
@@ -108,7 +116,7 @@ const RequestsTable = (props: RequestTableProps) => {
       // Check if any suppliers match
       const suppliersMatch = () => {
         if (
-          request.purchases.some(purchase => purchase.supplier.toLowerCase().includes(dataManipulator.suppliers.filter.toLowerCase()))){
+          request.purchases.some(purchase => purchase.supplier.toLowerCase().includes(dataManipulator.suppliers.filter.toLowerCase().trim()))){
           return true;
         }
         return false;
@@ -119,7 +127,7 @@ const RequestsTable = (props: RequestTableProps) => {
         const costValue: string = dataManipulator.cost.filter.value;
         const costSymbol: Symbols = dataManipulator.cost.filter.symbol;
         if (costValue === '') return true; // Always include if no value
-        if (!parseFloat(costValue)) return true; // Always return if it's NaN. (Junk entered in filter)
+        if (!parseFloat(costValue)) return true; // Always return if it's NaN. (Junk entered in filter) Shouldn't happen, but just in case.
 
         const costValueInt = parseFloat(costValue);
        
@@ -141,7 +149,7 @@ const RequestsTable = (props: RequestTableProps) => {
         const startDate = dataManipulator.submissionDate.filter.startDate;
         const endDate = dataManipulator.submissionDate.filter.endDate;
         const recordDate = new Date(request.submissionDate).getTime();
-        if (!startDate && !endDate) return true;
+        if (!startDate && !endDate) return true; // If both are undefined for some reason.
         if (
           startDate && 
           endDate &&
@@ -170,6 +178,10 @@ const RequestsTable = (props: RequestTableProps) => {
     return filteredData;
   };
 
+  /**
+   * @description Updates the dataManipulator with the appropriate value if it passes regex check.
+   * @param e The event from the CurrencyComparer component.
+   */
   const updateCostFilter = (e: any) => {
     const regex = /^[0-9\.]*$/;
     if (regex.test(e.target.value)){
@@ -186,6 +198,9 @@ const RequestsTable = (props: RequestTableProps) => {
     }
   }
 
+  /**
+   * @description Changes the symbol in the CurrencyComparer component when clicked. Also updates the dataManipulator.
+   */
   const changeSymbol = () => {
     const symbolDiv = document.getElementById('symbol');
     if (symbolDiv){
@@ -217,6 +232,10 @@ const RequestsTable = (props: RequestTableProps) => {
     }
   }
 
+  /**
+   * @description Updates the dataManipulator with the new multiselect status value.
+   * @param e The event from the Select component.
+   */
   const updateStatusFilter = (e: any) => {
     setDataManipulator({
       ...dataManipulator,
@@ -227,12 +246,19 @@ const RequestsTable = (props: RequestTableProps) => {
     });
   }
 
+  /**
+   * @description Updates the dataManipulator with the new text value for basic TextInput fields.
+   * @param e The event from the TextField component.
+   */
   const updateManipulator = (e: any) => {
     let tempManipulator = { ...dataManipulator };
     tempManipulator[e.target.id].filter = e.target.value;
     setDataManipulator(tempManipulator);
   }
 
+  /**
+   * @description Resets the dataManipulator to the default value.
+   */
   const resetFilter = () => {
     setDataManipulator(defaultManipulator);
   }
@@ -240,8 +266,12 @@ const RequestsTable = (props: RequestTableProps) => {
   const filterStyle = {
     display: 'block',
     maxWidth: '14em',
-    marginTop: '5px'
+    marginTop: '5px',
   };
+
+  const filterInputStyle = {
+    color: bcgov.text
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -254,10 +284,17 @@ const RequestsTable = (props: RequestTableProps) => {
                 id='requestor'
                 variant='standard' 
                 sx={{
-                  ...filterStyle
+                  ...filterStyle,
+                  width: '90%'
                 }}
                 value={dataManipulator.requestor.filter}
                 onChange={updateManipulator}
+                InputProps={{
+                  endAdornment: <InputAdornment position='end'><FilterAlt fontSize='small'/></InputAdornment>,
+                  sx: {
+                    ...filterInputStyle
+                  }
+                }}
               />
             </HeaderCell>
             <HeaderCell>
@@ -266,10 +303,17 @@ const RequestsTable = (props: RequestTableProps) => {
                 id='suppliers'
                 variant='standard' 
                 sx={{
-                  ...filterStyle
+                  ...filterStyle,
+                  width: '90%'
                 }}
                 onChange={updateManipulator}
                 value={dataManipulator.suppliers.filter}
+                InputProps={{
+                  endAdornment: <InputAdornment position='end'><FilterAlt fontSize='small'/></InputAdornment>,
+                  sx: {
+                    ...filterInputStyle
+                  }
+                }}
               />
             </HeaderCell>
             <HeaderCell>
@@ -289,6 +333,7 @@ const RequestsTable = (props: RequestTableProps) => {
                 placeholder='Select Range'
                 cleanable={false}
                 showOneCalendar
+                // DateRangePicker must take an array of exactly two dates.
                 value={[new Date(dataManipulator.submissionDate.filter.startDate), new Date(dataManipulator.submissionDate.filter.endDate)]}
                 style={{
                   ...filterStyle,
@@ -316,7 +361,7 @@ const RequestsTable = (props: RequestTableProps) => {
               Status
               <Select
                 labelId="status"
-                id="status"
+                id="statusFilter"
                 multiple
                 variant='standard'
                 value={dataManipulator.status.filter}
@@ -328,7 +373,8 @@ const RequestsTable = (props: RequestTableProps) => {
                   return 'Filtered';
                 }}
                 sx={{
-                  ...filterStyle
+                  ...filterStyle,
+                  color: bcgov.text
                 }}
               >
                 {selectItems.map((name) => {

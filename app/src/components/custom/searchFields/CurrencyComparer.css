@@ -1,5 +1,0 @@
-@keyframes spin180 { 100% { transform:rotate(+180deg); } }
-@keyframes rotate {
-  from {transform:rotate(0deg);}
-  to {transform:rotate(180deg);}
-}
