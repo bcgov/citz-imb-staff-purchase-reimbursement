@@ -124,13 +124,17 @@ const RequestsTable = (props: RequestTableProps) => {
     setData(sortedData);
   }, [props.data, dataManipulator]);
 
+  /**
+   * @description Sorts the data in the table based on the dataManipulator state object.
+   * @param {Array<ReimbursementRequest>} data An array of reimbursement request records. 
+   * @returns {Array<ReimbursementRequest>} The sorted array of data.
+   */
   const sortData: (data: Array<ReimbursementRequest>) => Array<ReimbursementRequest> = (data: Array<ReimbursementRequest>) => {
     // Which field are we sorting by?
     // Undefined can't be an index type, but sort field could be undefined if all values are UNSORTED. Default back to submissionDate if that's the case.
     const sortField = Object.keys(dataManipulator).find(key => dataManipulator[key].sort !== SortState.UNSORTED) || 'submissionDate';
     // Which direction are we sorting?
     const direction = dataManipulator[sortField].sort;
-    console.log(sortField, direction)
     // Perform sort based on sortField
     switch(sortField){
       case 'requestor':
@@ -165,14 +169,18 @@ const RequestsTable = (props: RequestTableProps) => {
           return data.sort((a, b) => convertStateToStatus(b.state).localeCompare(convertStateToStatus(a.state)));
         }
       default:
-        return data;
+        return data; // Default is descending by date.
     }
   }
 
+  /**
+   * @description Sets the sort field depending on which element was clicked.
+   * @param e The event from the clicked element.
+   */
   const setSortField = (e: any) => {
     const targetField = e.currentTarget.id; // currentTarget gets element with event listener, not element that triggered event
     const tempManipulator = { ...dataManipulator };
-    // Set all fields to Unsorted
+    // Set all fields to Unsorted, unless it's the target field
     Object.keys(tempManipulator).forEach(key => {
       if (key !== targetField){
         tempManipulator[key].sort = SortState.UNSORTED;
@@ -183,6 +191,11 @@ const RequestsTable = (props: RequestTableProps) => {
     setDataManipulator(tempManipulator);
   }
 
+  /**
+   * @description Determines the next sort state value based on a provided value.
+   * @param {SortState} value The current sort state.
+   * @returns {SortState} The next applicable sort state.
+   */
   const getNextSortValue = (value: SortState) => {
     switch(value){
       case SortState.DESCENDING:
