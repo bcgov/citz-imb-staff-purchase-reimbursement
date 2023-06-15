@@ -39,9 +39,19 @@ export const buttonStyles = {
     }
   },
   secondary: {
-      ...commonButtonStyle,       
-      backgroundColor: bcgov.white,
-      border: `1px solid ${bcgov.links}`,
-      color: bcgov.text,
-    },
+    ...commonButtonStyle,       
+    backgroundColor: bcgov.white,
+    border: `1px solid ${bcgov.links}`,
+    color: bcgov.text,
+  },
+  smallSecondary: {
+    ...commonButtonStyle,       
+    backgroundColor: bcgov.white,
+    border: `1px solid ${bcgov.links}`,
+    color: bcgov.text,
+    width: '1em',
+    height: '2em',
+    padding: '0.25em',
+    margin: '0 0.5em'
+  }
 };

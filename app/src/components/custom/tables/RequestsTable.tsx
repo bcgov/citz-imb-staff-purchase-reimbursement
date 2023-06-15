@@ -27,6 +27,7 @@ import CurrencyComparer from '../searchFields/CurrencyComparer';
 import { SortState } from '../searchFields/SortButton';
 import { FilterAlt } from '@mui/icons-material';
 import SortButton from '../searchFields/SortButton';
+import PaginationControl, { PaginationControlObject } from './PaginationControl';
 
 // Date Picker 
 import { DateRangePicker } from 'rsuite';
@@ -113,7 +114,17 @@ const RequestsTable = (props: RequestTableProps) => {
       sort: SortState.UNSORTED
     }
   };
-  const [dataManipulator, setDataManipulator] = useState<DataManipulatorObject>(defaultManipulator); // Data manipulation state. Filtering and sorting.
+
+  // Data manipulation state. Filtering and sorting.
+  const [dataManipulator, setDataManipulator] = useState<DataManipulatorObject>(defaultManipulator);
+  // Pagination state. Used to break the records into pages.
+  const [paginationControlObject, setPaginationControlObject] = useState<PaginationControlObject>({
+    currentPage: 1,
+    rowsPerPage: 30,
+    totalRecords: data.length
+  });
+  // Page data, the info only shown on the current page. e.g. 1 of 3
+  const [pageData, setPageData] = useState<Array<ReimbursementRequest>>(props.data);
   const { state: authState } = useAuthService(); 
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
 
@@ -122,7 +133,20 @@ const RequestsTable = (props: RequestTableProps) => {
     const filteredData = filterData(props.data) || props.data;
     const sortedData = sortData(filteredData);
     setData(sortedData);
+    // Set pagination back to start
+    setPaginationControlObject({
+      ...paginationControlObject,
+      currentPage: 1,
+      totalRecords: sortedData.length
+    });
   }, [props.data, dataManipulator]);
+
+  // Slices the data in to a page's worth of records if the pagination control changes.
+  useEffect(() => {
+    setPageData([...data].splice(
+      (paginationControlObject.currentPage - 1) * paginationControlObject.rowsPerPage, 
+      paginationControlObject.rowsPerPage));
+  }, [paginationControlObject])
 
   /**
    * @description Sorts the data in the table based on the dataManipulator state object.
@@ -387,6 +411,7 @@ const RequestsTable = (props: RequestTableProps) => {
   }
 
   return (
+  <>
     <TableContainer component={Paper}>
       <Table aria-label='simple table'>
         <TableHead>
@@ -515,9 +540,9 @@ const RequestsTable = (props: RequestTableProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          { !data || data.length === 0
+          { !pageData || pageData.length === 0
           ? <TableRow><CustomTableCell>No requests available.</CustomTableCell></TableRow>
-          : data.map((row, index) => (
+          : pageData.map((row, index) => (
             <TableRow
               key={row._id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary }}
@@ -533,6 +558,8 @@ const RequestsTable = (props: RequestTableProps) => {
         </TableBody>
       </Table>
     </TableContainer>
+    <PaginationControl controlObject={paginationControlObject} setControlObject={setPaginationControlObject}/>
+  </>
   );
 }
 
