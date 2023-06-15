@@ -114,12 +114,16 @@ const RequestsTable = (props: RequestTableProps) => {
       sort: SortState.UNSORTED
     }
   };
-  const [dataManipulator, setDataManipulator] = useState<DataManipulatorObject>(defaultManipulator); // Data manipulation state. Filtering and sorting.
+
+  // Data manipulation state. Filtering and sorting.
+  const [dataManipulator, setDataManipulator] = useState<DataManipulatorObject>(defaultManipulator);
+  // Pagination state. Used to break the records into pages.
   const [paginationControlObject, setPaginationControlObject] = useState<PaginationControlObject>({
     currentPage: 1,
     rowsPerPage: 30,
     totalRecords: data.length
   });
+  // Page data, the info only shown on the current page. e.g. 1 of 3
   const [pageData, setPageData] = useState<Array<ReimbursementRequest>>(props.data);
   const { state: authState } = useAuthService(); 
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
