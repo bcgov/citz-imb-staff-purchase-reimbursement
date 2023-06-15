@@ -136,33 +136,33 @@ const RequestsTable = (props: RequestTableProps) => {
       case 'requestor':
         // Check if ascending, otherwise it's descending.
         if (direction === SortState.ASCENDING){
-          return data.sort((a, b) => +(a.firstName > b.firstName)); // Need to convert boolean to number.
+          return data.sort((a, b) => a.firstName.localeCompare(b.firstName)); // Webkit doesn't accept boolean, so need local compare.
         } else {
-          return data.sort((a, b) => +(a.firstName < b.firstName));
+          return data.sort((a, b) => b.firstName.localeCompare(a.firstName));
         }
       case 'suppliers':
         if (direction === SortState.ASCENDING){
-          return data.sort((a, b) => +(a.purchases.at(0)!.supplier > b.purchases.at(0)!.supplier)); 
+          return data.sort((a, b) => a.purchases.at(0)!.supplier.localeCompare(b.purchases.at(0)!.supplier)); 
         } else {
-          return data.sort((a, b) => +(a.purchases.at(0)!.supplier < b.purchases.at(0)!.supplier));
+          return data.sort((a, b) => b.purchases.at(0)!.supplier.localeCompare(a.purchases.at(0)!.supplier));
         }
       case 'cost':
         if (direction === SortState.ASCENDING){
-          return data.sort((a, b) => +(a.purchases.reduce((total, purchase) => total + purchase.cost, 0).toFixed(2) < b.purchases.reduce((total, purchase) => total + purchase.cost, 0).toFixed(2))); 
+          return data.sort((a, b) => a.purchases.reduce((total, purchase) => total + purchase.cost, 0) - b.purchases.reduce((total, purchase) => total + purchase.cost, 0)); 
         } else {
-          return data.sort((a, b) => +(a.purchases.reduce((total, purchase) => total + purchase.cost, 0).toFixed(2) > b.purchases.reduce((total, purchase) => total + purchase.cost, 0).toFixed(2)));
+          return data.sort((a, b) => b.purchases.reduce((total, purchase) => total + purchase.cost, 0) - a.purchases.reduce((total, purchase) => total + purchase.cost, 0));
         }
       case 'submissionDate':
         if (direction === SortState.ASCENDING){
-          return data.sort((a, b) => +(a.submissionDate > b.submissionDate)); 
+          return data.sort((a, b) => a.submissionDate.localeCompare(b.submissionDate)); 
         } else {
           return data; // Should already be sorted descending from API. 
         }
       case 'status':
         if (direction === SortState.ASCENDING){
-          return data.sort((a, b) => +(convertStateToStatus(a.state) > convertStateToStatus(b.state)));
+          return data.sort((a, b) => convertStateToStatus(a.state).localeCompare(convertStateToStatus(b.state)));
         } else {
-          return data.sort((a, b) => +(convertStateToStatus(a.state) < convertStateToStatus(b.state)));
+          return data.sort((a, b) => convertStateToStatus(b.state).localeCompare(convertStateToStatus(a.state)));
         }
       default:
         return data;
