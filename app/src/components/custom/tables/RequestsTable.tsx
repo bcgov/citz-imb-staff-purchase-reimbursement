@@ -24,11 +24,13 @@ import { useEffect, useState } from 'react';
 import { useAuthService } from '../../../keycloak';
 import { Symbols } from '../searchFields/CurrencyComparer';
 import CurrencyComparer from '../searchFields/CurrencyComparer';
+import { SortState } from '../searchFields/SortButton';
+import { FilterAlt } from '@mui/icons-material';
+import SortButton from '../searchFields/SortButton';
 
 // Date Picker 
 import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.css';
-import { FilterAlt } from '@mui/icons-material';
 
 /**
  * @interface
@@ -46,29 +48,29 @@ interface RequestTableProps {
 interface DataManipulatorObject extends Record<string, any> {
   requestor: {
     filter: string,
-    sort: number
+    sort: SortState
   },
   suppliers: {
     filter: string,
-    sort: number
+    sort: SortState
   },
   cost: {
     filter: {
       symbol: Symbols,
       value: string
     },
-    sort: number
+    sort: SortState
   },
   submissionDate: {
     filter: {
       startDate: number,
       endDate:  number
     },
-    sort: number
+    sort: SortState
   }, 
   status: {
     filter: RequestStates[],
-    sort: number
+    sort: SortState
   }
 }
 
@@ -86,29 +88,29 @@ const RequestsTable = (props: RequestTableProps) => {
   const defaultManipulator: DataManipulatorObject = {
     requestor: {
       filter: '',
-      sort: 0
+      sort: SortState.UNSORTED
     },
     suppliers: {
       filter: '',
-      sort: 0
+      sort: SortState.UNSORTED
     },
     cost: {
       filter: {
         symbol: Symbols.GT,
         value: ''
       },
-      sort: 0
+      sort: SortState.UNSORTED
     },
     submissionDate: {
       filter: {
         startDate: Date.now() - (weekOfMilliseconds * 2),
         endDate:  Date.now()
       },
-      sort: 0
+      sort: SortState.DESCENDING
     }, 
     status: {
       filter: defaultSelectItems,
-      sort: 0
+      sort: SortState.UNSORTED
     }
   };
   const [dataManipulator, setDataManipulator] = useState<DataManipulatorObject>(defaultManipulator); // Data manipulation state. Filtering and sorting.
@@ -117,16 +119,87 @@ const RequestsTable = (props: RequestTableProps) => {
 
   // Resets data if the prop updates or if the filter/sort params change.
   useEffect(() => {
-    const newData = filterData(props.data) || props.data;
-    setData(newData);
+    const filteredData = filterData(props.data) || props.data;
+    const sortedData = sortData(filteredData);
+    setData(sortedData);
   }, [props.data, dataManipulator]);
+
+  const sortData: (data: Array<ReimbursementRequest>) => Array<ReimbursementRequest> = (data: Array<ReimbursementRequest>) => {
+    // Which field are we sorting by?
+    // Undefined can't be an index type, but sort field could be undefined if all values are UNSORTED. Default back to submissionDate if that's the case.
+    const sortField = Object.keys(dataManipulator).find(key => dataManipulator[key].sort !== SortState.UNSORTED) || 'submissionDate';
+    // Which direction are we sorting?
+    const direction = dataManipulator[sortField].sort;
+    console.log(sortField, direction)
+    // Perform sort based on sortField
+    switch(sortField){
+      case 'requestor':
+        // Check if ascending, otherwise it's descending.
+        if (direction === SortState.ASCENDING){
+          return data.sort((a, b) => +(a.firstName > b.firstName)); // Need to convert boolean to number.
+        } else {
+          return data.sort((a, b) => +(a.firstName < b.firstName));
+        }
+      case 'suppliers':
+        if (direction === SortState.ASCENDING){
+          return data.sort((a, b) => +(a.purchases.at(0)!.supplier > b.purchases.at(0)!.supplier)); 
+        } else {
+          return data.sort((a, b) => +(a.purchases.at(0)!.supplier < b.purchases.at(0)!.supplier));
+        }
+      case 'cost':
+        if (direction === SortState.ASCENDING){
+          return data.sort((a, b) => +(a.purchases.reduce((total, purchase) => total + purchase.cost, 0).toFixed(2) < b.purchases.reduce((total, purchase) => total + purchase.cost, 0).toFixed(2))); 
+        } else {
+          return data.sort((a, b) => +(a.purchases.reduce((total, purchase) => total + purchase.cost, 0).toFixed(2) > b.purchases.reduce((total, purchase) => total + purchase.cost, 0).toFixed(2)));
+        }
+      case 'submissionDate':
+        if (direction === SortState.ASCENDING){
+          return data.sort((a, b) => +(a.submissionDate > b.submissionDate)); 
+        } else {
+          return data; // Should already be sorted descending from API. 
+        }
+      case 'status':
+        if (direction === SortState.ASCENDING){
+          return data.sort((a, b) => +(convertStateToStatus(a.state) > convertStateToStatus(b.state)));
+        } else {
+          return data.sort((a, b) => +(convertStateToStatus(a.state) < convertStateToStatus(b.state)));
+        }
+      default:
+        return data;
+    }
+  }
+
+  const setSortField = (e: any) => {
+    const targetField = e.currentTarget.id; // currentTarget gets element with event listener, not element that triggered event
+    const tempManipulator = { ...dataManipulator };
+    // Set all fields to Unsorted
+    Object.keys(tempManipulator).forEach(key => {
+      if (key !== targetField){
+        tempManipulator[key].sort = SortState.UNSORTED;
+      }
+    })
+    // Update desired field with new sort value
+    tempManipulator[targetField].sort = getNextSortValue(dataManipulator[targetField].sort);
+    setDataManipulator(tempManipulator);
+  }
+
+  const getNextSortValue = (value: SortState) => {
+    switch(value){
+      case SortState.DESCENDING:
+        return SortState.UNSORTED;
+      case SortState.ASCENDING:
+        return SortState.DESCENDING;
+      default:
+        return SortState.ASCENDING;
+    }
+  }
 
   /**
    * @description Filters data based on the dataManipulator state and returns
    * @param {Array<ReimbursementRequest>} data The data to be sorted.
    * @returns {Array<ReimbursementRequest>} Sorted data.
    */
-  const filterData = (data: Array<ReimbursementRequest>) => {
+  const filterData: (data: Array<ReimbursementRequest>) => Array<ReimbursementRequest> = (data: Array<ReimbursementRequest>) => {
     const filteredData: Array<ReimbursementRequest> = data.filter(request => {
       // Check if requestor matches
       const requestorMatch = () => {
@@ -307,6 +380,7 @@ const RequestsTable = (props: RequestTableProps) => {
           <TableRow>
             <HeaderCell>
               Requestor Name
+              <SortButton id='requestor' currentValue={dataManipulator.requestor.sort} onChange={setSortField}/>
               <TextField 
                 id='requestor'
                 variant='standard' 
@@ -326,6 +400,7 @@ const RequestsTable = (props: RequestTableProps) => {
             </HeaderCell>
             <HeaderCell>
               Suppliers
+              <SortButton id='suppliers' currentValue={dataManipulator.suppliers.sort} onChange={setSortField}/>
               <TextField 
                 id='suppliers'
                 variant='standard' 
@@ -345,6 +420,7 @@ const RequestsTable = (props: RequestTableProps) => {
             </HeaderCell>
             <HeaderCell>
               Total Cost
+              <SortButton id='cost' currentValue={dataManipulator.cost.sort} onChange={setSortField}/>
               <CurrencyComparer 
                 sx={{...filterStyle}}
                 value={dataManipulator.cost.filter.value}
@@ -354,6 +430,7 @@ const RequestsTable = (props: RequestTableProps) => {
             </HeaderCell>
             <HeaderCell>
               Submission Date
+              <SortButton id='submissionDate' currentValue={dataManipulator.submissionDate.sort} onChange={setSortField}/>
               <DateRangePicker
                 id='submissionDate'
                 editable={false}
@@ -386,6 +463,7 @@ const RequestsTable = (props: RequestTableProps) => {
             </HeaderCell>
             <HeaderCell>
               Status
+              <SortButton id='status' currentValue={dataManipulator.status.sort} onChange={setSortField}/>
               <Select
                 labelId="status"
                 id="statusFilter"
