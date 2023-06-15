@@ -2,7 +2,6 @@ import { Button, ButtonGroup, TextField, InputAdornment } from "@mui/material";
 import { buttonStyles } from "../../bcgov/ButtonStyles";
 import React from "react";
 import { bcgov } from "../../../constants/colours";
-import { lightGreen } from "@mui/material/colors";
 
 /**
  * @description Defines the properties for the Currency Comparer component.

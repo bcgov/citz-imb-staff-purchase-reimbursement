@@ -24,11 +24,13 @@ import { useEffect, useState } from 'react';
 import { useAuthService } from '../../../keycloak';
 import { Symbols } from '../searchFields/CurrencyComparer';
 import CurrencyComparer from '../searchFields/CurrencyComparer';
+import { SortState } from '../searchFields/SortButton';
+import { FilterAlt } from '@mui/icons-material';
+import SortButton from '../searchFields/SortButton';
 
 // Date Picker 
 import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.css';
-import { FilterAlt } from '@mui/icons-material';
 
 /**
  * @interface
@@ -37,6 +39,39 @@ import { FilterAlt } from '@mui/icons-material';
  */
 interface RequestTableProps {
   data: Array<ReimbursementRequest>
+}
+
+/**
+ * @interface
+ * @description Defines the properties of the DataManipulator Record
+ */
+interface DataManipulatorObject extends Record<string, any> {
+  requestor: {
+    filter: string,
+    sort: SortState
+  },
+  suppliers: {
+    filter: string,
+    sort: SortState
+  },
+  cost: {
+    filter: {
+      symbol: Symbols,
+      value: string
+    },
+    sort: SortState
+  },
+  submissionDate: {
+    filter: {
+      startDate: number,
+      endDate:  number
+    },
+    sort: SortState
+  }, 
+  status: {
+    filter: RequestStates[],
+    sort: SortState
+  }
 }
 
 /**
@@ -50,62 +85,139 @@ const RequestsTable = (props: RequestTableProps) => {
   const defaultSelectItems = [RequestStates.INCOMPLETE, RequestStates.INPROGRESS, RequestStates.SUBMITTED]; // Default selected items for filter
   const weekOfMilliseconds = 604800000; // One week of milliseconds. 
   // The default state for data manipulation. Used for filtering and sorting.
-  const defaultManipulator = {
+  const defaultManipulator: DataManipulatorObject = {
     requestor: {
       filter: '',
-      sort: 0
+      sort: SortState.UNSORTED
     },
     suppliers: {
       filter: '',
-      sort: 0
+      sort: SortState.UNSORTED
     },
     cost: {
       filter: {
         symbol: Symbols.GT,
         value: ''
       },
-      sort: 0
+      sort: SortState.UNSORTED
     },
     submissionDate: {
       filter: {
         startDate: Date.now() - (weekOfMilliseconds * 2),
         endDate:  Date.now()
       },
-      sort: 0
+      sort: SortState.DESCENDING
     }, 
     status: {
       filter: defaultSelectItems,
-      sort: 0
+      sort: SortState.UNSORTED
     }
   };
-  const [dataManipulator, setDataManipulator] = useState<Record<string, any>>(defaultManipulator); // Data manipulation state. Filtering and sorting.
+  const [dataManipulator, setDataManipulator] = useState<DataManipulatorObject>(defaultManipulator); // Data manipulation state. Filtering and sorting.
   const { state: authState } = useAuthService(); 
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
 
   // Resets data if the prop updates or if the filter/sort params change.
   useEffect(() => {
-    const newData = filterData(props.data) || props.data;
-    setData(newData);
+    const filteredData = filterData(props.data) || props.data;
+    const sortedData = sortData(filteredData);
+    setData(sortedData);
   }, [props.data, dataManipulator]);
+
+  /**
+   * @description Sorts the data in the table based on the dataManipulator state object.
+   * @param {Array<ReimbursementRequest>} data An array of reimbursement request records. 
+   * @returns {Array<ReimbursementRequest>} The sorted array of data.
+   */
+  const sortData: (data: Array<ReimbursementRequest>) => Array<ReimbursementRequest> = (data: Array<ReimbursementRequest>) => {
+    // Which field are we sorting by?
+    // Undefined can't be an index type, but sort field could be undefined if all values are UNSORTED. Default back to submissionDate if that's the case.
+    const sortField = Object.keys(dataManipulator).find(key => dataManipulator[key].sort !== SortState.UNSORTED) || 'submissionDate';
+    // Which direction are we sorting?
+    const direction = dataManipulator[sortField].sort;
+    // Perform sort based on sortField
+    switch(sortField){
+      case 'requestor':
+        // Check if ascending, otherwise it's descending.
+        if (direction === SortState.ASCENDING){
+          return data.sort((a, b) => a.firstName.localeCompare(b.firstName)); // Webkit doesn't accept boolean, so need local compare.
+        } else {
+          return data.sort((a, b) => b.firstName.localeCompare(a.firstName));
+        }
+      case 'suppliers':
+        if (direction === SortState.ASCENDING){
+          return data.sort((a, b) => a.purchases.at(0)!.supplier.localeCompare(b.purchases.at(0)!.supplier)); 
+        } else {
+          return data.sort((a, b) => b.purchases.at(0)!.supplier.localeCompare(a.purchases.at(0)!.supplier));
+        }
+      case 'cost':
+        if (direction === SortState.ASCENDING){
+          return data.sort((a, b) => a.purchases.reduce((total, purchase) => total + purchase.cost, 0) - b.purchases.reduce((total, purchase) => total + purchase.cost, 0)); 
+        } else {
+          return data.sort((a, b) => b.purchases.reduce((total, purchase) => total + purchase.cost, 0) - a.purchases.reduce((total, purchase) => total + purchase.cost, 0));
+        }
+      case 'submissionDate':
+        if (direction === SortState.ASCENDING){
+          return data.sort((a, b) => a.submissionDate.localeCompare(b.submissionDate)); 
+        } else {
+          return data; // Should already be sorted descending from API. 
+        }
+      case 'status':
+        if (direction === SortState.ASCENDING){
+          return data.sort((a, b) => convertStateToStatus(a.state).localeCompare(convertStateToStatus(b.state)));
+        } else {
+          return data.sort((a, b) => convertStateToStatus(b.state).localeCompare(convertStateToStatus(a.state)));
+        }
+      default:
+        return data; // Default is descending by date.
+    }
+  }
+
+  /**
+   * @description Sets the sort field depending on which element was clicked.
+   * @param e The event from the clicked element.
+   */
+  const setSortField = (e: any) => {
+    const targetField = e.currentTarget.id; // currentTarget gets element with event listener, not element that triggered event
+    const tempManipulator = { ...dataManipulator };
+    // Set all fields to Unsorted, unless it's the target field
+    Object.keys(tempManipulator).forEach(key => {
+      if (key !== targetField){
+        tempManipulator[key].sort = SortState.UNSORTED;
+      }
+    })
+    // Update desired field with new sort value
+    tempManipulator[targetField].sort = getNextSortValue(dataManipulator[targetField].sort);
+    setDataManipulator(tempManipulator);
+  }
+
+  /**
+   * @description Determines the next sort state value based on a provided value.
+   * @param {SortState} value The current sort state.
+   * @returns {SortState} The next applicable sort state.
+   */
+  const getNextSortValue = (value: SortState) => {
+    switch(value){
+      case SortState.DESCENDING:
+        return SortState.UNSORTED;
+      case SortState.ASCENDING:
+        return SortState.DESCENDING;
+      default:
+        return SortState.ASCENDING;
+    }
+  }
 
   /**
    * @description Filters data based on the dataManipulator state and returns
    * @param {Array<ReimbursementRequest>} data The data to be sorted.
    * @returns {Array<ReimbursementRequest>} Sorted data.
    */
-  const filterData = (data: Array<ReimbursementRequest>) => {
-    // If every filter is default, return data as is.
-    if (dataManipulator.requestor.filter === '' &&
-        dataManipulator.suppliers.filter === '' &&
-        dataManipulator.submissionDate.filter === undefined &&
-        dataManipulator.status.filter === undefined){
-          return data;
-        }
-
+  const filterData: (data: Array<ReimbursementRequest>) => Array<ReimbursementRequest> = (data: Array<ReimbursementRequest>) => {
     const filteredData: Array<ReimbursementRequest> = data.filter(request => {
       // Check if requestor matches
       const requestorMatch = () => {
         if (
+          dataManipulator.requestor.filter === '' || // Don't filter out if field is blank
           request.firstName.toLowerCase().includes(dataManipulator.requestor.filter.toLowerCase().trim()) ||
           request.lastName.toLowerCase().includes(dataManipulator.requestor.filter.toLowerCase().trim())){
           return true;
@@ -116,6 +228,7 @@ const RequestsTable = (props: RequestTableProps) => {
       // Check if any suppliers match
       const suppliersMatch = () => {
         if (
+          dataManipulator.suppliers.filter === '' ||  // Don't filter out if field is blank
           request.purchases.some(purchase => purchase.supplier.toLowerCase().includes(dataManipulator.suppliers.filter.toLowerCase().trim()))){
           return true;
         }
@@ -126,7 +239,7 @@ const RequestsTable = (props: RequestTableProps) => {
       const costMatch = () => {
         const costValue: string = dataManipulator.cost.filter.value;
         const costSymbol: Symbols = dataManipulator.cost.filter.symbol;
-        if (costValue === '') return true; // Always include if no value
+        if (costValue === '') return true; // Don't filter out if field is blank
         if (!parseFloat(costValue)) return true; // Always return if it's NaN. (Junk entered in filter) Shouldn't happen, but just in case.
 
         const costValueInt = parseFloat(costValue);
@@ -280,6 +393,7 @@ const RequestsTable = (props: RequestTableProps) => {
           <TableRow>
             <HeaderCell>
               Requestor Name
+              <SortButton id='requestor' currentValue={dataManipulator.requestor.sort} onChange={setSortField}/>
               <TextField 
                 id='requestor'
                 variant='standard' 
@@ -299,6 +413,7 @@ const RequestsTable = (props: RequestTableProps) => {
             </HeaderCell>
             <HeaderCell>
               Suppliers
+              <SortButton id='suppliers' currentValue={dataManipulator.suppliers.sort} onChange={setSortField}/>
               <TextField 
                 id='suppliers'
                 variant='standard' 
@@ -318,6 +433,7 @@ const RequestsTable = (props: RequestTableProps) => {
             </HeaderCell>
             <HeaderCell>
               Total Cost
+              <SortButton id='cost' currentValue={dataManipulator.cost.sort} onChange={setSortField}/>
               <CurrencyComparer 
                 sx={{...filterStyle}}
                 value={dataManipulator.cost.filter.value}
@@ -327,6 +443,7 @@ const RequestsTable = (props: RequestTableProps) => {
             </HeaderCell>
             <HeaderCell>
               Submission Date
+              <SortButton id='submissionDate' currentValue={dataManipulator.submissionDate.sort} onChange={setSortField}/>
               <DateRangePicker
                 id='submissionDate'
                 editable={false}
@@ -359,6 +476,7 @@ const RequestsTable = (props: RequestTableProps) => {
             </HeaderCell>
             <HeaderCell>
               Status
+              <SortButton id='status' currentValue={dataManipulator.status.sort} onChange={setSortField}/>
               <Select
                 labelId="status"
                 id="statusFilter"
