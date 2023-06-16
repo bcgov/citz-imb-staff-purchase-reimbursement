@@ -5,6 +5,8 @@ import RequestsTable from '../components/custom/tables/RequestsTable';
 import { headerFont } from '../constants/fonts';
 import { useAuthService } from '../keycloak';
 import { useParams } from 'react-router-dom';
+import LinkButton from '../components/bcgov/LinkButton';
+import { buttonStyles } from '../components/bcgov/ButtonStyles';
 
 const UserRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -32,15 +34,33 @@ const UserRequests = () => {
         }
       })
       setRequests(data);
-    } catch (e) {
-      console.warn('Server could not be reached.');
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)){
+        const status = e.response!.status;
+        switch(status){
+          case 401:
+            console.warn('User is unauthenticated. Redirecting to login.');
+            window.location.reload();
+            break;
+          case 404:
+            // User has no records.
+            setRequests([]);
+            break;
+          default:
+            console.warn(e);
+            break;
+        }
+      } else {
+        console.warn(e);
+      }      
     }
   }, []);
 
   if (!isAdmin){
     return (<>
       <h1>You do not have permission to view this page.</h1>
-      <p>If you think you are seeing this by mistake, contact your administrator.</p>
+      <p style={{ margin: '1em 0'}}>If you think you are seeing this by mistake, contact your administrator.</p>
+      <LinkButton link="/" style={buttonStyles.secondary}>Back</LinkButton>
     </>);
   } else
 

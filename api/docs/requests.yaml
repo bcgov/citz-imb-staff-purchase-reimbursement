@@ -222,6 +222,8 @@ paths:
               schema:
                 type: string
                 example: 'Forbidden: User does not match requested IDIR.'
+        '404':
+          $ref: '#/components/responses/404NoRecords'
         '429':
           $ref: '#/components/responses/429TooManyRequests'
 
