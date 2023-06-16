@@ -37,6 +37,7 @@ const PaginationControl = (props: PaginationControlProps) => {
     setControlObject
   } = props;
   const totalPages = Math.ceil(controlObject.totalRecords / controlObject.rowsPerPage); // Have to round up
+  const noRecords  = controlObject.totalRecords === 0 ? true : false;
 
   // First record to show is: the number of rows per page * the previous page number, then the next record (+1)
   // or first record if on the first page
@@ -86,38 +87,40 @@ const PaginationControl = (props: PaginationControlProps) => {
   }
 
   return (
-    <>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        width: 'fit-content',
-        position: 'relative',
-        float: 'right',
-        alignItems: 'center',
-        marginTop: '0.5em'
-      }}>
-        <span>Rows per page:</span>
-        <Select
-          defaultValue={30}
-          size="small"
-          sx={{
-            margin: '0 1em'
-          }}
-          onChange={updateRowsPerPage}
-        >
-          <MenuItem value={10}>10</MenuItem>
-          <MenuItem value={30}>30</MenuItem>
-          <MenuItem value={50}>50</MenuItem>
-          <MenuItem value={100}>100</MenuItem>
-          <MenuItem value={1000}>1000</MenuItem>
-        </Select>
-        <IconButton onClick={goToFirstPage} disabled={controlObject.currentPage === 1}><FirstPage/></IconButton>
-        <IconButton onClick={goToPreviousPage} disabled={controlObject.currentPage === 1}><NavigateBefore/></IconButton>
-        <span style={{ margin: '0 1em' }}>{`Record ${firstRecord} - ${lastRecord} of ${controlObject.totalRecords}`}</span>
-        <IconButton onClick={goToNextPage} disabled={controlObject.currentPage === totalPages}><NavigateNext/></IconButton>
-        <IconButton onClick={goToLastPage} disabled={controlObject.currentPage === totalPages}><LastPage/></IconButton>
-      </div>
-    </>
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      width: 'fit-content',
+      position: 'relative',
+      float: 'right',
+      alignItems: 'center',
+      marginTop: '0.5em'
+    }}>
+      <span>Rows per page:</span>
+      <Select
+        defaultValue={30}
+        size="small"
+        sx={{
+          margin: '0 1em'
+        }}
+        onChange={updateRowsPerPage}
+      >
+        <MenuItem value={10}>10</MenuItem>
+        <MenuItem value={30}>30</MenuItem>
+        <MenuItem value={50}>50</MenuItem>
+        <MenuItem value={100}>100</MenuItem>
+        <MenuItem value={1000}>1000</MenuItem>
+      </Select>
+      <IconButton onClick={goToFirstPage} disabled={controlObject.currentPage === 1 || noRecords}><FirstPage/></IconButton>
+      <IconButton onClick={goToPreviousPage} disabled={controlObject.currentPage === 1 || noRecords}><NavigateBefore/></IconButton>
+      {
+        noRecords 
+          ? <span style={{ margin: '0 1em' }}>{'0 records'}</span>
+          : <span style={{ margin: '0 1em' }}>{`Record ${firstRecord} - ${lastRecord} of ${controlObject.totalRecords}`}</span>
+      }
+      <IconButton onClick={goToNextPage} disabled={controlObject.currentPage === totalPages || noRecords}><NavigateNext/></IconButton>
+      <IconButton onClick={goToLastPage} disabled={controlObject.currentPage === totalPages || noRecords}><LastPage/></IconButton>
+    </div>
   );
 }
 

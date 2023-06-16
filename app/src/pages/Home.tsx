@@ -22,8 +22,8 @@ const Home = () => {
   // Fires on page load.
   useEffect(() => {
     const targetPage = sessionStorage.getItem('target-page');
+    sessionStorage.removeItem('target-page');
     if (targetPage && targetPage !== FRONTEND_URL){
-      sessionStorage.clear()
       navigate(targetPage);
     } else {
       getRequests();
@@ -42,8 +42,25 @@ const Home = () => {
         }
       })
       setRequests(data);
-    } catch (e) {
-      console.warn('Server could not be reached.');
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)){
+        const status = e.response!.status;
+        switch(status){
+          case 401:
+            console.warn('User is unauthenticated. Redirecting to login.');
+            window.location.reload();
+            break;
+          case 404:
+            // User has no records.
+            setRequests([]);
+            break;
+          default:
+            console.warn(e);
+            break;
+        }
+      } else {
+        console.warn(e);
+      }      
     }
   }, [adminView]);
 
@@ -64,7 +81,7 @@ const Home = () => {
               <Switch 
                 checked={adminView} 
                 onChange={(e) => {
-                  sessionStorage.setItem('adminView', `${!adminView}`)
+                  sessionStorage.setItem('adminView', `${!adminView}`);
                   setAdminView(!adminView);
                 }}
               />

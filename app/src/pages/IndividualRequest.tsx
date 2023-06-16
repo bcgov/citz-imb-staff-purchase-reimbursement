@@ -4,13 +4,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Constants from "../constants/Constants";
 import { ReimbursementRequest } from "../interfaces/ReimbursementRequest";
-import { buttonStyles } from "../components/bcgov/ButtonStyles";
 import { useAuthService } from "../keycloak";
 import { IFile } from "../interfaces/IFile";
 import { Purchase } from "../interfaces/Purchase";
 import { Approval } from "../interfaces/Approval";
 import RequestForm from "../components/custom/forms/RequestForm";
-import LinkButton from "../components/bcgov/LinkButton";
+import BackButton from "../components/bcgov/BackButton";
+import { marginBlock } from "../constants/styles";
 
 /**
  * @description A page showing an individual reimbursement requests and all its fields.
@@ -86,10 +86,30 @@ const IndividualRequest = () => {
           setLocked(true);
         }
       }
-    } catch (e) {
-      console.warn('Record could not be retrieved.');
-      // Request was not a success. User didn't get a record back, so don't show the form.
-      setShowRecord(false);   
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)){
+        const status = e.response!.status;
+        switch(status){
+          case 401:
+            console.warn('User is unauthenticated. Redirecting to login.');
+            window.location.reload();
+            break;
+          case 403:
+            console.warn('User is not authorized to view record.');
+            // Request was not a success. User didn't get a record back, so don't show the form.
+            setShowRecord(false);
+            break;
+          case 404:
+            // Record doesn't exist
+            navigate(-1);
+            break;
+          default:
+            console.warn(e);
+            break;
+        }
+      } else {
+        console.warn(e);
+      }    
     }
   }, []);
 
@@ -152,8 +172,8 @@ const IndividualRequest = () => {
     }}/>
     : <>
         <h1>You do not have access to this record.</h1>
-        <p>If you think you are seeing this by mistake, contact your administrator.</p>
-        <LinkButton link="/" style={buttonStyles.secondary}>Back</LinkButton>
+        <p style={marginBlock}>If you think you are seeing this by mistake, contact your administrator.</p>
+        <BackButton/>
       </>
   );
 }

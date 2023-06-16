@@ -20,6 +20,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from "axios";
 import Constants from "../../../constants/Constants";
 import { useAuthService } from "../../../keycloak";
+import BackButton from "../../bcgov/BackButton";
 
 /**
  * @interface
@@ -135,14 +136,14 @@ const RequestForm = (props: RequestFormProps) => {
             <Grid container xs={12} sx={{ justifyContent: 'space-between', display: 'flex' }}>
               <Grid xs={12} sm={6}><h4>Request ID: {reimbursementRequest?._id || 'No request found'}</h4></Grid>
               <Grid xs={12} sm={5} alignItems='center' justifyContent={matches ? 'flex-end' : 'flex-start'} style={{  minWidth: '215px', display: 'flex' }}>
-                <ActionButton style={{ ...buttonStyles.secondary, marginTop: '0.75em' }} handler={() => {navigate(-1)}}>Back</ActionButton>
-                <ActionButton style={{ ...buttonStyles.primary, marginLeft: '1em', marginTop: '0.75em' }} handler={handleUpdate}>Update</ActionButton>
+                <BackButton/>
+                <ActionButton style={{ ...buttonStyles.primary, marginLeft: '1em' }} handler={handleUpdate}>Update</ActionButton>
                 { isAdmin 
                   ? <>
                       <IconButton
                         onClick={handleClick}
                         size="small"
-                        sx={{ ml: 2, margin: '0.75em 0 0 0' }}
+                        sx={{ ml: 2 }}
                         aria-controls={open ? 'account-menu' : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}

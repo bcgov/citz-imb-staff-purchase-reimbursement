@@ -109,6 +109,7 @@ export const getRequestsByIDIR = async (req: Request, res: Response) => {
     if (records.length === 0) {
       return res.status(404).send('No records found');
     }
+    
     // If records are found.
     if (records){
       return res.status(200).json(records);
