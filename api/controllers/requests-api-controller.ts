@@ -1,6 +1,6 @@
 import db from '../db/conn';
 import { Request, Response } from 'express';
-import { Collection, WithId, ObjectId } from 'mongodb';
+import { Collection, WithId, ObjectId, Filter } from 'mongodb';
 import RequestStates from '../constants/RequestStates';
 import { z } from 'zod';
 import { checkForCompleteRequest } from './../helpers/checkForCompleteRequest';
@@ -62,12 +62,21 @@ const minimalProjection = {
  * @returns {Response}    200 status with array of records or 404 if no records are found.
  */
 export const getAllRequests = async (req: Request, res: Response) => {
-  const { minimal } = req.query;
+  const { minimal, before, after } = req.query;
+  const latestPossibleDate = '3000-01-01';
+  const earliestPossibleDate = '1970-01-01';
+  // Query will filter out by date, but only if provided.
+  const findQuery: Filter<RequestRecord> = {
+    submissionDate: {
+      $gte: after as string || earliestPossibleDate,
+      $lt: before as string || latestPossibleDate
+    }
+  };
+
   try {
-    // TODO: Is there a more memory-efficient solution? Like only returning the first X records?
     const cursor = minimal === 'true'
-                  ? collection.find().sort({submissionDate: -1}).project(minimalProjection)
-                  : collection.find().sort({submissionDate: -1});
+                  ? collection.find(findQuery).sort({submissionDate: -1}).project(minimalProjection)
+                  : collection.find(findQuery).sort({submissionDate: -1});
     const records = await cursor.toArray();
     // If there are no records.
     if (records.length === 0) {

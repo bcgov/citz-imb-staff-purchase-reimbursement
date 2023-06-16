@@ -167,6 +167,18 @@ paths:
             type: boolean
             example: true 
           description: Boolean to determine if a minimal version of each document is returned.
+        - in: query
+          name: before
+          schema:
+            type: string
+            example: '2023-06-30'
+          description: The farthest future date from when records should be retrieved. Not inclusive.
+        - in: query
+          name: after
+          schema:
+            type: string
+            example: '2023-06-01'
+          description: The farthest past date from when records should be retrieved. Inclusive.
       responses:
         '200':
           description: OK
