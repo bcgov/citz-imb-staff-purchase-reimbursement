@@ -4,9 +4,9 @@ import axios from 'axios';
 import RequestsTable from '../components/custom/tables/RequestsTable';
 import { headerFont } from '../constants/fonts';
 import { useAuthService } from '../keycloak';
-import { useParams } from 'react-router-dom';
-import LinkButton from '../components/bcgov/LinkButton';
+import { useNavigate, useParams } from 'react-router-dom';
 import { buttonStyles } from '../components/bcgov/ButtonStyles';
+import ActionButton from '../components/bcgov/ActionButton';
 
 const UserRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -14,6 +14,7 @@ const UserRequests = () => {
   const { state: authState } = useAuthService();
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
   const { idir } = useParams();
+  const navigate = useNavigate();
 
   // Fires on page load.
   useEffect(() => {
@@ -60,7 +61,10 @@ const UserRequests = () => {
     return (<>
       <h1>You do not have permission to view this page.</h1>
       <p style={{ margin: '1em 0'}}>If you think you are seeing this by mistake, contact your administrator.</p>
-      <LinkButton link="/" style={buttonStyles.secondary}>Back</LinkButton>
+      <ActionButton handler={() => {
+        sessionStorage.removeItem('target-page'); // Otherwise navigating to / causes redirect if target is stored.
+        navigate('/');
+      }} style={buttonStyles.secondary}>Back</ActionButton>
     </>);
   } else
 

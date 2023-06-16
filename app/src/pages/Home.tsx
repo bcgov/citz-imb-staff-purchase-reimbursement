@@ -22,8 +22,8 @@ const Home = () => {
   // Fires on page load.
   useEffect(() => {
     const targetPage = sessionStorage.getItem('target-page');
+    sessionStorage.removeItem('target-page');
     if (targetPage && targetPage !== FRONTEND_URL){
-      sessionStorage.clear()
       navigate(targetPage);
     } else {
       getRequests();
@@ -81,7 +81,7 @@ const Home = () => {
               <Switch 
                 checked={adminView} 
                 onChange={(e) => {
-                  sessionStorage.setItem('adminView', `${!adminView}`)
+                  sessionStorage.setItem('adminView', `${!adminView}`);
                   setAdminView(!adminView);
                 }}
               />
