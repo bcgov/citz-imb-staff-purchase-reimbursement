@@ -11,6 +11,7 @@ import { Purchase } from "../interfaces/Purchase";
 import { Approval } from "../interfaces/Approval";
 import RequestForm from "../components/custom/forms/RequestForm";
 import ActionButton from "../components/bcgov/ActionButton";
+import BackButton from "../components/bcgov/BackButton";
 
 /**
  * @description A page showing an individual reimbursement requests and all its fields.
@@ -173,10 +174,7 @@ const IndividualRequest = () => {
     : <>
         <h1>You do not have access to this record.</h1>
         <p style={{ margin: '1em 0'}}>If you think you are seeing this by mistake, contact your administrator.</p>
-        <ActionButton handler={() => {
-          sessionStorage.removeItem('target-page'); // Otherwise navigating to / causes redirect if target is stored.
-          navigate('/');
-        }} style={buttonStyles.secondary}>Back</ActionButton>
+        <BackButton/>
       </>
   );
 }
