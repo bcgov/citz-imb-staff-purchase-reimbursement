@@ -5,9 +5,8 @@ import RequestsTable from '../components/custom/tables/RequestsTable';
 import { headerFont } from '../constants/fonts';
 import { useAuthService } from '../keycloak';
 import { useNavigate, useParams } from 'react-router-dom';
-import { buttonStyles } from '../components/bcgov/ButtonStyles';
-import ActionButton from '../components/bcgov/ActionButton';
 import BackButton from '../components/bcgov/BackButton';
+import { marginBlock } from '../constants/styles';
 
 const UserRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -61,7 +60,7 @@ const UserRequests = () => {
   if (!isAdmin){
     return (<>
       <h1>You do not have permission to view this page.</h1>
-      <p style={{ margin: '1em 0'}}>If you think you are seeing this by mistake, contact your administrator.</p>
+      <p style={marginBlock}>If you think you are seeing this by mistake, contact your administrator.</p>
       <BackButton/>
     </>);
   } else
