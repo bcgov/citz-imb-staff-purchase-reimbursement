@@ -112,6 +112,8 @@ const ApprovalTable = (props: ApprovalTableProps) => {
               { editable
                 ? <CustomTableCell sx={{ width: '80px' }}>
                     <Button
+                      aria-label='Remove approval'
+                      aria-description='Removes this record from the purchase request'
                       onClick={(e) => {
                         // TODO: Double check with user that they want to delete the entry
                         const tempApprovals = [...approvals];
@@ -135,6 +137,8 @@ const ApprovalTable = (props: ApprovalTableProps) => {
       </Table>
       { editable
         ? <Button 
+            aria-label='Add Approval'
+            aria-description='Adds a new approval to the request.'
             sx={{
               width: '100%',
               color: bcgov.links

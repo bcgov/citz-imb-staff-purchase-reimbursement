@@ -100,6 +100,8 @@ const PaginationControl = (props: PaginationControlProps) => {
       <Select
         defaultValue={30}
         size="small"
+        aria-label="Rows per page selector"
+        aria-description="Changes the rows displayed per page on the table."
         sx={{
           margin: '0 1em'
         }}
@@ -111,15 +113,31 @@ const PaginationControl = (props: PaginationControlProps) => {
         <MenuItem value={100}>100</MenuItem>
         <MenuItem value={1000}>1000</MenuItem>
       </Select>
-      <IconButton onClick={goToFirstPage} disabled={controlObject.currentPage === 1 || noRecords}><FirstPage/></IconButton>
-      <IconButton onClick={goToPreviousPage} disabled={controlObject.currentPage === 1 || noRecords}><NavigateBefore/></IconButton>
+      <IconButton 
+        onClick={goToFirstPage} 
+        disabled={controlObject.currentPage === 1 || noRecords}
+        aria-label="Go to first table page."
+      ><FirstPage/></IconButton>
+      <IconButton 
+        onClick={goToPreviousPage} 
+        disabled={controlObject.currentPage === 1 || noRecords}
+        aria-label="Go to previous table page."
+      ><NavigateBefore/></IconButton>
       {
         noRecords 
           ? <span style={{ margin: '0 1em' }}>{'0 records'}</span>
           : <span style={{ margin: '0 1em' }}>{`Record ${firstRecord} - ${lastRecord} of ${controlObject.totalRecords}`}</span>
       }
-      <IconButton onClick={goToNextPage} disabled={controlObject.currentPage === totalPages || noRecords}><NavigateNext/></IconButton>
-      <IconButton onClick={goToLastPage} disabled={controlObject.currentPage === totalPages || noRecords}><LastPage/></IconButton>
+      <IconButton 
+        onClick={goToNextPage} 
+        disabled={controlObject.currentPage === totalPages || noRecords}
+        aria-label="Go to next table page."
+      ><NavigateNext/></IconButton>
+      <IconButton 
+        onClick={goToLastPage} 
+        disabled={controlObject.currentPage === totalPages || noRecords}
+        aria-label="Go to last table page."
+      ><LastPage/></IconButton>
     </div>
   );
 }

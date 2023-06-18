@@ -28,7 +28,7 @@ const Login = () => {
       <p style={{
         margin: '2em'
       }}>To access this application, log in with your IDIR.</p>
-      <LinkButton link={`${BACKEND_URL}/oauth/login`} style={buttonStyles.primary}>Log In</LinkButton>
+      <LinkButton link={`${BACKEND_URL}/oauth/login`} style={buttonStyles.primary} ariaDescription='Log In'>Log In</LinkButton>
     </Paper>
   );
 }

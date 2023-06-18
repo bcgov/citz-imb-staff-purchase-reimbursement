@@ -10,12 +10,14 @@ import { ReactNode } from 'react';
  * @property {React.MouseEventHandler}  handler   - The function the button will execute.
  * @property {object}                   style     - The style applied to the button.
  * @property {boolean}                  disabled  - Optional: Whether the button should be in a disabled state.
+ * @property {string}                   ariaDescription - Optional: Text description of what button does.
  */
 interface ActionButtonProps {
   children: ReactNode,
   style: object,
   disabled?: boolean,
-  handler: React.MouseEventHandler
+  handler: React.MouseEventHandler,
+  ariaDescription?: string
 }
 
 /**
@@ -28,7 +30,8 @@ const ActionButton = (props: ActionButtonProps) => {
     children,
     style,
     disabled,
-    handler
+    handler,
+    ariaDescription
   } = props;
 
   return (
@@ -36,7 +39,9 @@ const ActionButton = (props: ActionButtonProps) => {
       variant='contained' 
       onClick={handler} 
       sx={style} 
-      disabled={disabled}>
+      disabled={disabled}
+      aria-description={ariaDescription}
+    >
         {children}
     </Button>
   );

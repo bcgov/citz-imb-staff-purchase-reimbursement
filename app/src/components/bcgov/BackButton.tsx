@@ -34,6 +34,8 @@ const BackButton = (props: BackButtonProps) => {
         sessionStorage.removeItem('target-page'); // Otherwise there can be strange affects with redirect.
         navigate(-1);
       }}
+      aria-label='Back Button'
+      aria-aria-description='A button that sends the user back one page.'
     >
       Back
     </Button>
