@@ -8,7 +8,7 @@ export enum RequestStates {
   COMPLETE,
   INPROGRESS,
   SUBMITTED,
-  __LENGTH
+  __LENGTH,
 }
 
 /**
@@ -17,7 +17,7 @@ export enum RequestStates {
  * @returns A string representation of the state enum.
  */
 export const convertStateToStatus = (state: RequestStates) => {
-  switch(state){
+  switch (state) {
     case RequestStates.DELETED:
       return 'Deleted';
     case RequestStates.INCOMPLETE:
@@ -31,4 +31,4 @@ export const convertStateToStatus = (state: RequestStates) => {
     default:
       return '';
   }
-}
+};

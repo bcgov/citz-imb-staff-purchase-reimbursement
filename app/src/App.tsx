@@ -1,16 +1,15 @@
-import './App.css'
-import NavigationBar from './components/bcgov/NavigationBar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import '@bcgov/bc-sans/css/BCSans.css';
-import { normalFont } from './constants/fonts';
-import Home from './pages/Home';
-import IndividualRequest from './pages/IndividualRequest'; 
 import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { KeycloakWrapper } from './keycloak';
-import { useAuthService } from './keycloak';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import '@bcgov/bc-sans/css/BCSans.css';
+import Home from './pages/Home';
+import IndividualRequest from './pages/IndividualRequest';
+import NavigationBar from './components/bcgov/NavigationBar';
+import { KeycloakWrapper, useAuthService } from './keycloak';
+import { normalFont } from './constants/fonts';
 import Login from './pages/Login';
 import UserRequests from './pages/UserRequests';
+import './App.css';
 
 /**
  * @returns Main element containing various providers and routes.
@@ -24,29 +23,31 @@ const App = () => {
     maxWidth: '1600px',
     width: '90%',
     margin: '2em auto',
-    paddingTop: '60px'
-  }
-  
+    paddingTop: '60px',
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <BrowserRouter>
-        <div style={{...normalFont}} className='App'>
+        <div style={{ ...normalFont }} className='App'>
           <NavigationBar />
           <KeycloakWrapper>
             <div style={container}>
-              { user
-              ? <Routes>
-                  <Route index element={<Home/>} />
-                  <Route path={'request/:id'} element={<IndividualRequest />}/>
-                  <Route path={'user/:idir'} element={<UserRequests />}/>
+              {user ? (
+                <Routes>
+                  <Route index element={<Home />} />
+                  <Route path='request/:id' element={<IndividualRequest />} />
+                  <Route path='user/:idir' element={<UserRequests />} />
                 </Routes>
-              : <Login/> }
+              ) : (
+                <Login />
+              )}
             </div>
           </KeycloakWrapper>
         </div>
       </BrowserRouter>
     </LocalizationProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;

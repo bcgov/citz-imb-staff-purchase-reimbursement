@@ -1,5 +1,5 @@
-import { bcgov } from "../../constants/colours";
-import { normalFont } from "../../constants/fonts";
+import { bcgov } from '../../constants/colours';
+import { normalFont } from '../../constants/fonts';
 
 /**
  * @constant
@@ -19,9 +19,9 @@ const commonButtonStyle = {
 
   '&:hover': {
     background: bcgov.links,
-    color: bcgov.white
-  }
-}
+    color: bcgov.white,
+  },
+};
 
 /**
  * @constant
@@ -29,29 +29,29 @@ const commonButtonStyle = {
  */
 export const buttonStyles = {
   primary: {
-    ...commonButtonStyle,      
+    ...commonButtonStyle,
     backgroundColor: bcgov.primary,
     color: bcgov.white,
-  
+
     disabled: {
       ...commonButtonStyle,
-      backgroundColor: bcgov.white
-    }
+      backgroundColor: bcgov.white,
+    },
   },
   secondary: {
-    ...commonButtonStyle,       
+    ...commonButtonStyle,
     backgroundColor: bcgov.white,
     border: `1px solid ${bcgov.links}`,
     color: bcgov.text,
   },
   smallSecondary: {
-    ...commonButtonStyle,       
+    ...commonButtonStyle,
     backgroundColor: bcgov.white,
     border: `1px solid ${bcgov.links}`,
     color: bcgov.text,
     width: '1em',
     height: '2em',
     padding: '0.25em',
-    margin: '0 0.5em'
-  }
+    margin: '0 0.5em',
+  },
 };

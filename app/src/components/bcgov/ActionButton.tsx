@@ -1,7 +1,5 @@
-import {
-  Button
-} from '@mui/material';
-import { ReactNode } from 'react';
+import { Button } from '@mui/material';
+import { ReactNode, MouseEventHandler } from 'react';
 
 /**
  * @interface
@@ -12,10 +10,10 @@ import { ReactNode } from 'react';
  * @property {boolean}                  disabled  - Optional: Whether the button should be in a disabled state.
  */
 interface ActionButtonProps {
-  children: ReactNode,
-  style: object,
-  disabled?: boolean,
-  handler: React.MouseEventHandler
+  children: ReactNode;
+  style: object;
+  disabled?: boolean;
+  handler: MouseEventHandler;
 }
 
 /**
@@ -24,22 +22,13 @@ interface ActionButtonProps {
  * @returns A React Button element.
  */
 const ActionButton = (props: ActionButtonProps) => {
-  const {
-    children,
-    style,
-    disabled,
-    handler
-  } = props;
+  const { children, style, disabled, handler } = props;
 
   return (
-    <Button 
-      variant='contained' 
-      onClick={handler} 
-      sx={style} 
-      disabled={disabled}>
-        {children}
+    <Button variant='contained' onClick={handler} sx={style} disabled={disabled}>
+      {children}
     </Button>
   );
-}
+};
 
 export default ActionButton;

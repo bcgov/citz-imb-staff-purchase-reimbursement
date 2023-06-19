@@ -1,6 +1,6 @@
-import { SetStateAction, Dispatch } from "react";
-import { IconButton, MenuItem, Select } from "@mui/material";
-import { FirstPage, LastPage, NavigateBefore, NavigateNext } from "@mui/icons-material";
+import { SetStateAction, Dispatch } from 'react';
+import { IconButton, MenuItem, Select } from '@mui/material';
+import { FirstPage, LastPage, NavigateBefore, NavigateNext } from '@mui/icons-material';
 
 /**
  * @interface
@@ -9,8 +9,8 @@ import { FirstPage, LastPage, NavigateBefore, NavigateNext } from "@mui/icons-ma
  * @property {Dispatch<SetStateAction<PaginationControlObject>>} setControlObject The setter for controlObject.
  */
 interface PaginationControlProps {
-  controlObject: PaginationControlObject
-  setControlObject: Dispatch<SetStateAction<PaginationControlObject>>
+  controlObject: PaginationControlObject;
+  setControlObject: Dispatch<SetStateAction<PaginationControlObject>>;
 }
 
 /**
@@ -21,9 +21,9 @@ interface PaginationControlProps {
  * @property {number} rowsPerPage The number of rows displayed on each page.
  */
 export interface PaginationControlObject {
-  currentPage: number,
-  totalRecords: number,
-  rowsPerPage: number
+  currentPage: number;
+  totalRecords: number;
+  rowsPerPage: number;
 }
 
 /**
@@ -32,76 +32,81 @@ export interface PaginationControlObject {
  * @returns {PaginationControl} A React component.
  */
 const PaginationControl = (props: PaginationControlProps) => {
-  const {
-    controlObject,
-    setControlObject
-  } = props;
+  const { controlObject, setControlObject } = props;
   const totalPages = Math.ceil(controlObject.totalRecords / controlObject.rowsPerPage); // Have to round up
-  const noRecords  = controlObject.totalRecords === 0 ? true : false;
+  const noRecords = controlObject.totalRecords === 0;
 
   // First record to show is: the number of rows per page * the previous page number, then the next record (+1)
   // or first record if on the first page
-  const firstRecord = controlObject.currentPage === 1 ? 1 : controlObject.rowsPerPage * (controlObject.currentPage - 1) + 1;
+  const firstRecord =
+    controlObject.currentPage === 1
+      ? 1
+      : controlObject.rowsPerPage * (controlObject.currentPage - 1) + 1;
   // Last record to show is the first record + the number of rows per page - 1
   // or the total number of records if on the last page
-  const lastRecord = controlObject.currentPage === totalPages ? controlObject.totalRecords : firstRecord + controlObject.rowsPerPage - 1;
+  const lastRecord =
+    controlObject.currentPage === totalPages
+      ? controlObject.totalRecords
+      : firstRecord + controlObject.rowsPerPage - 1;
 
   // Sets the current page to 1
-  const goToFirstPage = (e: any) => {
+  const goToFirstPage = () => {
     setControlObject({
       ...controlObject,
-      currentPage: 1
+      currentPage: 1,
     });
-  }
+  };
 
   // Sets the current page to the previous page
-  const goToPreviousPage = (e: any) => {
+  const goToPreviousPage = () => {
     setControlObject({
       ...controlObject,
-      currentPage: controlObject.currentPage - 1
+      currentPage: controlObject.currentPage - 1,
     });
-  }
+  };
 
   // Sets the current page to the next page
-  const goToNextPage = (e: any) => {
+  const goToNextPage = () => {
     setControlObject({
       ...controlObject,
-      currentPage: controlObject.currentPage + 1
+      currentPage: controlObject.currentPage + 1,
     });
-  }
+  };
 
   // Sets the current page to the last page
-  const goToLastPage = (e: any) => {
+  const goToLastPage = () => {
     setControlObject({
       ...controlObject,
-      currentPage: totalPages
+      currentPage: totalPages,
     });
-  }
+  };
 
   // Updates the number of rows displayed per page
   const updateRowsPerPage = (e: any) => {
     setControlObject({
       ...controlObject,
-      rowsPerPage: e.target.value
+      rowsPerPage: e.target.value,
     });
-  }
+  };
 
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      width: 'fit-content',
-      position: 'relative',
-      float: 'right',
-      alignItems: 'center',
-      marginTop: '0.5em'
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        width: 'fit-content',
+        position: 'relative',
+        float: 'right',
+        alignItems: 'center',
+        marginTop: '0.5em',
+      }}
+    >
       <span>Rows per page:</span>
       <Select
         defaultValue={30}
-        size="small"
+        size='small'
         sx={{
-          margin: '0 1em'
+          margin: '0 1em',
         }}
         onChange={updateRowsPerPage}
       >
@@ -111,17 +116,36 @@ const PaginationControl = (props: PaginationControlProps) => {
         <MenuItem value={100}>100</MenuItem>
         <MenuItem value={1000}>1000</MenuItem>
       </Select>
-      <IconButton onClick={goToFirstPage} disabled={controlObject.currentPage === 1 || noRecords}><FirstPage/></IconButton>
-      <IconButton onClick={goToPreviousPage} disabled={controlObject.currentPage === 1 || noRecords}><NavigateBefore/></IconButton>
-      {
-        noRecords 
-          ? <span style={{ margin: '0 1em' }}>{'0 records'}</span>
-          : <span style={{ margin: '0 1em' }}>{`Record ${firstRecord} - ${lastRecord} of ${controlObject.totalRecords}`}</span>
-      }
-      <IconButton onClick={goToNextPage} disabled={controlObject.currentPage === totalPages || noRecords}><NavigateNext/></IconButton>
-      <IconButton onClick={goToLastPage} disabled={controlObject.currentPage === totalPages || noRecords}><LastPage/></IconButton>
+      <IconButton onClick={goToFirstPage} disabled={controlObject.currentPage === 1 || noRecords}>
+        <FirstPage />
+      </IconButton>
+      <IconButton
+        onClick={goToPreviousPage}
+        disabled={controlObject.currentPage === 1 || noRecords}
+      >
+        <NavigateBefore />
+      </IconButton>
+      {noRecords ? (
+        <span style={{ margin: '0 1em' }}>0 records</span>
+      ) : (
+        <span
+          style={{ margin: '0 1em' }}
+        >{`Record ${firstRecord} - ${lastRecord} of ${controlObject.totalRecords}`}</span>
+      )}
+      <IconButton
+        onClick={goToNextPage}
+        disabled={controlObject.currentPage === totalPages || noRecords}
+      >
+        <NavigateNext />
+      </IconButton>
+      <IconButton
+        onClick={goToLastPage}
+        disabled={controlObject.currentPage === totalPages || noRecords}
+      >
+        <LastPage />
+      </IconButton>
     </div>
   );
-}
+};
 
 export default PaginationControl;

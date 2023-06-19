@@ -1,7 +1,7 @@
-import { Button, ButtonGroup, TextField, InputAdornment } from "@mui/material";
-import { buttonStyles } from "../../bcgov/ButtonStyles";
-import React from "react";
-import { bcgov } from "../../../constants/colours";
+import { Button, ButtonGroup, TextField, InputAdornment } from '@mui/material';
+import { buttonStyles } from '../../bcgov/ButtonStyles';
+import React from 'react';
+import { bcgov } from '../../../constants/colours';
 
 /**
  * @description Defines the properties for the Currency Comparer component.
@@ -12,10 +12,10 @@ import { bcgov } from "../../../constants/colours";
  * @property {(e: any) => void}     onChange        Function called when value of the component changes.
  */
 interface CurrencyComparerProps {
-  sx: React.CSSProperties,
-  value: string,
-  changeSymbol: (e: any) => void,
-  onChange: (e: any) => void,
+  sx: React.CSSProperties;
+  value: string;
+  changeSymbol: (e: any) => void;
+  onChange: (e: any) => void;
 }
 
 /**
@@ -24,7 +24,7 @@ interface CurrencyComparerProps {
  */
 export enum Symbols {
   GT, // Greater than
-  LT // Less than
+  LT, // Less than
 }
 
 /**
@@ -36,49 +36,55 @@ const CurrencyComparer = (props: CurrencyComparerProps) => {
   const { sx, value, changeSymbol, onChange } = props;
 
   return (
-  <>
-    <ButtonGroup
-      sx={{
-        ...sx
-      }}
-    >
-      <Button
+    <>
+      <ButtonGroup
         sx={{
-          ...buttonStyles.secondary,
-          borderTopRightRadius: 0,
-          borderBottomRightRadius: 0,
-          borderColor: 'lightgray',
-          padding: 0,
-          height: '2.2em'
+          ...sx,
         }}
-        onClick={changeSymbol}
-      ><div id='symbol' style={{ color: bcgov.component }}>{'>='}</div></Button>
-      <TextField 
-        variant='standard'
-        id='costInput'
-        value={value}
-        onChange={(e) => {
-          const regex = /^[0-9\.]*$/; // Any combo of numbers and decimals.
-          if (regex.test(e.target.value)){
-            onChange(e);
-          }
-        }}
-        InputProps={{
-          startAdornment: <InputAdornment position="start">$</InputAdornment>,
-          sx: {
-            color: bcgov.text
-          }
-        }}
-        sx={{
-          borderTopLeftRadius: 0,
-          borderBottomLeftRadius: 0,
-          height: '2em',
-          width: '5em',
-          paddingLeft: '0.25em'
-        }}
-      />
-    </ButtonGroup>
-  </>);
-}
+      >
+        <Button
+          sx={{
+            ...buttonStyles.secondary,
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+            borderColor: 'lightgray',
+            padding: 0,
+            height: '2.2em',
+          }}
+          onClick={changeSymbol}
+        >
+          <div id='symbol' style={{ color: bcgov.component }}>
+            {'>='}
+          </div>
+        </Button>
+        <TextField
+          variant='standard'
+          id='costInput'
+          value={value}
+          onChange={(e) => {
+            // eslint-disable-next-line no-useless-escape
+            const regex = /^[0-9\.]*$/; // Any combo of numbers and decimals.
+            if (regex.test(e.target.value)) {
+              onChange(e);
+            }
+          }}
+          InputProps={{
+            startAdornment: <InputAdornment position='start'>$</InputAdornment>,
+            sx: {
+              color: bcgov.text,
+            },
+          }}
+          sx={{
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            height: '2em',
+            width: '5em',
+            paddingLeft: '0.25em',
+          }}
+        />
+      </ButtonGroup>
+    </>
+  );
+};
 
 export default CurrencyComparer;

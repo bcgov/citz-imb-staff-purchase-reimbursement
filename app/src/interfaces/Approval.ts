@@ -1,4 +1,4 @@
-import { IFile } from "./IFile";
+import { IFile } from './IFile';
 
 /**
  * @interface
@@ -7,6 +7,6 @@ import { IFile } from "./IFile";
  * @property {IFile}  fileObj       - Optional: The file with proof of approval.
  */
 export interface Approval {
-  approvalDate: string,
-  fileObj?: IFile
+  approvalDate: string;
+  fileObj?: IFile;
 }

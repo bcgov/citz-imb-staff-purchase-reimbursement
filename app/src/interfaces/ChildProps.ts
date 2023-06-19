@@ -7,6 +7,6 @@ import { ReactNode, CSSProperties } from 'react';
  * @property {CSSProperties}  sx        - Optional: A style object with styling for the element using this prop.
  */
 export interface ChildProps {
-  children?: ReactNode,
-  sx?: CSSProperties
+  children?: ReactNode;
+  sx?: CSSProperties;
 }

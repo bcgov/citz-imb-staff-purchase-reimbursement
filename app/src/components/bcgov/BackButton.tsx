@@ -1,6 +1,4 @@
-import {
-  Button
-} from '@mui/material';
+import { Button } from '@mui/material';
 import { buttonStyles } from './ButtonStyles';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
  * @property {boolean} disabled  - Optional: Whether the button should be in a disabled state.
  */
 interface BackButtonProps {
-  disabled?: boolean,
+  disabled?: boolean;
 }
 
 /**
@@ -19,15 +17,13 @@ interface BackButtonProps {
  * @returns A React Button element.
  */
 const BackButton = (props: BackButtonProps) => {
-  const {
-    disabled,    
-  } = props;
+  const { disabled } = props;
 
   const navigate = useNavigate();
 
   return (
-    <Button 
-      variant='contained' 
+    <Button
+      variant='contained'
       disabled={disabled}
       sx={buttonStyles.secondary}
       onClick={() => {
@@ -38,6 +34,6 @@ const BackButton = (props: BackButtonProps) => {
       Back
     </Button>
   );
-}
+};
 
 export default BackButton;

@@ -1,6 +1,4 @@
-import {
-  Button
-} from '@mui/material';
+import { Button } from '@mui/material';
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -13,10 +11,10 @@ import { Link } from 'react-router-dom';
  * @property {boolean}    disabled  - Optional: Whether the button should be in a disabled state.
  */
 interface LinkButtonProps {
-  children: ReactNode,
-  link: string,
-  style: object,
-  disabled?: boolean
+  children: ReactNode;
+  link: string;
+  style: object;
+  disabled?: boolean;
 }
 
 /**
@@ -25,14 +23,13 @@ interface LinkButtonProps {
  * @returns A React Button element.
  */
 const LinkButton = (props: LinkButtonProps) => {
-  const {
-    children,
-    link,
-    style,
-    disabled
-  } = props;
+  const { children, link, style, disabled } = props;
 
-  return <Button variant='contained' component={Link} to={link} sx={style} disabled={disabled}>{children}</Button>;
-}
+  return (
+    <Button variant='contained' component={Link} to={link} sx={style} disabled={disabled}>
+      {children}
+    </Button>
+  );
+};
 
 export default LinkButton;

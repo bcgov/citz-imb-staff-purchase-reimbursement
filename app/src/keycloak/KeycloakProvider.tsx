@@ -24,6 +24,7 @@ const KeycloakProvider = (props: IKeycloakProvider) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
+    // eslint-disable-next-line react/jsx-no-constructed-context-values
     <AuthContext.Provider value={{ state, dispatch } as unknown as AuthStateWithDispatch}>
       {children}
     </AuthContext.Provider>

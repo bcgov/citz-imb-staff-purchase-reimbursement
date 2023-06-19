@@ -13,7 +13,7 @@ const KeycloakWrapper = (props: IKeycloakWrapper) => {
   useEffect(() => {
     // Get the current URL and its search parameters
     const url = new URL(window.location.href);
-    const searchParams = url.searchParams;
+    const { searchParams } = url;
     const token = searchParams.get('token');
 
     if (token) {
