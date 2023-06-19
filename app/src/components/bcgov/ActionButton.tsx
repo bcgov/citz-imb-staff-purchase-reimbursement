@@ -40,6 +40,8 @@ const ActionButton = (props: ActionButtonProps) => {
       onClick={handler} 
       sx={style} 
       disabled={disabled}
+      tabIndex={0}
+      aria-label='Executes action noted in description.'
       aria-description={ariaDescription}
     >
         {children}

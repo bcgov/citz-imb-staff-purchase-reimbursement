@@ -36,6 +36,7 @@ const BackButton = (props: BackButtonProps) => {
       }}
       aria-label='Back Button'
       aria-aria-description='A button that sends the user back one page.'
+      tabIndex={0}
     >
       Back
     </Button>

@@ -41,7 +41,9 @@ const LinkButton = (props: LinkButtonProps) => {
     to={link} 
     sx={style} 
     disabled={disabled}
+    aria-label='Follows link noted in description.'
     aria-description={ariaDescription}
+    tabIndex={0}
     >{children}</Button>;
 }
 

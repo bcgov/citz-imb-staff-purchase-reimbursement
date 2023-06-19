@@ -62,7 +62,7 @@ const SortIcon = (props: SortIconProps) => {
 const SortButton = (props: SortButtonProps) => {
   const { id, currentValue, onChange } = props;
   return (
-    <IconButton id={id} onClick={onChange} aria-description={`Sorts the ${id} field.`}>
+    <IconButton id={id} onClick={onChange} aria-label={`Sorts the ${id} field.`}>
       <SortIcon value={currentValue}/>
     </IconButton>
   );
