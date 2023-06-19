@@ -56,6 +56,7 @@ const NavigationBar = () => {
         </a>
         <h1 
           onClick={() => {
+            sessionStorage.removeItem('target-page');
             navigate('/');
           }} 
           style={{ ...headerTextStyle, fontSize: matches ? '30px' : '18px', cursor: 'pointer' }}

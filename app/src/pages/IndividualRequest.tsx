@@ -145,6 +145,7 @@ const IndividualRequest = () => {
       }
       let response = await axios(axiosReqConfig);
       if (response.status === 200) {
+        sessionStorage.removeItem('target-page');
         // Return to home page
         navigate(-1);
       }
