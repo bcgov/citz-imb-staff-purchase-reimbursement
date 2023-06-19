@@ -10,4 +10,4 @@ import Constants from '../constants/Constants';
 export const swaggerRedirect = async (req: Request, res: Response) => {
   const { BACKEND_URL } = Constants;
   return res.redirect(`${BACKEND_URL}/api/docs`);
-}
+};

@@ -1,7 +1,8 @@
+/* eslint-disable camelcase */
 import axios from 'axios';
 import qs from 'qs';
-
 import configuration from './configuration';
+
 const {
   SSO_CLIENT_ID,
   SSO_CLIENT_SECRET,

@@ -7,9 +7,8 @@
  * @property {string} size - Optional: The size of the file in bytes.
  */
 export interface IFile {
-  file?: string,
-  name?: string,
-  date?: string,
-  size?: number
+  file?: string;
+  name?: string;
+  date?: string;
+  size?: number;
 }
-
