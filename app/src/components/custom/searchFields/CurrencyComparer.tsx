@@ -51,6 +51,8 @@ const CurrencyComparer = (props: CurrencyComparerProps) => {
             padding: 0,
             height: '2.2em',
           }}
+          aria-label='Change cost filter direction'
+          aria-description='Changes the filter to look for greater or equal to versus less or equal to the value.'
           onClick={changeSymbol}
         >
           <div id='symbol' style={{ color: bcgov.component }}>
@@ -61,6 +63,8 @@ const CurrencyComparer = (props: CurrencyComparerProps) => {
           variant='standard'
           id='costInput'
           value={value}
+          name='costFilterInput'
+          aria-label='Cost Filter Input'
           onChange={(e) => {
             // eslint-disable-next-line no-useless-escape
             const regex = /^[0-9\.]*$/; // Any combo of numbers and decimals.

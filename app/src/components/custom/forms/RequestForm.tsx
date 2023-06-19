@@ -112,6 +112,7 @@ const RequestForm = (props: RequestFormProps) => {
       };
       const response = await axios(axiosReqConfig);
       if (response.status === 200) {
+        sessionStorage.removeItem('target-page');
         // Return to home page
         navigate(-1);
       }
@@ -158,6 +159,7 @@ const RequestForm = (props: RequestFormProps) => {
                 <ActionButton
                   style={{ ...buttonStyles.primary, marginLeft: '1em' }}
                   handler={handleUpdate}
+                  ariaDescription='Updates the record with the info currently displayed.'
                 >
                   Update
                 </ActionButton>
@@ -170,6 +172,7 @@ const RequestForm = (props: RequestFormProps) => {
                       aria-controls={open ? 'account-menu' : undefined}
                       aria-haspopup='true'
                       aria-expanded={open ? 'true' : undefined}
+                      aria-label='More Options'
                     >
                       <MoreVertIcon fontSize='large' />
                     </IconButton>

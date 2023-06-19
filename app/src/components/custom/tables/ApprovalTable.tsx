@@ -86,8 +86,8 @@ const ApprovalTable = (props: ApprovalTableProps) => {
                 backgroundColor: index % 2 === 0 ? bcgov.white : bcgov.backgroundSecondary,
               }}
             >
-              <CustomTableCell sx={{ width: '40px' }}>{index + 1}</CustomTableCell>
-              <CustomTableCell sx={{ width: '150px' }}>
+              <CustomTableCell sx={{ width: '2em' }}>{index + 1}</CustomTableCell>
+              <CustomTableCell sx={{ width: '12em' }}>
                 {!editable ? (
                   new Date(approval.approvalDate || Date.now()).toLocaleDateString()
                 ) : (
@@ -110,8 +110,10 @@ const ApprovalTable = (props: ApprovalTableProps) => {
                 />
               </CustomTableCell>
               {editable ? (
-                <CustomTableCell sx={{ width: '80px' }}>
+                <CustomTableCell sx={{ width: '10em' }}>
                   <Button
+                    aria-label='Remove approval'
+                    aria-description='Removes this record from the purchase request'
                     onClick={() => {
                       // TODO: Double check with user that they want to delete the entry
                       const tempApprovals = [...approvals];
@@ -138,6 +140,8 @@ const ApprovalTable = (props: ApprovalTableProps) => {
       </Table>
       {editable ? (
         <Button
+          aria-label='Add Approval'
+          aria-description='Adds a new approval to the request.'
           sx={{
             width: '100%',
             color: bcgov.links,

@@ -478,6 +478,9 @@ const RequestsTable = (props: RequestTableProps) => {
                 <TextField
                   id='requestor'
                   variant='standard'
+                  name='requestor'
+                  aria-label='Requestor Filter Field'
+                  aria-description='Enter text here to filter the table data.'
                   sx={{
                     ...filterStyle,
                     width: '90%',
@@ -506,6 +509,9 @@ const RequestsTable = (props: RequestTableProps) => {
                 <TextField
                   id='suppliers'
                   variant='standard'
+                  name='suppliers'
+                  aria-label='Suppliers Filter Field'
+                  aria-description='Enter text here to filter the table data.'
                   sx={{
                     ...filterStyle,
                     width: '90%',
@@ -551,6 +557,8 @@ const RequestsTable = (props: RequestTableProps) => {
                   placeholder='Select Range'
                   cleanable={false}
                   showOneCalendar
+                  aria-label='Submission Date Filter Field'
+                  aria-description='Select this element to choose dates for filtering.'
                   // DateRangePicker must take an array of exactly two dates.
                   value={[
                     new Date(dataManipulator.submissionDate.filter.startDate),
@@ -604,6 +612,9 @@ const RequestsTable = (props: RequestTableProps) => {
                   multiple
                   variant='standard'
                   value={dataManipulator.status.filter}
+                  name='statusFilter'
+                  aria-label='Status Filter Field'
+                  aria-description='Select options here to filter the table data.'
                   onChange={updateStatusFilter}
                   renderValue={(selected) => {
                     if (selected.length === selectItems.length) {
@@ -622,7 +633,7 @@ const RequestsTable = (props: RequestTableProps) => {
                       return;
                     }
                     return (
-                      <MenuItem key={name} value={name}>
+                      <MenuItem key={name} value={name} aria-label={`Status ${name.toString()}`}>
                         <Checkbox checked={dataManipulator.status.filter.indexOf(name) > -1} />
                         <ListItemText primary={convertStateToStatus(name)} />
                       </MenuItem>
@@ -665,7 +676,11 @@ const RequestsTable = (props: RequestTableProps) => {
                   </CustomTableCell>
                   <CustomTableCell>{convertStateToStatus(row.state)}</CustomTableCell>
                   <CustomTableCell>
-                    <LinkButton link={`/request/${row._id}`} style={buttonStyles.primary}>
+                    <LinkButton
+                      link={`/request/${row._id}`}
+                      style={buttonStyles.primary}
+                      ariaDescription='Goes to specific page for this request.'
+                    >
                       More
                     </LinkButton>
                   </CustomTableCell>

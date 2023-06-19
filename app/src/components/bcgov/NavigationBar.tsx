@@ -47,7 +47,7 @@ const NavigationBar = () => {
   const matches = useMediaQuery(theme.breakpoints.up('md'));
 
   return (
-    <header style={headerStyle}>
+    <header style={headerStyle} aria-label='The site navigation header.'>
       <div style={bannerStyle}>
         <a href='https://gov.bc.ca'>
           <img
@@ -58,7 +58,12 @@ const NavigationBar = () => {
             }}
           />
         </a>
-        <Link to='/' style={{ textDecoration: 'none', color: bcgov.white }}>
+        <Link
+          to='/'
+          style={{ textDecoration: 'none', color: bcgov.white }}
+          aria-label='Staff Purchase Reimbursement'
+          aria-description='Sends the user back to the main page when clicked.'
+        >
           <h1
             style={{ ...headerTextStyle, fontSize: matches ? '30px' : '18px', cursor: 'pointer' }}
           >
