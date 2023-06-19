@@ -28,10 +28,12 @@ import { SortState } from '../searchFields/SortButton';
 import { FilterAlt } from '@mui/icons-material';
 import SortButton from '../searchFields/SortButton';
 import PaginationControl, { PaginationControlObject } from './PaginationControl';
+import { ReactNode } from 'react';
 
 // Date Picker 
 import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.css';
+import { dateRanges } from '../../../utils/dateRanges';
 
 /**
  * @interface
@@ -481,6 +483,7 @@ const RequestsTable = (props: RequestTableProps) => {
                   ...filterStyle,
                   color: bcgov.text
                 }}
+                ranges={dateRanges}
                 onClean={(e) => {
                   if (e){
                     let tempManipulator = { ...dataManipulator };
