@@ -103,6 +103,7 @@ const RequestForm = (props: RequestFormProps) => {
       }
       let response = await axios(axiosReqConfig);
       if (response.status === 200) {
+        sessionStorage.removeItem('target-page');
         // Return to home page
         navigate(-1);
       }
@@ -137,7 +138,11 @@ const RequestForm = (props: RequestFormProps) => {
               <Grid xs={12} sm={6}><h4>Request ID: {reimbursementRequest?._id || 'No request found'}</h4></Grid>
               <Grid xs={12} sm={5} alignItems='center' justifyContent={matches ? 'flex-end' : 'flex-start'} style={{  minWidth: '215px', display: 'flex' }}>
                 <BackButton/>
-                <ActionButton style={{ ...buttonStyles.primary, marginLeft: '1em' }} handler={handleUpdate}>Update</ActionButton>
+                <ActionButton 
+                  style={{ ...buttonStyles.primary, marginLeft: '1em' }} 
+                  handler={handleUpdate}
+                  ariaDescription='Updates the record with the info currently displayed.'
+                >Update</ActionButton>
                 { isAdmin 
                   ? <>
                       <IconButton
@@ -147,6 +152,7 @@ const RequestForm = (props: RequestFormProps) => {
                         aria-controls={open ? 'account-menu' : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
+                        aria-label='More Options'
                       >
                         <MoreVertIcon fontSize="large"/>
                       </IconButton>
@@ -227,10 +233,10 @@ const RequestForm = (props: RequestFormProps) => {
             <Grid xs={12} sm={3}>
               <FormControl sx={formControlStyle}>
                 <FormLabel htmlFor='submissionDate'>Submission Date</FormLabel>
-                  <DatePicker
-                    value={dayjs(reimbursementRequest?.submissionDate)}
-                    disabled={true}
-                  />
+                <DatePicker
+                  value={dayjs(reimbursementRequest?.submissionDate)}
+                  disabled={true}
+                />
               </FormControl>
             </Grid>
             <Grid xs={12} sm={3}>

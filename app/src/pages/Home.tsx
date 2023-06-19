@@ -80,6 +80,8 @@ const Home = () => {
               <span style={headerFont}>Admin View</span>
               <Switch 
                 checked={adminView} 
+                aria-label='Admin View Switch'
+                aria-description='Switches the view from admin to user perspectives.'
                 onChange={(e) => {
                   sessionStorage.setItem('adminView', `${!adminView}`);
                   setAdminView(!adminView);

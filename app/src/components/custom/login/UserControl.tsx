@@ -99,7 +99,11 @@ const UserControl = () => {
                       aria-labelledby="composition-button"
                       onKeyDown={handleListKeyDown}
                     >
-                      <MenuItem onClick={() => {window.location.href = getLogoutURL();}} >Logout</MenuItem>
+                      <MenuItem 
+                        onClick={() => {window.location.href = getLogoutURL();}} 
+                        aria-label='Logout'
+                        aria-aria-description='Logs the user out of their account.'
+                      >Logout</MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
@@ -117,6 +121,8 @@ const UserControl = () => {
             aria-controls={open ? 'composition-menu' : undefined}
             aria-expanded={open ? 'true' : undefined}
             aria-haspopup="true"
+            aria-description='Proceeds to login page'
+            aria-label='Log In'
             sx={{...buttonStyles.secondary}}
             onClick={() => {window.location.href = getLoginURL();}}
           >

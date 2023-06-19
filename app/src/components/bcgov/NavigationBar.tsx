@@ -47,16 +47,22 @@ const NavigationBar = () => {
   const navigate = useNavigate();
 
   return (
-    <header style={headerStyle}>
+    <header style={headerStyle} aria-label="The site navigation header.">
       <div style={bannerStyle}>
         <a href="https://gov.bc.ca">
           <img src="/logo-banner.svg" alt="Go to the Government of British Columbia website" style={{
             height: '45px'
           }}/>
         </a>
-        <h1 onClick={() => {
-          navigate('/');
-        }} style={{ ...headerTextStyle, fontSize: matches ? '30px' : '18px', cursor: 'pointer' }}>Staff Purchase Reimbursement</h1>
+        <h1 
+          onClick={() => {
+            sessionStorage.removeItem('target-page');
+            navigate('/');
+          }} 
+          style={{ ...headerTextStyle, fontSize: matches ? '30px' : '18px', cursor: 'pointer' }}
+          aria-label="Staff Purchase Reimbursement"
+          aria-description="Sends the user back to the main page when clicked."
+        >Staff Purchase Reimbursement</h1>
       </div>
       <div
       style={{
