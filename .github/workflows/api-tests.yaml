@@ -42,6 +42,7 @@ jobs:
           echo "MONGO_PASSWORD=purchase-admin" >> .env
           echo "MONGO_USERNAME=purchase-admin" >> .env
           echo "MONGO_DATABASE=purchase-db" >> .env
+          echo "MONGO_SERVICE=mongo" >> .env
           echo "ENVIRONMENT=local" >> .env
           echo "FRONTEND_PORT=8080" >> .env
 
