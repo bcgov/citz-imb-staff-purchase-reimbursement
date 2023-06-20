@@ -1,4 +1,4 @@
-import { 
+import {
   Button,
   ClickAwayListener,
   Grow,
@@ -30,10 +30,7 @@ const UserControl = () => {
 
   // Closes dropdown when item selected.
   const handleClose = (event: Event | React.SyntheticEvent) => {
-    if (
-      anchorRef.current &&
-      anchorRef.current.contains(event.target as HTMLElement)
-    ) {
+    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
       return;
     }
 
@@ -48,7 +45,7 @@ const UserControl = () => {
     } else if (event.key === 'Escape') {
       setOpen(false);
     }
-  }
+  };
 
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
@@ -62,24 +59,24 @@ const UserControl = () => {
 
   if (user) {
     return (
-      <Stack direction="row" spacing={2}>
+      <Stack direction='row' spacing={2}>
         <div>
           <Button
             ref={anchorRef}
-            id="composition-button"
+            id='composition-button'
             aria-controls={open ? 'composition-menu' : undefined}
             aria-expanded={open ? 'true' : undefined}
-            aria-haspopup="true"
-            sx={{...buttonStyles.secondary}}
+            aria-haspopup='true'
+            sx={{ ...buttonStyles.secondary }}
             onClick={handleToggle}
           >
-            { `${user.given_name} ${user.family_name}`}
+            {`${user.given_name} ${user.family_name}`}
           </Button>
           <Popper
             open={open}
             anchorEl={anchorRef.current}
             role={undefined}
-            placement="bottom-start"
+            placement='bottom-start'
             transition
             disablePortal
           >
@@ -87,23 +84,26 @@ const UserControl = () => {
               <Grow
                 {...TransitionProps}
                 style={{
-                  transformOrigin:
-                    placement === 'bottom-start' ? 'left top' : 'left bottom',
+                  transformOrigin: placement === 'bottom-start' ? 'left top' : 'left bottom',
                 }}
               >
                 <Paper>
                   <ClickAwayListener onClickAway={handleClose}>
                     <MenuList
                       autoFocusItem={open}
-                      id="composition-menu"
-                      aria-labelledby="composition-button"
+                      id='composition-menu'
+                      aria-labelledby='composition-button'
                       onKeyDown={handleListKeyDown}
                     >
-                      <MenuItem 
-                        onClick={() => {window.location.href = getLogoutURL();}} 
+                      <MenuItem
+                        onClick={() => {
+                          window.location.href = getLogoutURL();
+                        }}
                         aria-label='Logout'
-                        aria-aria-description='Logs the user out of their account.'
-                      >Logout</MenuItem>
+                        aria-description='Logs the user out of their account.'
+                      >
+                        Logout
+                      </MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
@@ -116,20 +116,22 @@ const UserControl = () => {
   } else {
     return (
       <Button
-            ref={anchorRef}
-            id="composition-button"
-            aria-controls={open ? 'composition-menu' : undefined}
-            aria-expanded={open ? 'true' : undefined}
-            aria-haspopup="true"
-            aria-description='Proceeds to login page'
-            aria-label='Log In'
-            sx={{...buttonStyles.secondary}}
-            onClick={() => {window.location.href = getLoginURL();}}
-          >
-            Log In
+        ref={anchorRef}
+        id='composition-button'
+        aria-controls={open ? 'composition-menu' : undefined}
+        aria-expanded={open ? 'true' : undefined}
+        aria-haspopup='true'
+        aria-description='Proceeds to login page'
+        aria-label='Log In'
+        sx={{ ...buttonStyles.secondary }}
+        onClick={() => {
+          window.location.href = getLoginURL();
+        }}
+      >
+        Log In
       </Button>
     );
   }
-}
+};
 
 export default UserControl;

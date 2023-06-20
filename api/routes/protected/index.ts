@@ -1,7 +1,7 @@
 import requests from './requests-router';
 
 const protectedRouter = {
-  requests
+  requests,
 };
 
 export default protectedRouter;

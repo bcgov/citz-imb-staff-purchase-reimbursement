@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { Application } from 'express';

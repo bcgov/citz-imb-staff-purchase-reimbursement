@@ -1,4 +1,5 @@
 import AuthActionType from './authActions';
+
 const { LOGIN, LOGOUT, SET_TOKEN } = AuthActionType;
 
 export interface AuthState {

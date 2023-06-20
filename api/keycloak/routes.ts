@@ -1,8 +1,8 @@
 import express from 'express';
-const router = express.Router();
-
 import { IKeycloakInitOptions } from '.';
 import * as oauthController from './controllers';
+
+const router = express.Router();
 const { login, loginCallback, logout, logoutCallback, refreshToken } = oauthController;
 
 const oauthRouter = (options?: IKeycloakInitOptions | undefined) => {

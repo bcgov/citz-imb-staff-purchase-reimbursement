@@ -9,7 +9,7 @@ enum RequestStates {
   COMPLETE,
   INPROGRESS,
   SUBMITTED,
-  __LENGTH
+  __LENGTH,
 }
 
 export default RequestStates;

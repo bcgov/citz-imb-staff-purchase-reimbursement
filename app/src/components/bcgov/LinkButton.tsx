@@ -1,6 +1,4 @@
-import {
-  Button
-} from '@mui/material';
+import { Button } from '@mui/material';
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -14,11 +12,11 @@ import { Link } from 'react-router-dom';
  * @property {string}     ariaDescription - Optional: Text description of what button does.
  */
 interface LinkButtonProps {
-  children: ReactNode,
-  link: string,
-  style: object,
-  disabled?: boolean
-  ariaDescription?: string
+  children: ReactNode;
+  link: string;
+  style: object;
+  disabled?: boolean;
+  ariaDescription?: string;
 }
 
 /**
@@ -27,24 +25,22 @@ interface LinkButtonProps {
  * @returns A React Button element.
  */
 const LinkButton = (props: LinkButtonProps) => {
-  const {
-    children,
-    link,
-    style,
-    disabled,
-    ariaDescription
-  } = props;
+  const { children, link, style, disabled, ariaDescription } = props;
 
-  return <Button 
-    variant='contained' 
-    component={Link} 
-    to={link} 
-    sx={style} 
-    disabled={disabled}
-    aria-label='Follows link noted in description.'
-    aria-description={ariaDescription}
-    tabIndex={0}
-    >{children}</Button>;
-}
+  return (
+    <Button
+      variant='contained'
+      component={Link}
+      to={link}
+      sx={style}
+      disabled={disabled}
+      aria-label='Follows link noted in description.'
+      aria-description={ariaDescription}
+      tabIndex={0}
+    >
+      {children}
+    </Button>
+  );
+};
 
 export default LinkButton;

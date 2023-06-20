@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { useContext, useMemo } from 'react';
 
 import { AuthContext } from '../KeycloakProvider';
