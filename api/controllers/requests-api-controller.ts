@@ -3,11 +3,11 @@ import { Request, Response } from 'express';
 import { Collection, WithId, ObjectId, Filter } from 'mongodb';
 import RequestStates from '../constants/RequestStates';
 import { z } from 'zod';
-import { checkForCompleteRequest } from './../helpers/checkForCompleteRequest';
+import { checkForCompleteRequest } from '../helpers/checkForCompleteRequest';
 import { getUserInfo } from '../keycloak/utils';
 
 // All functions use requests collection
-const collection : Collection<RequestRecord> = db.collection<RequestRecord>('requests');
+const collection: Collection<RequestRecord> = db.collection<RequestRecord>('requests');
 
 // Schema to check for document id when coming in as url params
 const idSchema = z.string().length(24);
@@ -28,18 +28,18 @@ const idSchema = z.string().length(24);
  * @property {RequestStates}  state           - The current state of the request.
  */
 export interface RequestRecord {
-  _id: ObjectId,
-  lateEntry: boolean,
-  firstName: string,
-  lastName: string,
-  employeeId: number,
-  idir: string,
-  purchases: Array<object>,
-  approvals: Array<object>,
-  additionalComments: string,
-  submit: boolean,
-  submissionDate: string,
-  state: RequestStates
+  _id: ObjectId;
+  lateEntry: boolean;
+  firstName: string;
+  lastName: string;
+  employeeId: number;
+  idir: string;
+  purchases: object[];
+  approvals: object[];
+  additionalComments: string;
+  submit: boolean;
+  submissionDate: string;
+  state: RequestStates;
 }
 
 /**
@@ -49,11 +49,11 @@ export interface RequestRecord {
 const minimalProjection = {
   firstName: 1,
   lastName: 1,
-  "purchases.cost": 1, // Format for getting specific properties of objects in an array
-  "purchases.supplier": 1,
+  'purchases.cost': 1, // Format for getting specific properties of objects in an array
+  'purchases.supplier': 1,
   submissionDate: 1,
-  state: 1
-}
+  state: 1,
+};
 
 /**
  * @description Gets all request records. Includes an option to retrieve records with projection.
@@ -68,22 +68,23 @@ export const getAllRequests = async (req: Request, res: Response) => {
   // Query will filter out by date, but only if provided.
   const findQuery: Filter<RequestRecord> = {
     submissionDate: {
-      $gte: after as string || earliestPossibleDate,
-      $lt: before as string || latestPossibleDate
-    }
+      $gte: (after as string) || earliestPossibleDate,
+      $lt: (before as string) || latestPossibleDate,
+    },
   };
 
   try {
-    const cursor = minimal === 'true'
-                  ? collection.find(findQuery).sort({submissionDate: -1}).project(minimalProjection)
-                  : collection.find(findQuery).sort({submissionDate: -1});
+    const cursor =
+      minimal === 'true'
+        ? collection.find(findQuery).sort({ submissionDate: -1 }).project(minimalProjection)
+        : collection.find(findQuery).sort({ submissionDate: -1 });
     const records = await cursor.toArray();
     // If there are no records.
     if (records.length === 0) {
       return res.status(404).send('No records found');
     }
     // If records are found.
-    if (records){
+    if (records) {
       return res.status(200).json(records);
     }
   } catch (e) {
@@ -91,7 +92,7 @@ export const getAllRequests = async (req: Request, res: Response) => {
     // Error response
     return res.status(400).send('Request could not be processed.');
   }
-}
+};
 
 /**
  * @description Get any request records matching a specific IDIR GUID. Includes an option to retrieve records with projection.
@@ -106,21 +107,26 @@ export const getRequestsByIDIR = async (req: Request, res: Response) => {
   const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
   const idirMatches = userInfo.idir_user_guid === idir;
   const isAdmin = userInfo.client_roles?.includes('admin');
-  if (!idirMatches && !isAdmin) return res.status(403).send('Forbidden: User does not match requested IDIR.');
+  if (!idirMatches && !isAdmin)
+    return res.status(403).send('Forbidden: User does not match requested IDIR.');
 
   try {
-    const cursor = minimal === 'true'
-                  ? collection.find({ idir: { $eq: idir as string }}).sort({submissionDate: -1}).project(minimalProjection)
-                  : collection.find({ idir: { $eq: idir as string }}).sort({submissionDate: -1});
+    const cursor =
+      minimal === 'true'
+        ? collection
+            .find({ idir: { $eq: idir as string } })
+            .sort({ submissionDate: -1 })
+            .project(minimalProjection)
+        : collection.find({ idir: { $eq: idir as string } }).sort({ submissionDate: -1 });
     const records = await cursor.toArray();
 
     // If there are no records.
     if (records.length === 0) {
       return res.status(404).send('No records found');
     }
-    
+
     // If records are found.
-    if (records){
+    if (records) {
       return res.status(200).json(records);
     }
   } catch (e) {
@@ -128,7 +134,7 @@ export const getRequestsByIDIR = async (req: Request, res: Response) => {
     // Error response
     return res.status(400).send('Request could not be processed.');
   }
-}
+};
 
 /**
  * @description Get a single request record by ID. Includes an option to retrieve records with projection.
@@ -141,29 +147,32 @@ export const getRequestByID = async (req: Request, res: Response) => {
   // If ID doesn't match schema, return a 400
   try {
     idSchema.parse(id);
-  } catch (e){
+  } catch (e) {
     return res.status(400).send('ID was malformed. Cannot complete request.');
   }
 
   try {
-    const record : WithId<RequestRecord> = await collection.findOne({ _id: { $eq: new ObjectId(id) } });
-    if (!record){
+    const record: WithId<RequestRecord> = await collection.findOne({
+      _id: { $eq: new ObjectId(id) },
+    });
+    if (!record) {
       return res.status(404).send('No record with that ID found.');
     }
-    if (record){
-      // If neither the IDIR matches nor the user is admin, return the 403      
+    if (record) {
+      // If neither the IDIR matches nor the user is admin, return the 403
       const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
       const idirMatches = userInfo.idir_user_guid === record.idir;
       const isAdmin = userInfo.client_roles?.includes('admin');
-      if (!idirMatches && !isAdmin) return res.status(403).send('Forbidden: User does not match requested record.');
+      if (!idirMatches && !isAdmin)
+        return res.status(403).send('Forbidden: User does not match requested record.');
       return res.status(200).json(record);
     }
   } catch (e) {
     console.warn(e);
     // Error response
     return res.status(400).send('Request could not be processed.');
-  }  
-}
+  }
+};
 
 /**
  * @description Updates the state of a specific request record. Also functions as the soft-delete option.
@@ -173,19 +182,12 @@ export const getRequestByID = async (req: Request, res: Response) => {
  */
 export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { 
-    employeeId,
-    purchases,
-    approvals,
-    additionalComments,
-    state,
-    isAdmin
-  } = req.body;
+  const { employeeId, purchases, approvals, additionalComments, state, isAdmin } = req.body;
 
   // If ID doesn't match schema, return a 400
   try {
     idSchema.parse(id);
-  } catch (e){
+  } catch (e) {
     return res.status(400).send('ID was malformed. Cannot complete request.');
   }
 
@@ -193,43 +195,46 @@ export const updateRequestState = async (req: Request, res: Response) => {
   const filter = { _id: { $eq: new ObjectId(id) } };
 
   // Check that state is a valid option
-  if ( state < 0 || state >= RequestStates.__LENGTH) return res.status(403).send('An invalid state was requested.');
+  if (state < 0 || state >= RequestStates.__LENGTH)
+    return res.status(403).send('An invalid state was requested.');
 
   // Get previous state of request
-  const existingRequest : WithId<RequestRecord> = await collection.findOne(filter);
+  const existingRequest: WithId<RequestRecord> = await collection.findOne(filter);
 
-  if (existingRequest){
+  if (existingRequest) {
     // If neither the IDIR matches nor the user is admin, return the 403
     const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
     const idirMatches = userInfo.idir_user_guid === existingRequest.idir;
     const isAdmin = userInfo.client_roles?.includes('admin');
-    if (!idirMatches && !isAdmin) return res.status(403).send('Forbidden: User does not match requested record.');
+    if (!idirMatches && !isAdmin)
+      return res.status(403).send('Forbidden: User does not match requested record.');
   }
 
   let refinedState = state;
 
   // If user isn't an admin, take control of the state update
-  if (!isAdmin){
+  if (!isAdmin) {
     // If request has all required fields and files
-    if (checkForCompleteRequest({employeeId, purchases, approvals})){
+    if (checkForCompleteRequest({ employeeId, purchases, approvals })) {
       // If previous state was Incomplete, change it to Submitted
-      if (existingRequest.state == RequestStates.INCOMPLETE){
+      if (existingRequest.state === RequestStates.INCOMPLETE) {
         refinedState = RequestStates.SUBMITTED;
       }
     } else {
       // Otherwise, submission should be marked as Incomplete
       refinedState = RequestStates.INCOMPLETE;
     }
-  } 
+  }
 
   // Create setting object
-  let newProperties = {
+  const newProperties = {
     approvals: approvals || existingRequest.approvals,
     additionalComments: additionalComments || existingRequest.additionalComments,
     purchases: purchases || existingRequest.purchases,
     employeeId: employeeId || existingRequest.employeeId,
-    state: refinedState === undefined || refinedState === null ? existingRequest.state : refinedState,
-  }
+    state:
+      refinedState === undefined || refinedState === null ? existingRequest.state : refinedState,
+  };
 
   // Update the document
   const updateDoc = {
@@ -246,4 +251,4 @@ export const updateRequestState = async (req: Request, res: Response) => {
     console.warn(e);
     return res.status(400).send('Request could not be processed.');
   }
-}
+};

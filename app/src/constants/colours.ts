@@ -12,8 +12,8 @@ const colours = {
   grey: '#606060',
   red: '#D8292F',
   green: '#2E8540',
-  white: '#fff'
-}
+  white: '#fff',
+};
 
 /**
  * @constant
@@ -31,5 +31,5 @@ export const bcgov = {
   component: colours.grey,
   error: colours.red,
   success: colours.green,
-  white: colours.white
-}
+  white: colours.white,
+};

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import config from './configuration';
 import { IKeycloakInitOptions } from '.';
 import { Request, Response } from 'express';

@@ -1,8 +1,5 @@
-import { IconButton } from "@mui/material";
-import { 
-  KeyboardArrowDown,
-  KeyboardArrowUp
- } from "@mui/icons-material";
+import { IconButton } from '@mui/material';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 
 /**
@@ -13,9 +10,9 @@ import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
  * @property {(e: any) => void} onChange The event handler for the element when clicked.
  */
 interface SortButtonProps {
-  id: string,
-  currentValue: SortState,
-  onChange: (e: any) => void
+  id: string;
+  currentValue: SortState;
+  onChange: (e: any) => void;
 }
 
 /**
@@ -24,7 +21,7 @@ interface SortButtonProps {
  * @property {SortState} value The current SortState of the element.
  */
 interface SortIconProps {
-  value: SortState
+  value: SortState;
 }
 
 /**
@@ -34,7 +31,7 @@ interface SortIconProps {
 export enum SortState {
   UNSORTED,
   ASCENDING,
-  DESCENDING
+  DESCENDING,
 }
 
 /**
@@ -44,15 +41,15 @@ export enum SortState {
  */
 const SortIcon = (props: SortIconProps) => {
   const { value } = props;
-  switch(value){
+  switch (value) {
     case SortState.DESCENDING:
-      return <KeyboardArrowDown />
+      return <KeyboardArrowDown />;
     case SortState.ASCENDING:
-      return <KeyboardArrowUp />
+      return <KeyboardArrowUp />;
     default:
-      return <HorizontalRuleIcon />
+      return <HorizontalRuleIcon />;
   }
-}
+};
 
 /**
  * @description The button for sorting toggles.
@@ -63,9 +60,9 @@ const SortButton = (props: SortButtonProps) => {
   const { id, currentValue, onChange } = props;
   return (
     <IconButton id={id} onClick={onChange} aria-label={`Sorts the ${id} field.`}>
-      <SortIcon value={currentValue}/>
+      <SortIcon value={currentValue} />
     </IconButton>
   );
-}
+};
 
 export default SortButton;

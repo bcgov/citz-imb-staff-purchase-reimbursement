@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Switch } from '@mui/material';
 
 /**
- * @description The Home page, showing a list of reimbursement requests. 
+ * @description The Home page, showing a list of reimbursement requests.
  * @returns A React element
  */
 const Home = () => {
@@ -16,14 +16,16 @@ const Home = () => {
   const { BACKEND_URL, FRONTEND_URL } = Constants;
   const { state: authState } = useAuthService();
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
-  const [adminView, setAdminView] = useState<boolean>(isAdmin && sessionStorage.getItem('adminView') === 'true');
+  const [adminView, setAdminView] = useState<boolean>(
+    isAdmin && sessionStorage.getItem('adminView') === 'true',
+  );
   const navigate = useNavigate();
 
   // Fires on page load.
   useEffect(() => {
     const targetPage = sessionStorage.getItem('target-page');
     sessionStorage.removeItem('target-page');
-    if (targetPage && targetPage !== FRONTEND_URL){
+    if (targetPage && targetPage !== FRONTEND_URL) {
       navigate(targetPage);
     } else {
       getRequests();
@@ -33,19 +35,19 @@ const Home = () => {
   // Retrieves a list of all reimbursement requests and updates state.
   const getRequests = useCallback(async () => {
     const targetURL = adminView
-                      ? `${BACKEND_URL}/api/requests?minimal=true`
-                      : `${BACKEND_URL}/api/requests/idir?minimal=true&idir=${authState.userInfo.idir_user_guid}`;
+      ? `${BACKEND_URL}/api/requests?minimal=true`
+      : `${BACKEND_URL}/api/requests/idir?minimal=true&idir=${authState.userInfo.idir_user_guid}`;
     try {
       const { data } = await axios.get(targetURL, {
         headers: {
-          Authorization : `Bearer ${authState.accessToken}`
-        }
-      })
+          Authorization: `Bearer ${authState.accessToken}`,
+        },
+      });
       setRequests(data);
     } catch (e: unknown) {
-      if (axios.isAxiosError(e)){
-        const status = e.response!.status;
-        switch(status){
+      if (axios.isAxiosError(e)) {
+        const { status } = e.response!;
+        switch (status) {
           case 401:
             console.warn('User is unauthenticated. Redirecting to login.');
             window.location.reload();
@@ -60,40 +62,44 @@ const Home = () => {
         }
       } else {
         console.warn(e);
-      }      
+      }
     }
   }, [adminView]);
 
   return (
     <>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+        }}
+      >
         <h2 style={headerFont}>Reimbursement Requests</h2>
-        {
-          isAdmin
-          ? <div style={{
-                margin: '1em 0 1em 1em'
-              }}>
-              <span style={headerFont}>Admin View</span>
-              <Switch 
-                checked={adminView} 
-                aria-label='Admin View Switch'
-                aria-description='Switches the view from admin to user perspectives.'
-                onChange={(e) => {
-                  sessionStorage.setItem('adminView', `${!adminView}`);
-                  setAdminView(!adminView);
-                }}
-              />
-            </div>   
-          : <></>
-        }
-      </div>  
+        {isAdmin ? (
+          <div
+            style={{
+              margin: '1em 0 1em 1em',
+            }}
+          >
+            <span style={headerFont}>Admin View</span>
+            <Switch
+              checked={adminView}
+              aria-label='Admin View Switch'
+              aria-description='Switches the view from admin to user perspectives.'
+              onChange={() => {
+                sessionStorage.setItem('adminView', `${!adminView}`);
+                setAdminView(!adminView);
+              }}
+            />
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
       <RequestsTable data={requests} />
     </>
   );
-}
+};
 
 export default Home;

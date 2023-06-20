@@ -1,4 +1,4 @@
-import { IFile } from "./IFile";
+import { IFile } from './IFile';
 
 /**
  * @interface
@@ -9,8 +9,8 @@ import { IFile } from "./IFile";
  * @property {IFile}  fileObj       - Optional: The file showing proof of purchase (receipt).
  */
 export interface Purchase {
-  supplier: string,
-  purchaseDate: string,
-  cost: number,
-  fileObj?: IFile
+  supplier: string;
+  purchaseDate: string;
+  cost: number;
+  fileObj?: IFile;
 }

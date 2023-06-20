@@ -1,7 +1,5 @@
-import {
-  Button
-} from '@mui/material';
-import { ReactNode } from 'react';
+import { Button } from '@mui/material';
+import { ReactNode, MouseEventHandler } from 'react';
 
 /**
  * @interface
@@ -13,11 +11,11 @@ import { ReactNode } from 'react';
  * @property {string}                   ariaDescription - Optional: Text description of what button does.
  */
 interface ActionButtonProps {
-  children: ReactNode,
-  style: object,
-  disabled?: boolean,
-  handler: React.MouseEventHandler,
-  ariaDescription?: string
+  children: ReactNode;
+  style: object;
+  disabled?: boolean;
+  handler: MouseEventHandler;
+  ariaDescription?: string;
 }
 
 /**
@@ -26,27 +24,21 @@ interface ActionButtonProps {
  * @returns A React Button element.
  */
 const ActionButton = (props: ActionButtonProps) => {
-  const {
-    children,
-    style,
-    disabled,
-    handler,
-    ariaDescription
-  } = props;
+  const { children, style, disabled, handler, ariaDescription } = props;
 
   return (
-    <Button 
-      variant='contained' 
-      onClick={handler} 
-      sx={style} 
+    <Button
+      variant='contained'
+      onClick={handler}
+      sx={style}
       disabled={disabled}
       tabIndex={0}
       aria-label='Executes action noted in description.'
       aria-description={ariaDescription}
     >
-        {children}
+      {children}
     </Button>
   );
-}
+};
 
 export default ActionButton;

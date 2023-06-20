@@ -5,7 +5,7 @@ import swaggerRouter from './swagger-router';
 const openRouter = {
   healthRouter,
   chefsRouter,
-  swaggerRouter
+  swaggerRouter,
 };
 
 export default openRouter;

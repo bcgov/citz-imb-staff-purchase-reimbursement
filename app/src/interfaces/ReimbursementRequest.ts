@@ -1,5 +1,5 @@
-import { Approval } from "./Approval";
-import { Purchase } from "./Purchase";
+import { Approval } from './Approval';
+import { Purchase } from './Purchase';
 
 /**
  * @interface
@@ -16,14 +16,14 @@ import { Purchase } from "./Purchase";
  * @property {string}         additionalComments  - Optional: Comments attached to request.
  */
 export interface ReimbursementRequest {
-  _id: string,
-  firstName: string,
-  lastName: string,
-  idir: string,
-  employeeId: number,
-  purchases: Array<Purchase>,
-  additionalComments?: string,
-  submissionDate: string,
-  state: number,
-  approvals?: Array<Approval>
+  _id: string;
+  firstName: string;
+  lastName: string;
+  idir: string;
+  employeeId: number;
+  purchases: Array<Purchase>;
+  additionalComments?: string;
+  submissionDate: string;
+  state: number;
+  approvals?: Array<Approval>;
 }

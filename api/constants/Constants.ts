@@ -1,11 +1,4 @@
-const {
-  ENVIRONMENT,
-  FRONTEND_URL,
-  BACKEND_URL,
-  TESTING,
-  API_PORT,
-  FRONTEND_PORT
-} = process.env;
+const { ENVIRONMENT, FRONTEND_URL, BACKEND_URL, TESTING, API_PORT, FRONTEND_PORT } = process.env;
 
 // Use production urls unless ENVIRONMENT === "local".
 let frontendUrl = FRONTEND_URL;
@@ -17,14 +10,14 @@ if (ENVIRONMENT && ENVIRONMENT === 'local') {
 }
 
 /**
- * @description Contains constants with their associated fallback. 
+ * @description Contains constants with their associated fallback.
  * @constant
  */
 const Constants = {
   API_PORT: API_PORT || 3004,
   TESTING: `${TESTING}`.toLowerCase() === 'true',
   BACKEND_URL: backendUrl,
-  FRONTEND_URL: frontendUrl
+  FRONTEND_URL: frontendUrl,
 };
 
 export default Constants;

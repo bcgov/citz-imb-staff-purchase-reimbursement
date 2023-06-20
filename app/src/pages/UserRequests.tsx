@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import Constants from '../constants/Constants';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import RequestsTable from '../components/custom/tables/RequestsTable';
 import { headerFont } from '../constants/fonts';
 import { useAuthService } from '../keycloak';
-import { useNavigate, useParams } from 'react-router-dom';
 import BackButton from '../components/bcgov/BackButton';
 import { marginBlock } from '../constants/styles';
+import Constants from '../constants/Constants';
 
 const UserRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -14,14 +14,13 @@ const UserRequests = () => {
   const { state: authState } = useAuthService();
   const isAdmin = authState.userInfo.client_roles?.includes('admin');
   const { idir } = useParams();
-  const navigate = useNavigate();
 
   // Fires on page load.
   useEffect(() => {
-    if (isAdmin){
+    if (isAdmin) {
       getRequests();
     } else {
-      console.warn('User is not permitted to view these records.')
+      console.warn('User is not permitted to view these records.');
     }
   }, []);
 
@@ -31,14 +30,14 @@ const UserRequests = () => {
     try {
       const { data } = await axios.get(targetURL, {
         headers: {
-          Authorization : `Bearer ${authState.accessToken}`
-        }
-      })
+          Authorization: `Bearer ${authState.accessToken}`,
+        },
+      });
       setRequests(data);
     } catch (e: unknown) {
-      if (axios.isAxiosError(e)){
-        const status = e.response!.status;
-        switch(status){
+      if (axios.isAxiosError(e)) {
+        const { status } = e.response!;
+        switch (status) {
           case 401:
             console.warn('User is unauthenticated. Redirecting to login.');
             window.location.reload();
@@ -53,30 +52,35 @@ const UserRequests = () => {
         }
       } else {
         console.warn(e);
-      }      
+      }
     }
   }, []);
 
-  if (!isAdmin){
-    return (<>
-      <h1>You do not have permission to view this page.</h1>
-      <p style={marginBlock}>If you think you are seeing this by mistake, contact your administrator.</p>
-      <BackButton/>
-    </>);
+  if (!isAdmin) {
+    return (
+      <>
+        <h1>You do not have permission to view this page.</h1>
+        <p style={marginBlock}>
+          If you think you are seeing this by mistake, contact your administrator.
+        </p>
+        <BackButton />
+      </>
+    );
   } else
-
-  return (
-    <>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end'
-      }}>
-        <h2 style={headerFont}>Reimbursement Requests</h2>
-      </div>  
-      <RequestsTable data={requests} />
-    </>
-  );
-}
+    return (
+      <>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+          }}
+        >
+          <h2 style={headerFont}>Reimbursement Requests</h2>
+        </div>
+        <RequestsTable data={requests} />
+      </>
+    );
+};
 
 export default UserRequests;

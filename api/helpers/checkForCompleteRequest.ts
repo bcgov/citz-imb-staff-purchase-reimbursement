@@ -1,5 +1,5 @@
-import { Approval } from "./../interfaces/Approval";
-import { Purchase } from "./../interfaces/Purchase";
+import { Approval } from '../interfaces/Approval';
+import { Purchase } from '../interfaces/Purchase';
 
 /**
  * @interface
@@ -9,9 +9,9 @@ import { Purchase } from "./../interfaces/Purchase";
  * @param {Array<Approval>} approvals   - The approvals in the request.
  */
 interface RequestUpdateData {
-  employeeId: number,
-  purchases: Array<Purchase>,
-  approvals: Array<Approval>
+  employeeId: number;
+  purchases: Purchase[];
+  approvals: Approval[];
 }
 
 /**
@@ -24,15 +24,15 @@ export const checkForCompleteRequest = (requestData: RequestUpdateData) => {
   if (!requestData.employeeId) return false;
 
   // Do all purchases have a file?
-  const purchasesHaveFiles = requestData.purchases.every((purchase: Purchase) => purchase.fileObj)
+  const purchasesHaveFiles = requestData.purchases.every((purchase: Purchase) => purchase.fileObj);
   if (!purchasesHaveFiles) return false;
 
   // Does at least one approval exist?
   if (requestData.approvals.length === 0) return false;
 
   // Does each approval have a file?
-  const approvalsHaveFiles = requestData.approvals.every((approval: Approval) => approval.fileObj)
+  const approvalsHaveFiles = requestData.approvals.every((approval: Approval) => approval.fileObj);
   if (!approvalsHaveFiles) return false;
 
   return true;
-}
+};

@@ -1,3 +1,5 @@
-export const marginBlock : React.CSSProperties = {
-  marginBlock: '1em'
+import { CSSProperties } from 'react';
+
+export const marginBlock: CSSProperties = {
+  marginBlock: '1em',
 };
