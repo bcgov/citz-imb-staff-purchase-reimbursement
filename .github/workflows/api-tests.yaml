@@ -52,7 +52,7 @@ jobs:
       - name: Wait for Mongo Healthcheck
         uses: stringbean/docker-healthcheck-action@v1
         with:
-          container: mongo
+          container: mongodb
           wait-time: 60
           require-status: running
           require-healthy: true
