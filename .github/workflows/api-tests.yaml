@@ -13,8 +13,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  unit-tests:
-    name: API Unit Tests
+  integration-tests:
+    name: API Integration Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -47,7 +47,7 @@ jobs:
 
       - name: Spin Up Mongo and API Images
         run: |
-          docker-compose up --build mongo spr-api -d
+          docker-compose up --build -d mongo spr-api
 
       - name: Wait for Mongo Healthcheck
         uses: stringbean/docker-healthcheck-action@v1
