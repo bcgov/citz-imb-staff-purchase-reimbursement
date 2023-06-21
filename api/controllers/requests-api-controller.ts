@@ -238,8 +238,8 @@ export const updateRequestState = async (req: Request, res: Response) => {
   const newProperties = {
     approvals: approvals || existingRequest?.approvals || [],
     additionalComments: additionalComments || existingRequest?.additionalComments || '',
-    purchases: purchases || existingRequest.purchases,
-    employeeId: employeeId || existingRequest.employeeId,
+    purchases: purchases || existingRequest?.purchases || [],
+    employeeId: employeeId || existingRequest?.employeeId || 999999,
     state:
       refinedState === undefined || refinedState === null ? existingRequest.state : refinedState,
   };

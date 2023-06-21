@@ -12,6 +12,19 @@ on:
       - ".github/workflows/api-tests.yaml"
   workflow_dispatch:
 
+# ENV values match local development seed values only.
+# Does not allow for Keycloak or GC Notify tests
+env:
+  TESTING: true
+  API_PORT: 3004
+  MONGO_PORT: 27017
+  MONGO_PASSWORD: purchase-admin
+  MONGO_USERNAME: purchase-admin
+  MONGO_DATABASE: purchase-db
+  MONGO_SERVICE: mongo
+  ENVIRONMENT: local
+  FRONTEND_PORT: 8080
+
 jobs:
   integration-tests:
     name: API Integration Tests
@@ -30,21 +43,6 @@ jobs:
         working-directory: ./api
         run: |
           sed -i 's/max: [0-9]\+,/max: 99999,/g' express.ts
-
-      # ENV values match local development seed values only.
-      # Does not allow for Keycloak or GC Notify tests
-      - name: Create Mock ENV
-        run: |
-          touch .env
-          echo "TESTING=true" >> .env
-          echo "API_PORT=3004" >> .env
-          echo "MONGO_PORT=27017" >> .env
-          echo "MONGO_PASSWORD=purchase-admin" >> .env
-          echo "MONGO_USERNAME=purchase-admin" >> .env
-          echo "MONGO_DATABASE=purchase-db" >> .env
-          echo "MONGO_SERVICE=mongo" >> .env
-          echo "ENVIRONMENT=local" >> .env
-          echo "FRONTEND_PORT=8080" >> .env
 
       - name: Spin Up Mongo and API Images
         run: |
