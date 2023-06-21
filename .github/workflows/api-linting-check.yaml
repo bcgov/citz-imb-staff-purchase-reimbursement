@@ -10,7 +10,7 @@ on:
 
 jobs:
   lint-api:
-    name: Lint Frontend App
+    name: Lint Backend API
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
