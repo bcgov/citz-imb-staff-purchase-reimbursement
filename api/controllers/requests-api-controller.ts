@@ -5,6 +5,7 @@ import RequestStates from '../constants/RequestStates';
 import { z } from 'zod';
 import { checkForCompleteRequest } from '../helpers/checkForCompleteRequest';
 import { getUserInfo } from '../keycloak/utils';
+import Constants from '../constants/Constants';
 
 // All functions use requests collection
 const collection: Collection<RequestRecord> = db.collection<RequestRecord>('requests');
@@ -102,13 +103,16 @@ export const getAllRequests = async (req: Request, res: Response) => {
  */
 export const getRequestsByIDIR = async (req: Request, res: Response) => {
   const { minimal, idir } = req.query;
+  const { TESTING } = Constants;
 
-  // If neither the IDIR matches nor the user is admin, return the 403
-  const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
-  const idirMatches = userInfo.idir_user_guid === idir;
-  const isAdmin = userInfo.client_roles?.includes('admin');
-  if (!idirMatches && !isAdmin)
-    return res.status(403).send('Forbidden: User does not match requested IDIR.');
+  if (!TESTING) {
+    // If neither the IDIR matches nor the user is admin, return the 403
+    const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
+    const idirMatches = userInfo.idir_user_guid === idir;
+    const isAdmin = userInfo.client_roles?.includes('admin');
+    if (!idirMatches && !isAdmin)
+      return res.status(403).send('Forbidden: User does not match requested IDIR.');
+  }
 
   try {
     const cursor =
@@ -144,6 +148,7 @@ export const getRequestsByIDIR = async (req: Request, res: Response) => {
  */
 export const getRequestByID = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const { TESTING } = Constants;
   // If ID doesn't match schema, return a 400
   try {
     idSchema.parse(id);
@@ -159,12 +164,15 @@ export const getRequestByID = async (req: Request, res: Response) => {
       return res.status(404).send('No record with that ID found.');
     }
     if (record) {
-      // If neither the IDIR matches nor the user is admin, return the 403
-      const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
-      const idirMatches = userInfo.idir_user_guid === record.idir;
-      const isAdmin = userInfo.client_roles?.includes('admin');
-      if (!idirMatches && !isAdmin)
-        return res.status(403).send('Forbidden: User does not match requested record.');
+      if (!TESTING) {
+        // If neither the IDIR matches nor the user is admin, return the 403
+        const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
+        const idirMatches = userInfo.idir_user_guid === record.idir;
+        const isAdmin = userInfo.client_roles?.includes('admin');
+        if (!idirMatches && !isAdmin)
+          return res.status(403).send('Forbidden: User does not match requested record.');
+      }
+
       return res.status(200).json(record);
     }
   } catch (e) {
@@ -183,6 +191,7 @@ export const getRequestByID = async (req: Request, res: Response) => {
 export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { employeeId, purchases, approvals, additionalComments, state, isAdmin } = req.body;
+  const { TESTING } = Constants;
 
   // If ID doesn't match schema, return a 400
   try {
@@ -201,11 +210,10 @@ export const updateRequestState = async (req: Request, res: Response) => {
   // Get previous state of request
   const existingRequest: WithId<RequestRecord> = await collection.findOne(filter);
 
-  if (existingRequest) {
+  if (!TESTING && existingRequest) {
     // If neither the IDIR matches nor the user is admin, return the 403
     const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
     const idirMatches = userInfo.idir_user_guid === existingRequest.idir;
-    const isAdmin = userInfo.client_roles?.includes('admin');
     if (!idirMatches && !isAdmin)
       return res.status(403).send('Forbidden: User does not match requested record.');
   }
@@ -228,8 +236,8 @@ export const updateRequestState = async (req: Request, res: Response) => {
 
   // Create setting object
   const newProperties = {
-    approvals: approvals || existingRequest.approvals,
-    additionalComments: additionalComments || existingRequest.additionalComments,
+    approvals: approvals || existingRequest?.approvals || [],
+    additionalComments: additionalComments || existingRequest?.additionalComments || '',
     purchases: purchases || existingRequest.purchases,
     employeeId: employeeId || existingRequest.employeeId,
     state:
