@@ -1,0 +1,25 @@
+name: API Linting Check
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+    paths:
+      - "api/**"
+  workflow_dispatch:
+
+jobs:
+  lint-api:
+    name: Lint Frontend App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Run ESLint
+        run: |
+          cd ./api
+          npm i
+          npm run lint
