@@ -1,7 +1,8 @@
-import { Button, ButtonGroup, TextField, InputAdornment } from '@mui/material';
+import { Button, ButtonGroup, TextField, InputAdornment, Typography } from '@mui/material';
 import { buttonStyles } from '../../bcgov/ButtonStyles';
 import React from 'react';
 import { bcgov } from '../../../constants/colours';
+import { normalFont } from '../../../constants/fonts';
 
 /**
  * @description Defines the properties for the Currency Comparer component.
@@ -55,9 +56,18 @@ const CurrencyComparer = (props: CurrencyComparerProps) => {
           aria-description='Changes the filter to look for greater or equal to versus less or equal to the value.'
           onClick={changeSymbol}
         >
-          <div id='symbol' style={{ color: bcgov.component }}>
+          <Typography
+            id='symbol'
+            sx={{
+              ...normalFont,
+              color: bcgov.component,
+              '&:hover': {
+                color: bcgov.white,
+              },
+            }}
+          >
             {'>='}
-          </div>
+          </Typography>
         </Button>
         <TextField
           variant='standard'
