@@ -32,7 +32,7 @@ describe("Testing GET routes for /requests endpoint", () => {
   })
 
   test("Document is updated to have a state of 0 (DELETED)", async () => {
-    let response = await request.patch(`/requests/${documentID}`).send({ state: 0 });
+    let response = await request.patch(`/requests/${documentID}`).send({ state: 0, isAdmin: true });
     expect(response.ok).toBe(true);
     expect(response.status).toBe(200);
 

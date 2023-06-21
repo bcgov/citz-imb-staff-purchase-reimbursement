@@ -1,0 +1,81 @@
+name: API Testing
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - main
+    paths:
+      - "api/**"
+      - ".github/workflows/api-tests.yaml"
+  workflow_dispatch:
+
+# ENV values match local development seed values only.
+# Does not allow for Keycloak or GC Notify tests
+env:
+  TESTING: true
+  API_PORT: 3004
+  MONGO_PORT: 27017
+  MONGO_PASSWORD: purchase-admin
+  MONGO_USERNAME: purchase-admin
+  MONGO_DATABASE: purchase-db
+  MONGO_SERVICE: mongo
+  ENVIRONMENT: local
+  FRONTEND_PORT: 8080
+
+jobs:
+  integration-tests:
+    name: API Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        working-directory: ./api
+        run: |
+          npm i
+
+      # Ups the rate limiter max to an unreasonable number. Avoids 429 responses.
+      - name: Relax Express Rate Limiter
+        working-directory: ./api
+        run: |
+          sed -i 's/max: [0-9]\+,/max: 99999,/g' express.ts
+
+      - name: Spin Up Mongo and API Images
+        run: |
+          docker-compose up --build -d mongo spr-api
+
+      - name: Wait for Mongo Healthcheck
+        uses: stringbean/docker-healthcheck-action@v1
+        with:
+          container: mongodb
+          wait-time: 60
+          require-status: running
+          require-healthy: true
+
+      - name: Wait for API Healthcheck
+        uses: stringbean/docker-healthcheck-action@v1
+        id: api-healthcheck
+        continue-on-error: true
+        with:
+          container: spr-api
+          wait-time: 60
+          require-status: running
+          require-healthy: true
+
+      - name: Print Docker API Logs
+        run: |
+          docker logs spr-api
+
+      - name: Stop if API Failed
+        if: steps.api-healthcheck.outcome == 'failure'
+        run: |
+          exit 1
+
+      - name: Run API Tests
+        working-directory: ./api
+        run: |
+          npm run test
