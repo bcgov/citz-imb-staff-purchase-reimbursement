@@ -41,9 +41,14 @@ const DeletePrompt = (props: DeletePromptProps) => {
       >
         {title}
       </h4>
-      {blurb.split(';;').map((paragraph) => (
-        <p style={{ textAlign: 'start' }}>{paragraph}</p>
-      ))}
+      {blurb.split(';;').map((paragraph, index) => {
+        const key = `blurb${title}${index}`;
+        return (
+          <p key={key} style={{ textAlign: 'start' }}>
+            {paragraph}
+          </p>
+        );
+      })}
       <div
         style={{
           display: 'flex',
