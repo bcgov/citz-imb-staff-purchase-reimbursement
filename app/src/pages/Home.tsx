@@ -6,6 +6,8 @@ import { headerFont } from '../constants/fonts';
 import { useAuthService } from '../keycloak';
 import { useNavigate } from 'react-router-dom';
 import { Switch } from '@mui/material';
+import LinkButton from '../components/bcgov/LinkButton';
+import { buttonStyles } from '../components/bcgov/ButtonStyles';
 
 /**
  * @description The Home page, showing a list of reimbursement requests.
@@ -73,29 +75,39 @@ const Home = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-end',
+          marginBottom: '1em',
         }}
       >
         <h2 style={headerFont}>Reimbursement Requests</h2>
-        {isAdmin ? (
-          <div
-            style={{
-              margin: '1em 0 1em 1em',
-            }}
-          >
-            <span style={headerFont}>Admin View</span>
-            <Switch
-              checked={adminView}
-              aria-label='Admin View Switch'
-              aria-description='Switches the view from admin to user perspectives.'
-              onChange={() => {
-                sessionStorage.setItem('adminView', `${!adminView}`);
-                setAdminView(!adminView);
+        <div>
+          {isAdmin ? (
+            <div
+              style={{
+                margin: '1em 0 1em 1em',
+                display: 'inline',
               }}
-            />
-          </div>
-        ) : (
-          <></>
-        )}
+            >
+              <span style={headerFont}>Admin View</span>
+              <Switch
+                checked={adminView}
+                aria-label='Admin View Switch'
+                aria-description='Switches the view from admin to user perspectives.'
+                onChange={() => {
+                  sessionStorage.setItem('adminView', `${!adminView}`);
+                  setAdminView(!adminView);
+                }}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
+          <LinkButton
+            link='https://submit.digital.gov.bc.ca/app/form/submit?f=52e61f0b-ebbd-462a-8e72-972c62c29877'
+            style={buttonStyles.primary}
+          >
+            +New Request
+          </LinkButton>
+        </div>
       </div>
       <RequestsTable data={requests} />
     </>
