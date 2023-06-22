@@ -7,6 +7,7 @@ import { useAuthService } from '../keycloak';
 import BackButton from '../components/bcgov/BackButton';
 import { marginBlock } from '../constants/styles';
 import Constants from '../constants/Constants';
+import { ReimbursementRequest } from '../interfaces/ReimbursementRequest';
 
 const UserRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -76,7 +77,9 @@ const UserRequests = () => {
             alignItems: 'flex-end',
           }}
         >
-          <h2 style={headerFont}>Reimbursement Requests</h2>
+          <h2 style={headerFont}>{`${
+            (requests.at(0) as unknown as ReimbursementRequest).firstName
+          }'s Reimbursement Requests`}</h2>
         </div>
         <RequestsTable data={requests} />
       </>
