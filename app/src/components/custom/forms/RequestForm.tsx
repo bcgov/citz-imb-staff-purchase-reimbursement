@@ -30,6 +30,7 @@ import axios from 'axios';
 import Constants from '../../../constants/Constants';
 import { useAuthService } from '../../../keycloak';
 import BackButton from '../../bcgov/BackButton';
+import DeletePrompt from '../modals/DeletePrompt';
 
 /**
  * @interface
@@ -121,6 +122,11 @@ const RequestForm = (props: RequestFormProps) => {
     }
   };
 
+  const openDialog = () => {
+    const dialog: HTMLDialogElement = document.querySelector('#deletePrompt')!;
+    dialog.showModal();
+  };
+
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const navigate = useNavigate();
@@ -134,6 +140,12 @@ const RequestForm = (props: RequestFormProps) => {
 
   return (
     <>
+      <DeletePrompt
+        deleteHandler={handleDelete}
+        title='Delete Request?'
+        blurb='Are you sure you want to delete this request?;;This action will hide the request from the requestor and may only be undone by an administrator.'
+        id='deletePrompt'
+      />
       <Paper
         sx={{
           padding: '1em',
@@ -218,7 +230,7 @@ const RequestForm = (props: RequestFormProps) => {
                       >
                         View User&apos;s Requests
                       </MenuItem>
-                      <MenuItem onClick={handleDelete}>Delete Request</MenuItem>
+                      <MenuItem onClick={openDialog}>Delete Request</MenuItem>
                     </Menu>
                   </>
                 ) : (
@@ -290,9 +302,13 @@ const RequestForm = (props: RequestFormProps) => {
                   <MenuItem value={RequestStates.COMPLETE}>
                     {convertStateToStatus(RequestStates.COMPLETE)}
                   </MenuItem>
-                  <MenuItem value={RequestStates.DELETED}>
-                    {convertStateToStatus(RequestStates.DELETED)}
-                  </MenuItem>
+                  {reimbursementRequest?.state === RequestStates.DELETED ? (
+                    <MenuItem value={RequestStates.DELETED}>
+                      {convertStateToStatus(RequestStates.DELETED)}
+                    </MenuItem>
+                  ) : (
+                    []
+                  )}
                 </Select>
               </FormControl>
             </Grid>
