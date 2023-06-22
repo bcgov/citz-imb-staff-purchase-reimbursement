@@ -101,15 +101,15 @@ const FileUpload = (props: FileUploadProps) => {
               color: bcgov.error,
             }}
           >
-            X{/* TODO: Double check with user that they want to delete the entry */}
+            X
           </Button>
           <DeletePrompt
             id={`fileDelete${index}`}
             title='Remove File?'
             blurb='Are you sure you want to remove this file?;;This is not recoverable, except by leaving this request without updating.'
             deleteHandler={() => {
-              const tempFiles = [...files];
-              tempFiles.splice(index, 1);
+              const tempFiles: IFile[] = [...files];
+              delete tempFiles[index].file;
               setFiles(tempFiles);
               const deletePrompt: HTMLDialogElement = document.querySelector(
                 `#fileDelete${index}`,
