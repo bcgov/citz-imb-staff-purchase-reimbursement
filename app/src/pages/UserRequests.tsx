@@ -78,7 +78,7 @@ const UserRequests = () => {
           }}
         >
           <h2 style={headerFont}>{`${
-            (requests.at(0) as unknown as ReimbursementRequest).firstName
+            (requests.at(0) as unknown as ReimbursementRequest)?.firstName
           }'s Reimbursement Requests`}</h2>
         </div>
         <RequestsTable data={requests} />
