@@ -63,6 +63,9 @@ const NavigationBar = () => {
           style={{ textDecoration: 'none', color: bcgov.white }}
           aria-label='Staff Purchase Reimbursement'
           aria-description='Sends the user back to the main page when clicked.'
+          onClick={() => {
+            sessionStorage.removeItem('target-page');
+          }}
         >
           <h1
             style={{ ...headerTextStyle, fontSize: matches ? '30px' : '18px', cursor: 'pointer' }}
