@@ -125,8 +125,18 @@ const RequestsTable = (props: RequestTableProps) => {
     },
   };
 
+  const getStartingDataManipulator = () => {
+    if (sessionStorage.getItem('dataManipulator')) {
+      return JSON.parse(sessionStorage.getItem('dataManipulator')!) as DataManipulatorObject;
+    } else {
+      return defaultManipulator;
+    }
+  };
+
   // Data manipulation state. Filtering and sorting.
-  const [dataManipulator, setDataManipulator] = useState<DataManipulatorObject>(defaultManipulator);
+  const [dataManipulator, setDataManipulator] = useState<DataManipulatorObject>(
+    getStartingDataManipulator(),
+  );
   // Pagination state. Used to break the records into pages.
   const [paginationControlObject, setPaginationControlObject] = useState<PaginationControlObject>({
     currentPage: 1,
@@ -149,6 +159,7 @@ const RequestsTable = (props: RequestTableProps) => {
       currentPage: 1,
       totalRecords: sortedData.length,
     });
+    sessionStorage.setItem('dataManipulator', JSON.stringify(dataManipulator));
   }, [propData, dataManipulator]);
 
   // Slices the data in to a page's worth of records if the pagination control changes.
@@ -160,6 +171,15 @@ const RequestsTable = (props: RequestTableProps) => {
       ),
     );
   }, [paginationControlObject]);
+
+  // Load existing data manipulator settings if they exist in session storage
+  useEffect(() => {
+    if (sessionStorage.getItem('dataManipulator')) {
+      setDataManipulator(
+        JSON.parse(sessionStorage.getItem('dataManipulator')!) as DataManipulatorObject,
+      );
+    }
+  }, []);
 
   /**
    * @description Sorts the data in the table based on the dataManipulator state object.
@@ -450,6 +470,7 @@ const RequestsTable = (props: RequestTableProps) => {
    */
   const resetFilter = () => {
     setDataManipulator(defaultManipulator);
+    sessionStorage.removeItem('dataManipulator');
   };
 
   const filterStyle = {
