@@ -104,6 +104,7 @@ const Home = () => {
           <LinkButton
             link='https://submit.digital.gov.bc.ca/app/form/submit?f=52e61f0b-ebbd-462a-8e72-972c62c29877'
             style={buttonStyles.primary}
+            newTab
           >
             +New Request
           </LinkButton>

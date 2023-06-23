@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
  * @property {object}     style     - The style applied to the button.
  * @property {boolean}    disabled  - Optional: Whether the button should be in a disabled state.
  * @property {string}     ariaDescription - Optional: Text description of what button does.
+ * @property {boolean}    newTab    - Optional: If the link should open in a new tab.
  */
 interface LinkButtonProps {
   children: ReactNode;
@@ -17,6 +18,7 @@ interface LinkButtonProps {
   style: object;
   disabled?: boolean;
   ariaDescription?: string;
+  newTab?: boolean;
 }
 
 /**
@@ -25,7 +27,7 @@ interface LinkButtonProps {
  * @returns A React Button element.
  */
 const LinkButton = (props: LinkButtonProps) => {
-  const { children, link, style, disabled, ariaDescription } = props;
+  const { children, link, style, disabled, ariaDescription, newTab } = props;
 
   return (
     <Button
@@ -37,6 +39,7 @@ const LinkButton = (props: LinkButtonProps) => {
       aria-label='Follows link noted in description.'
       aria-description={ariaDescription}
       tabIndex={0}
+      target={newTab ? '_blank' : '_self'}
     >
       {children}
     </Button>
