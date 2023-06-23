@@ -9,12 +9,14 @@ import { normalFont } from '../../../constants/fonts';
  * @interface
  * @property {React.CSSProperties}  sx              Style properties for the component.
  * @property {string}               value           The number value as a string.
+ * @property {Symbols}              buttonValue     The enum value that determines the button's visible symbol.
  * @property {(e: any) => void}     changeSymbol    Updates the symbol used in the filter's comparison.
  * @property {(e: any) => void}     onChange        Function called when value of the component changes.
  */
 interface CurrencyComparerProps {
   sx: React.CSSProperties;
   value: string;
+  buttonValue: Symbols;
   changeSymbol: (e: any) => void;
   onChange: (e: any) => void;
 }
@@ -34,7 +36,7 @@ export enum Symbols {
  * @returns A React component.
  */
 const CurrencyComparer = (props: CurrencyComparerProps) => {
-  const { sx, value, changeSymbol, onChange } = props;
+  const { sx, value, buttonValue, changeSymbol, onChange } = props;
 
   return (
     <>
@@ -66,7 +68,7 @@ const CurrencyComparer = (props: CurrencyComparerProps) => {
               },
             }}
           >
-            {'>='}
+            {buttonValue === Symbols.GT ? '>=' : '<='}
           </Typography>
         </Button>
         <TextField

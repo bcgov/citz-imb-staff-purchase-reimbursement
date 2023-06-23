@@ -125,6 +125,7 @@ const RequestsTable = (props: RequestTableProps) => {
     },
   };
 
+  // Gets the stored value from local storage or sets the default value if there is none.
   const getStartingDataManipulator = () => {
     if (sessionStorage.getItem('dataManipulator')) {
       return JSON.parse(sessionStorage.getItem('dataManipulator')!) as DataManipulatorObject;
@@ -137,12 +138,14 @@ const RequestsTable = (props: RequestTableProps) => {
   const [dataManipulator, setDataManipulator] = useState<DataManipulatorObject>(
     getStartingDataManipulator(),
   );
+
   // Pagination state. Used to break the records into pages.
   const [paginationControlObject, setPaginationControlObject] = useState<PaginationControlObject>({
     currentPage: 1,
     rowsPerPage: 30,
     totalRecords: data.length,
   });
+
   // Page data, the info only shown on the current page. e.g. 1 of 3
   const [pageData, setPageData] = useState<Array<ReimbursementRequest>>(propData);
   const { state: authState } = useAuthService();
@@ -171,15 +174,6 @@ const RequestsTable = (props: RequestTableProps) => {
       ),
     );
   }, [paginationControlObject]);
-
-  // Load existing data manipulator settings if they exist in session storage
-  useEffect(() => {
-    if (sessionStorage.getItem('dataManipulator')) {
-      setDataManipulator(
-        JSON.parse(sessionStorage.getItem('dataManipulator')!) as DataManipulatorObject,
-      );
-    }
-  }, []);
 
   /**
    * @description Sorts the data in the table based on the dataManipulator state object.
@@ -411,33 +405,28 @@ const RequestsTable = (props: RequestTableProps) => {
    * @description Changes the symbol in the CurrencyComparer component when clicked. Also updates the dataManipulator.
    */
   const changeSymbol = () => {
-    const symbolDiv = document.getElementById('symbol');
-    if (symbolDiv) {
-      if (dataManipulator.cost.filter.symbol === Symbols.GT) {
-        setDataManipulator({
-          ...dataManipulator,
-          cost: {
-            ...dataManipulator.cost,
-            filter: {
-              ...dataManipulator.cost.filter,
-              symbol: Symbols.LT,
-            },
+    if (dataManipulator.cost.filter.symbol === Symbols.GT) {
+      setDataManipulator({
+        ...dataManipulator,
+        cost: {
+          ...dataManipulator.cost,
+          filter: {
+            ...dataManipulator.cost.filter,
+            symbol: Symbols.LT,
           },
-        });
-        symbolDiv.innerHTML = '<=';
-      } else {
-        setDataManipulator({
-          ...dataManipulator,
-          cost: {
-            ...dataManipulator.cost,
-            filter: {
-              ...dataManipulator.cost.filter,
-              symbol: Symbols.GT,
-            },
+        },
+      });
+    } else {
+      setDataManipulator({
+        ...dataManipulator,
+        cost: {
+          ...dataManipulator.cost,
+          filter: {
+            ...dataManipulator.cost.filter,
+            symbol: Symbols.GT,
           },
-        });
-        symbolDiv.innerHTML = '>=';
-      }
+        },
+      });
     }
   };
 
@@ -561,6 +550,7 @@ const RequestsTable = (props: RequestTableProps) => {
                 <CurrencyComparer
                   sx={{ ...filterStyle }}
                   value={dataManipulator.cost.filter.value}
+                  buttonValue={dataManipulator.cost.filter.symbol}
                   onChange={updateCostFilter}
                   {...{ changeSymbol }}
                 />
