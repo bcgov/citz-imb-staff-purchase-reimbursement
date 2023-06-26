@@ -4,7 +4,7 @@ name: Code Climate API Unit Test Upload
 on:
   pull_request:
     types:
-      - open
+      - opened
       - synchronize
     branches:
       - main
@@ -63,19 +63,27 @@ jobs:
       - name: Before Build
         run: ./cc-test-reporter before-build
 
+      # Install Dependencies
+      - name: Install Dependencies
+        working-directory: ./api
+        run: |
+          npm i
+
       # Run Unit Tests
       - name: Unit Tests
         working-directory: ./api
         run: |
-          npm i
           npm run test -- --coverage ./tests/unit
 
-      # # Use lcov to format coverage for Code Climate
-      # - name: Format Test Coverage
-      #   run: |
-      #     ./cc-test-reporter format-coverage ./api/tests/coverage/lcov.info -t lcov --output ./api/tests/coverage/coverage.json
+      # Use lcov to format coverage for Code Climate
+      # -t is for coverage type
+      # Note: Project root for lcov must be configured in jest.config first.
+      - name: Format Test Coverage
+        run: |
+          ./cc-test-reporter format-coverage ${{ github.workspace }}/api/tests/coverage/lcov.info -t lcov --output ${{ github.workspace }}/api/tests/coverage/coverage.json
 
       # Upload coverage to Code Climate
+      # -i is for input, -d for detached
       - name: Upload Coverage
         run: |
-          ./cc-test-reporter upload-coverage -d -i ./api/tests/coverage/coverage-final.json
+          ./cc-test-reporter upload-coverage -d -i ${{ github.workspace }}/api/tests/coverage/coverage.json
