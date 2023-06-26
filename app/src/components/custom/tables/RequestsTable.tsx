@@ -405,29 +405,17 @@ const RequestsTable = (props: RequestTableProps) => {
    * @description Changes the symbol in the CurrencyComparer component when clicked. Also updates the dataManipulator.
    */
   const changeSymbol = () => {
-    if (dataManipulator.cost.filter.symbol === Symbols.GT) {
-      setDataManipulator({
-        ...dataManipulator,
-        cost: {
-          ...dataManipulator.cost,
-          filter: {
-            ...dataManipulator.cost.filter,
-            symbol: Symbols.LT,
-          },
+    const newSymbol = dataManipulator.cost.filter.symbol === Symbols.GT ? Symbols.LT : Symbols.GT;
+    setDataManipulator({
+      ...dataManipulator,
+      cost: {
+        ...dataManipulator.cost,
+        filter: {
+          ...dataManipulator.cost.filter,
+          symbol: newSymbol,
         },
-      });
-    } else {
-      setDataManipulator({
-        ...dataManipulator,
-        cost: {
-          ...dataManipulator.cost,
-          filter: {
-            ...dataManipulator.cost.filter,
-            symbol: Symbols.GT,
-          },
-        },
-      });
-    }
+      },
+    });
   };
 
   /**
