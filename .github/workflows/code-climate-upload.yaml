@@ -1,0 +1,76 @@
+# Runs API unit tests and uploads them to Code Climate
+name: Code Climate API Unit Test Upload
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - main
+    paths:
+      - "api/**"
+      - ".github/workflows/code-climate-upload.yaml"
+  workflow_dispatch:
+
+jobs:
+  cc-api-unit-tests:
+    # ENVS for Code Climate
+    env:
+      CC_TEST_REPORTER_ID: dbec9188218937ba4399d0bb64b8a951101d15f573d6d031bb10bb47d1bf8594
+      GIT_BRANCH: ${{ github.event.pull_request.head.ref }}
+      GIT_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+
+    name: Run API Unit Tests and Upload
+    runs-on: ubuntu-latest
+    steps:
+      # Confirm GitHub ENVs
+      - name: Echo ENVs
+        run: |
+          echo $GIT_BRANCH
+          echo $GIT_COMMIT_SHA
+
+      # Checkout repo
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # Import Code Climate
+      - name: Import Code Climate
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+
+      # Allow contents of test reporter to be executed
+      - name: Execute Permissions for Code Climate Binary
+        run: |
+          chmod +x ./cc-test-reporter
+
+      # Notifies Code Climate of impending report
+      - name: Before Build
+        run: ./cc-test-reporter before-build
+
+      # Install Dependencies
+      - name: Install Dependencies
+        working-directory: ./api
+        run: |
+          npm i
+
+      # Run Unit Tests
+      - name: Unit Tests
+        working-directory: ./api
+        run: |
+          npm run test -- --coverage ./tests/unit
+
+      # Use lcov to format coverage for Code Climate
+      # -t is for coverage type
+      # Note: Project root for lcov must be configured in jest.config first.
+      - name: Format Test Coverage
+        run: |
+          ./cc-test-reporter format-coverage ${{ github.workspace }}/api/tests/coverage/lcov.info -t lcov --output ${{ github.workspace }}/api/tests/coverage/coverage.json
+
+      # Upload coverage to Code Climate
+      # -i is for input, -d for detached
+      - name: Upload Coverage
+        run: |
+          ./cc-test-reporter upload-coverage -d -i ${{ github.workspace }}/api/tests/coverage/coverage.json

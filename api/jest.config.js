@@ -9,4 +9,12 @@ module.exports = {
   rootDir: "./",
   testTimeout: 10000,
   setupFiles: ["dotenv/config"],
+  coverageReporters: [
+    [
+      "lcov",
+      {
+        projectRoot: ".."
+      }
+    ]
+  ],
 };

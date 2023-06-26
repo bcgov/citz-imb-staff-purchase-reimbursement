@@ -32,3 +32,6 @@ package-lock.json
 
 # Mongo
 mongo
+
+# Jest
+coverage/
