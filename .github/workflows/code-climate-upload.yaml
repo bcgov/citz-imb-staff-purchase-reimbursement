@@ -13,19 +13,6 @@ on:
       - ".github/workflows/code-climate-upload.yaml"
   workflow_dispatch:
 
-# ENV values match local development seed values only.
-# Does not allow for Keycloak or GC Notify tests
-env:
-  TESTING: true
-  API_PORT: 3004
-  MONGO_PORT: 27017
-  MONGO_PASSWORD: purchase-admin
-  MONGO_USERNAME: purchase-admin
-  MONGO_DATABASE: purchase-db
-  MONGO_SERVICE: mongo
-  ENVIRONMENT: local
-  FRONTEND_PORT: 8080
-
 jobs:
   cc-api-unit-tests:
     # ENVS for Code Climate
