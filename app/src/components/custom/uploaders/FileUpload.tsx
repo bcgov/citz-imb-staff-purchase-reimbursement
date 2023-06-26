@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { buttonStyles } from '../../bcgov/ButtonStyles';
 import { bcgov } from '../../../constants/colours';
 import { normalFont } from '../../../constants/fonts';
+import DeletePrompt from '../modals/DeletePrompt';
 
 /**
  * @interface
@@ -89,9 +90,10 @@ const FileUpload = (props: FileUploadProps) => {
           >{`${files[index].name}`}</a>
           <Button
             onClick={() => {
-              const tempFiles = [...files];
-              tempFiles.splice(index, 1);
-              setFiles(tempFiles);
+              const deletePrompt: HTMLDialogElement = document.querySelector(
+                `#fileDelete${index}`,
+              )!;
+              deletePrompt.showModal();
             }}
             sx={{
               margin: '0 1em',
@@ -99,8 +101,22 @@ const FileUpload = (props: FileUploadProps) => {
               color: bcgov.error,
             }}
           >
-            X{/* TODO: Double check with user that they want to delete the entry */}
+            X
           </Button>
+          <DeletePrompt
+            id={`fileDelete${index}`}
+            title='Remove File?'
+            blurb='Are you sure you want to remove this file?;;This is not recoverable, except by leaving this request without updating.'
+            deleteHandler={() => {
+              const tempFiles: IFile[] = [...files];
+              delete tempFiles[index].file;
+              setFiles(tempFiles);
+              const deletePrompt: HTMLDialogElement = document.querySelector(
+                `#fileDelete${index}`,
+              )!;
+              deletePrompt.close();
+            }}
+          />
         </>
       );
     } else {

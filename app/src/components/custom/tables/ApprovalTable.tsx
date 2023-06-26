@@ -12,10 +12,11 @@ import CustomTableCell from './CustomTableCell';
 import HeaderCell from './HeaderCell';
 import { IFile } from '../../../interfaces/IFile';
 import FileUpload from '../uploaders/FileUpload';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useRef } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers';
 import { Approval } from '../../../interfaces/Approval';
+import DeletePrompt from '../modals/DeletePrompt';
 
 /**
  * @interface
@@ -57,6 +58,7 @@ interface ApprovalTableProps {
  */
 const ApprovalTable = (props: ApprovalTableProps) => {
   const { approvals, setApprovals, approvalFiles, setApprovalFiles, editable } = props;
+  const deletionIndex = useRef<number>(0); // Used to track which approval to delete.
 
   /**
    * @description A base for new approvals. Automatically assigned the date at time of creation.
@@ -66,8 +68,28 @@ const ApprovalTable = (props: ApprovalTableProps) => {
     approvalDate: dayjs(Date.now()).toISOString(),
   };
 
+  /**
+   * @description Removes an approval based on the last tracked index.
+   */
+  const removeApproval = () => {
+    const tempApprovals = [...approvals];
+    const tempApprovalFiles = [...approvalFiles];
+    tempApprovals.splice(deletionIndex.current, 1);
+    tempApprovalFiles.splice(deletionIndex.current, 1);
+    setApprovals(tempApprovals);
+    setApprovalFiles(tempApprovalFiles);
+    const approvalDeletionPrompt: HTMLDialogElement = document.querySelector('#approvalRemove')!;
+    approvalDeletionPrompt.close();
+  };
+
   return (
     <TableContainer component={Paper}>
+      <DeletePrompt
+        id='approvalRemove'
+        title='Remove Approval?'
+        blurb='Are you sure you want to remove this approval?;;This is not recoverable, except by leaving this request without updating.'
+        deleteHandler={removeApproval}
+      />
       <Table aria-label='approval-files'>
         <TableHead>
           <TableRow>
@@ -115,13 +137,10 @@ const ApprovalTable = (props: ApprovalTableProps) => {
                     aria-label='Remove approval'
                     aria-description='Removes this record from the purchase request'
                     onClick={() => {
-                      // TODO: Double check with user that they want to delete the entry
-                      const tempApprovals = [...approvals];
-                      const tempApprovalFiles = [...approvalFiles];
-                      tempApprovals.splice(index, 1);
-                      tempApprovalFiles.splice(index, 1);
-                      setApprovals(tempApprovals);
-                      setApprovalFiles(tempApprovalFiles);
+                      deletionIndex.current = index;
+                      const approvalDeletionPrompt: HTMLDialogElement =
+                        document.querySelector('#approvalRemove')!;
+                      approvalDeletionPrompt.showModal();
                     }}
                     sx={{
                       margin: '1em',
