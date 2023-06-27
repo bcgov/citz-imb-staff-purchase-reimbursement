@@ -67,5 +67,5 @@ module.exports = {
     'no-use-before-define': 'off',
     'no-else-return': 'off',
   },
-  ignorePatterns: ['node_modules/', 'package-lock.json', 'build/'],
+  ignorePatterns: ['node_modules/', 'package-lock.json', 'build/', 'cypress/'],
 };

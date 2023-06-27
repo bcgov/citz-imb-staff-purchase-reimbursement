@@ -1,14 +1,17 @@
 # CITZ IMB Staff Purchasing Reimbursement
+
 Citizen Services Capstone Project A for 2023
 
-[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
+[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](Redirect-URL)
 
 ## Setup
-Create a `.env` file in the root of the project. Populate it with values for each key specified in `.env.template`. 
+
+Create a `.env` file in the root of the project. Populate it with values for each key specified in `.env.template`.
 
 ### Example values
+
 | KEY                   | EXAMPLE       | DESCRIPTION                                                 |
-| ---                   | ---           | ---                                                         |
+| --------------------- | ------------- | ----------------------------------------------------------- |
 | API_PORT              | 3004          | The port the API will listen on.                            |
 | MONGO_PORT            | 27017         | The port used by MongoDB.                                   |
 | MONGO_USERNAME        | username      | The root admin name for MongoDB.                            |
@@ -25,13 +28,16 @@ Create a `.env` file in the root of the project. Populate it with values for eac
 | GC_NOTIFY_API_KEY     | somesecret    | API Key for GC Notify.                                      |
 | GC_NOTIFY_ADMIN_EMAIL | bob@gmail.com | Email address for admin mailbox.                            |
 | TESTING               | true          | Disables Keycloak for API testing.                          |
+| TEST_USERNAME         | username      | Username used for testing.                                  |
+| TEST_PASSWORD         | password      | Password used for testing.                                  |
 
 ## Running
+
 This project assumes that you have Docker installed on your system. If not, please install it first.
 
 [Docker](https://www.docker.com/)
 
-To start the entire application, run the following command: 
+To start the entire application, run the following command:
 
 `docker-compose up -d`.
 
