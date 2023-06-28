@@ -37,18 +37,18 @@ const limiter = rateLimit({
   max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-})
+});
 
 // CORS Configuration
 // Localhost does not need to be specified.
 const corsOptions = {
   origin: [
     'https://submit.digital.gov.bc.ca', // CHEFS
-    'http://localhost:8080',            // Local frontend testing
-    FRONTEND_URL                        // Frontend
+    'http://localhost:8080', // Local frontend testing
+    FRONTEND_URL, // Frontend
   ],
   credentials: true,
-}
+};
 
 // Maximum size of body data. Primarily used to limit incoming files.
 const maxBodySize = '10mb';
@@ -70,11 +70,11 @@ const headerHandler: unknown = (req: Request, res: Response, next: NextFunction)
   res.header('Access-Control-Allow-Methods', 'GET,PUT,PATCH,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization');
   next();
-}
+};
 app.use('/api', headerHandler as RequestHandler);
 
 // Use rate limiter if not testing
-if (TESTING) app.use(limiter);
+if (!TESTING) app.use(limiter);
 
 // Swagger service route
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
@@ -87,10 +87,14 @@ app.use('/api', openRouter.healthRouter);
 
 // Routing Protected Routes
 // Pass the request through with no protection (for testing)
-const falseProtect: unknown = (req: Request, res: Response, next: NextFunction) => { console.warn('Keycloak is off'); next(); }
+const falseProtect: unknown = (req: Request, res: Response, next: NextFunction) => {
+  console.warn('Keycloak is off');
+  next();
+};
 // Allow for removed protection when API testing is enabled, otherwise use Keycloak
-const routeProtector : (RequestHandler | Promise<Response<any, Record<string, any>>>) = TESTING ? (falseProtect as RequestHandler) : protect;
+const routeProtector: RequestHandler | Promise<Response<any, Record<string, any>>> = TESTING
+  ? (falseProtect as RequestHandler)
+  : protect;
 app.use('/api', routeProtector, protectedRouter.requests);
-
 
 export default app;
