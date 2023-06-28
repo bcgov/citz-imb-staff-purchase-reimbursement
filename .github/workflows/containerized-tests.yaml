@@ -17,7 +17,6 @@ on:
 # Does not allow for Keycloak-Express or GC Notify tests
 env:
   TESTING: true
-  VITE_TARGET: dev
   API_PORT: 3004
   MONGO_PORT: 27017
   MONGO_PASSWORD: purchase-admin
@@ -86,6 +85,12 @@ jobs:
         working-directory: ./api
         run: |
           npm run test
+
+      # Vite does not see this if just specified in the ENV for the workflow
+      - name: Specify VITE_TARGET
+        working-directory: ./app
+        run: |
+          echo "VITE_TARGET=dev" >> .env
 
       - name: Spin Up APP Image
         run: |
