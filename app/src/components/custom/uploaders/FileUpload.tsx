@@ -48,11 +48,12 @@ const FileUpload = (props: FileUploadProps) => {
       alert('File size is over 10MB and will not be uploaded.');
     } else {
       const tempFiles = [...files];
-      const tempFile = {
+      const tempFile: IFile = {
         file: '',
         name: '',
         size: 0,
         date: new Date(Date.now()).toISOString(),
+        deleted: false,
       };
       tempFile.file = (await toBase64(e.target.files[0])) as string;
       tempFile.name = e.target.files[0].name;
@@ -62,8 +63,10 @@ const FileUpload = (props: FileUploadProps) => {
     }
   };
 
-  // Is this element disabled?
-  if (disabled) {
+  if (files[index] && files[index].deleted) {
+    return <>{`${files[index].name} was automatically deleted.`}</>;
+  } else if (disabled) {
+    // Is this element disabled?
     // If file exists already, show link
     if (files[index] && files[index].name && files[index].file) {
       return (
