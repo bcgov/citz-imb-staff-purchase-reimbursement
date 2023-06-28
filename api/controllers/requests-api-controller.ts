@@ -23,7 +23,7 @@ const idSchema = z.string().length(24);
  * @property {number}         employeeId      - The requestor's employee ID.
  * @property {string}         idir            - The requestor's IDIR code.
  * @property {Array}          purchases       - A list of Purchase items.
- * @property {Array}          approvals       -  A list of Approval items.
+ * @property {Array}          approvals       - A list of Approval items.
  * @property {boolean}        submit          - Supplied by CHEFS. True if submitted. Only important if CHEFS stores drafts.
  * @property {string}         submissionDate  - The date of the reimbursement submission.
  * @property {RequestStates}  state           - The current state of the request.
