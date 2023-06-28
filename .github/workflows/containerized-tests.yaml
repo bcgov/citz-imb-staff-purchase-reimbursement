@@ -1,4 +1,4 @@
-name: API Testing
+name: Integration and E2E Testing
 
 on:
   pull_request:
@@ -8,12 +8,13 @@ on:
     branches:
       - main
     paths:
+      - "app/**"
       - "api/**"
-      - ".github/workflows/api-tests.yaml"
+      - ".github/workflows/containerized-tests.yaml"
   workflow_dispatch:
 
 # ENV values match local development seed values only.
-# Does not allow for Keycloak or GC Notify tests
+# Does not allow for Keycloak-Express or GC Notify tests
 env:
   TESTING: true
   API_PORT: 3004
@@ -24,19 +25,19 @@ env:
   MONGO_SERVICE: mongo
   ENVIRONMENT: local
   FRONTEND_PORT: 8080
+  SSO_CLIENT_ID: citz-imb-sandbox-4796
+  SSO_CLIENT_SECRET: ${{ secrets.SSO_CLIENT_SECRET }}
+  SSO_AUTH_SERVER_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect
+  TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+  TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
 
 jobs:
-  integration-tests:
-    name: API Integration Tests
+  containerized-tests:
+    name: Containerized Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-
-      - name: Install Dependencies
-        working-directory: ./api
-        run: |
-          npm i
 
       # Ups the rate limiter max to an unreasonable number. Avoids 429 responses.
       - name: Relax Express Rate Limiter
@@ -44,7 +45,7 @@ jobs:
         run: |
           sed -i 's/max: [0-9]\+,/max: 99999,/g' express.ts
 
-      - name: Spin Up Mongo and API Images
+      - name: Spin Up API and Mongo Images
         run: |
           docker-compose up --build -d mongo spr-api
 
@@ -66,6 +67,16 @@ jobs:
           require-status: running
           require-healthy: true
 
+      - name: Wait for APP Healthcheck
+        uses: stringbean/docker-healthcheck-action@v1
+        id: app-healthcheck
+        continue-on-error: true
+        with:
+          container: spr-app
+          wait-time: 60
+          require-status: running
+          require-healthy: true
+
       - name: Print Docker API Logs
         run: |
           docker logs spr-api
@@ -75,7 +86,35 @@ jobs:
         run: |
           exit 1
 
-      - name: Run API Tests
+      - name: Install Integration Testing Dependencies
+        working-directory: ./api
+        run: |
+          npm i jest supertest ts-jest dotenv @types/jest
+
+      - name: Run API Integration Tests
         working-directory: ./api
         run: |
           npm run test
+
+      - name: Spin Up APP Image
+        run: |
+          docker-compose up --build -d spr-app
+
+      - name: Print Docker APP Logs
+        run: |
+          docker logs spr-app
+
+      - name: Stop if APP Failed
+        if: steps.app-healthcheck.outcome == 'failure'
+        run: |
+          exit 1
+
+      - name: Install E2E Testing Dependencies
+        working-directory: ./app
+        run: |
+          npm i -D cypress dotenv
+
+      - name: Run E2E Tests
+        working-directory: ./app
+        run: |
+          npm run cypress:e2e
