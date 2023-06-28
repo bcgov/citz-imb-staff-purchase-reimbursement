@@ -86,6 +86,10 @@ jobs:
         run: |
           npm run test
 
+      - name: Print ENVIRONMENT ENVs
+        run: |
+          printenv ENVIRONMENT
+
       - name: Spin Up APP Image
         run: |
           docker-compose up --build -d spr-app
