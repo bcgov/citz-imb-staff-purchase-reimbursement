@@ -67,16 +67,6 @@ jobs:
           require-status: running
           require-healthy: true
 
-      - name: Wait for APP Healthcheck
-        uses: stringbean/docker-healthcheck-action@v1
-        id: app-healthcheck
-        continue-on-error: true
-        with:
-          container: spr-app
-          wait-time: 60
-          require-status: running
-          require-healthy: true
-
       - name: Print Docker API Logs
         run: |
           docker logs spr-api
@@ -99,6 +89,16 @@ jobs:
       - name: Spin Up APP Image
         run: |
           docker-compose up --build -d spr-app
+
+      - name: Wait for APP Healthcheck
+        uses: stringbean/docker-healthcheck-action@v1
+        id: app-healthcheck
+        continue-on-error: true
+        with:
+          container: spr-app
+          wait-time: 60
+          require-status: running
+          require-healthy: true
 
       - name: Print Docker APP Logs
         run: |
