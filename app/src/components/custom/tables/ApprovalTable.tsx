@@ -128,6 +128,7 @@ const ApprovalTable = (props: ApprovalTableProps) => {
                   disabled={!editable}
                   files={approvalFiles}
                   setFiles={setApprovalFiles}
+                  source='approval'
                   {...{ index }}
                 />
               </CustomTableCell>

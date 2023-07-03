@@ -116,7 +116,6 @@ const IndividualRequest = () => {
 
   // Fired when the record is updated (i.e. User selects UPDATE.)
   const handleUpdate = async () => {
-    console.log(approvalFiles);
     // Apply purchaseFiles to purchases
     const combinedPurchases = [...purchases];
     combinedPurchases.forEach((purchase, index) => {

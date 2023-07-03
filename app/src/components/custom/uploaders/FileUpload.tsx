@@ -16,15 +16,15 @@ import { useParams } from 'react-router-dom';
  * @property {Array}    files     - A list of files of type IFile.
  * @property {Dispatch} setFiles  - Sets the list of files.
  * @property {number}   index     - The index of the element in files being used.
- * @property {string}   date      - Optional: The date the file was uploaded.
+ * @property {string}   source    - What the uploader is being used for. Determines ID of delete modal.
  * @property {boolean}  disabled  - Optional: Whether the element is disabled.
  */
 interface FileUploadProps {
   files: Array<IFile>;
   setFiles: Dispatch<SetStateAction<Array<IFile>>>;
   index: number;
-  date?: string;
   disabled?: boolean;
+  source: string;
 }
 
 /**
@@ -33,7 +33,7 @@ interface FileUploadProps {
  * @returns A React element. Potentially a file link or upload button depending on file status.
  */
 const FileUpload = (props: FileUploadProps) => {
-  const { files, setFiles, index, disabled } = props;
+  const { files, setFiles, index, disabled, source } = props;
   const { id } = useParams();
   const uid = Math.random().toString();
   const fileString = useRef('');
@@ -104,7 +104,7 @@ const FileUpload = (props: FileUploadProps) => {
   } else if (disabled) {
     // Is this element disabled?
     // If file exists already, show link
-    if (files[index] && files[index].name) {
+    if (fileString.current !== 'removed' && files[index] && files[index].name) {
       return (
         <a
           id={uid}
@@ -124,7 +124,7 @@ const FileUpload = (props: FileUploadProps) => {
   } else {
     // Element is not disabled
     // If file exists already, show link
-    if (files[index] && files[index].name) {
+    if (fileString.current !== 'removed' && files[index] && files[index].name) {
       return (
         <>
           <a
@@ -140,7 +140,7 @@ const FileUpload = (props: FileUploadProps) => {
           <Button
             onClick={() => {
               const deletePrompt: HTMLDialogElement = document.querySelector(
-                `#fileDelete${index}`,
+                `#fileDelete${source}${index}`,
               )!;
               deletePrompt.showModal();
             }}
@@ -153,15 +153,16 @@ const FileUpload = (props: FileUploadProps) => {
             X
           </Button>
           <DeletePrompt
-            id={`fileDelete${index}`}
+            id={`fileDelete${source}${index}`}
             title='Remove File?'
             blurb='Are you sure you want to remove this file?;;This is not recoverable, except by leaving this request without updating.'
             deleteHandler={() => {
               const tempFiles: IFile[] = [...files];
               delete tempFiles[index].file;
+              fileString.current = 'removed';
               setFiles(tempFiles);
               const deletePrompt: HTMLDialogElement = document.querySelector(
-                `#fileDelete${index}`,
+                `#fileDelete${source}${index}`,
               )!;
               deletePrompt.close();
             }}

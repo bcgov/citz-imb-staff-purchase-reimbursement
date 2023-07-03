@@ -68,6 +68,7 @@ const PurchaseTable = (props: PurchaseTableProps) => {
                     disabled={!editable}
                     files={purchaseFiles}
                     setFiles={setPurchaseFiles}
+                    source='purchase'
                     {...{ index }}
                   />
                 </CustomTableCell>
