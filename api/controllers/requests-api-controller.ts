@@ -246,11 +246,40 @@ export const updateRequestState = async (req: Request, res: Response) => {
     }
   }
 
+  // If new files weren't uploaded, incoming patch won't have base64 file data, only metadata.
+  // Check each incoming file in purchases and approvals. If there's no base64 file, use the file from the existing record
+  const refinedPurchases: Purchase[] = purchases
+    ? purchases.map((purchase: Purchase, index: number) => {
+        if (purchase.fileObj && purchase.fileObj.file) {
+          return purchase;
+        } else {
+          return existingRequest.purchases[index];
+        }
+      })
+    : [];
+
+  const refinedApprovals: Approval[] = approvals
+    ? approvals.map((approval: Approval, index: number) => {
+        if (approval.fileObj && approval.fileObj.file) {
+          return approval;
+        } else if (existingRequest.approvals[index].fileObj) {
+          return {
+            ...approval,
+            fileObj: existingRequest.approvals[index].fileObj,
+          };
+        } else {
+          return existingRequest.approvals[index];
+        }
+      })
+    : [];
+
+  console.log(refinedApprovals);
+
   // Create setting object
   const newProperties = {
-    approvals: approvals || existingRequest?.approvals || [],
+    approvals: refinedApprovals,
     additionalComments: additionalComments || existingRequest?.additionalComments || '',
-    purchases: purchases || existingRequest?.purchases || [],
+    purchases: refinedPurchases,
     employeeId: employeeId || existingRequest?.employeeId || 999999,
     state:
       refinedState === undefined || refinedState === null ? existingRequest.state : refinedState,
@@ -332,7 +361,7 @@ export const getFile = async (req: Request, res: Response) => {
       const allFiles = [...record.purchases, ...record.approvals].map((el) => el.fileObj);
       if (date) {
         // Select only the file with the matching date
-        const desiredFile = allFiles.find((fileObj) => fileObj.date === date);
+        const desiredFile = allFiles.find((fileObj) => fileObj && fileObj.date === date);
         // Return 404 if no files were returned
         if (!desiredFile) {
           return res.status(404).send('No file matches that request.');

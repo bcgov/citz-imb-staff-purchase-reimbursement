@@ -43,6 +43,7 @@ const FileUpload = (props: FileUploadProps) => {
   // Assumption: no file for this request will have exactly the same upload date down to the millisecond
   const retrieveFile = async () => {
     const { BACKEND_URL } = Constants;
+    console.log(files[index].date);
     const axiosReqConfig = {
       url: `${BACKEND_URL}/api/requests/${id}/files?date=${files[index].date}`,
       method: `get`,
@@ -88,7 +89,9 @@ const FileUpload = (props: FileUploadProps) => {
         date: new Date(Date.now()).toISOString(),
         deleted: false,
       };
-      tempFile.file = (await toBase64(e.target.files[0])) as string;
+      const base64File = (await toBase64(e.target.files[0])) as string;
+      fileString.current = base64File;
+      tempFile.file = base64File;
       tempFile.name = e.target.files[0].name;
       tempFile.size = e.target.files[0].size;
       tempFiles.splice(index, 1, tempFile);
