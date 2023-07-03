@@ -6,6 +6,8 @@ import { z } from 'zod';
 import { checkForCompleteRequest } from '../helpers/checkForCompleteRequest';
 import { getUserInfo } from '../keycloak/utils';
 import Constants from '../constants/Constants';
+import { Purchase } from '../interfaces/Purchase';
+import { Approval } from '../interfaces/Approval';
 
 // All functions use requests collection
 const collection: Collection<RequestRecord> = db.collection<RequestRecord>('requests');
@@ -35,8 +37,8 @@ export interface RequestRecord {
   lastName: string;
   employeeId: number;
   idir: string;
-  purchases: object[];
-  approvals: object[];
+  purchases: Purchase[];
+  approvals: Approval[];
   additionalComments: string;
   submit: boolean;
   submissionDate: string;
@@ -149,6 +151,12 @@ export const getRequestsByIDIR = async (req: Request, res: Response) => {
 export const getRequestByID = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { TESTING } = Constants;
+
+  // Projection to get everything except a file's data
+  const noFileProjection = {
+    'purchases.fileObj.file': 0,
+  };
+
   // If ID doesn't match schema, return a 400
   try {
     idSchema.parse(id);
@@ -157,9 +165,14 @@ export const getRequestByID = async (req: Request, res: Response) => {
   }
 
   try {
-    const record: WithId<RequestRecord> = await collection.findOne({
-      _id: { $eq: new ObjectId(id) },
-    });
+    const record: WithId<RequestRecord> = await collection.findOne(
+      {
+        _id: { $eq: new ObjectId(id) },
+      },
+      {
+        projection: noFileProjection,
+      },
+    );
     if (!record) {
       return res.status(404).send('No record with that ID found.');
     }
@@ -172,7 +185,6 @@ export const getRequestByID = async (req: Request, res: Response) => {
         if (!idirMatches && !isAdmin)
           return res.status(403).send('Forbidden: User does not match requested record.');
       }
-
       return res.status(200).json(record);
     }
   } catch (e) {
@@ -257,6 +269,83 @@ export const updateRequestState = async (req: Request, res: Response) => {
     return res.status(200).send(`Request state updated to ${RequestStates[state]}.`);
   } catch (e) {
     console.warn(e);
+    return res.status(400).send('Request could not be processed.');
+  }
+};
+
+/**
+ * @description Gets all files associated with a record or a single requested file based on record ID and file upload timestamp
+ * @param {Request} req The incoming request.
+ * @param {Response} res The returned response.
+ * @returns A response with the attached base64 files in the body.
+ */
+export const getFile = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { date } = req.query;
+  const { TESTING } = Constants;
+
+  interface FilesRecord {
+    idir: string;
+    purchases: Purchase[];
+    approvals: Approval[];
+  }
+
+  // Projection to get only the file's data
+  const onlyFileProjection = {
+    idir: 1,
+    'purchases.fileObj': 1,
+    'approvals.fileObj': 1,
+  };
+
+  // If ID doesn't match schema, return a 400
+  try {
+    idSchema.parse(id);
+  } catch (e) {
+    return res.status(400).send('ID was malformed. Cannot complete request.');
+  }
+
+  try {
+    // Get all files from that record
+    const record: WithId<FilesRecord> = await collection.findOne(
+      {
+        _id: { $eq: new ObjectId(id) },
+      },
+      {
+        projection: onlyFileProjection,
+      },
+    );
+
+    // Return 404 if that record didn't exist
+    if (!record) {
+      return res.status(404).send('No record with that ID found.');
+    } else {
+      if (!TESTING) {
+        // If neither the IDIR matches nor the user is admin, return the 403
+        const userInfo = getUserInfo(req.headers.authorization.split(' ')[1]); // Excludes the 'Bearer' part of token.
+        const idirMatches = userInfo.idir_user_guid === record.idir;
+        const isAdmin = userInfo.client_roles?.includes('admin');
+        if (!idirMatches && !isAdmin)
+          return res.status(403).send('Forbidden: User does not match requested record.');
+      }
+
+      // Flat map files
+      const allFiles = [...record.purchases, ...record.approvals].map((el) => el.fileObj);
+      if (date) {
+        // Select only the file with the matching date
+        const desiredFile = allFiles.find((fileObj) => fileObj.date === date);
+        // Return 404 if no files were returned
+        if (!desiredFile) {
+          return res.status(404).send('No file matches that request.');
+        }
+        return res.status(200).json({ file: desiredFile.file });
+      } else {
+        // No date? Return all files
+        return res.status(200).json({ files: allFiles });
+      }
+    }
+  } catch (e) {
+    console.warn(e);
+    // Error response
     return res.status(400).send('Request could not be processed.');
   }
 };
