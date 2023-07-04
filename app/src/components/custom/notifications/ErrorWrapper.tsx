@@ -14,27 +14,51 @@ import CloseIcon from '@mui/icons-material/Close';
 import { bcgov } from '../../../constants/colours';
 import { SnackbarContent } from '@mui/material';
 
+/**
+ * @interface
+ * @description Properties passed to ErrorWrapper.
+ * @property {ReactNode} children The child elements within the ErrorWrapper.
+ */
 interface IErrorWrapper {
   children: ReactNode;
 }
 
+/**
+ * @interface
+ * @description Defines the properties of an Error State.
+ * @property {string} text The text displayed in the notification.
+ * @property {boolean} open Whether the notification is open and visible.
+ * @property {CSSProperties} style Optional: Styling properties for the notification.
+ */
 interface ErrorState {
   text: string;
   open: boolean;
   style?: CSSProperties;
 }
 
+/**
+ * @constant
+ * @description The initial state of the component. ErrorState
+ */
 const initialState: ErrorState = {
   text: '',
   open: false,
 };
 
+/**
+ * @constant
+ * @description The initial context passed down from the context provider.
+ */
 const initialContext = {
   errorState: initialState,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   setErrorState: (() => {}) as Dispatch<SetStateAction<ErrorState>>,
 };
 
+/**
+ * @constant
+ * @description An object containing styles for various types of error messages.
+ */
 export const errorStyles = {
   error: {
     backgroundColor: bcgov.error,
@@ -48,14 +72,25 @@ export const errorStyles = {
   } as CSSProperties,
 };
 
+/**
+ * @constant
+ * @description The context provided by the ErrorWrapper.
+ */
 export const ErrorContext = createContext(initialContext);
 
+/**
+ * @description Wraps the application and provides a popup notification that can be used with the supplied ErrorContext.
+ * @param {IErrorWrapper} props Properties passed to the component.
+ * @returns A React component
+ */
 const ErrorWrapper = (props: IErrorWrapper) => {
   const [errorState, setErrorState] = useState(initialState);
+  // Value passed into context later
   const value = useMemo(() => ({ errorState, setErrorState }), [errorState]);
 
   const { children } = props;
 
+  // When the closing X is clicked.
   const handleClose = (event: SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
@@ -66,6 +101,7 @@ const ErrorWrapper = (props: IErrorWrapper) => {
     });
   };
 
+  // The X element in the notification.
   const action = (
     <IconButton size='small' aria-label='close' color='inherit' onClick={handleClose}>
       <CloseIcon fontSize='small' />
