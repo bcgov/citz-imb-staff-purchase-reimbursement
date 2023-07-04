@@ -35,13 +35,16 @@ const initialContext = {
   setErrorState: (() => {}) as Dispatch<SetStateAction<ErrorState>>,
 };
 
-const errorStyles = {
+export const errorStyles = {
   error: {
     backgroundColor: bcgov.error,
   } as CSSProperties,
   warning: {
     backgroundColor: bcgov.primaryHighlight,
     color: bcgov.text,
+  } as CSSProperties,
+  success: {
+    backgroundColor: bcgov.success,
   } as CSSProperties,
 };
 
