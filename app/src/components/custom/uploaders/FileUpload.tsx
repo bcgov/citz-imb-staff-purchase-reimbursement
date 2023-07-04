@@ -1,10 +1,14 @@
 import { Button } from '@mui/material';
 import { IFile } from '../../../interfaces/IFile';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useRef } from 'react';
 import { buttonStyles } from '../../bcgov/ButtonStyles';
 import { bcgov } from '../../../constants/colours';
 import { normalFont } from '../../../constants/fonts';
 import DeletePrompt from '../modals/DeletePrompt';
+import axios from 'axios';
+import Constants from '../../../constants/Constants';
+import { useAuthService } from '../../../keycloak';
+import { useParams } from 'react-router-dom';
 
 /**
  * @interface
@@ -12,15 +16,15 @@ import DeletePrompt from '../modals/DeletePrompt';
  * @property {Array}    files     - A list of files of type IFile.
  * @property {Dispatch} setFiles  - Sets the list of files.
  * @property {number}   index     - The index of the element in files being used.
- * @property {string}   date      - Optional: The date the file was uploaded.
+ * @property {string}   source    - What the uploader is being used for. Determines ID of delete modal.
  * @property {boolean}  disabled  - Optional: Whether the element is disabled.
  */
 interface FileUploadProps {
   files: Array<IFile>;
   setFiles: Dispatch<SetStateAction<Array<IFile>>>;
   index: number;
-  date?: string;
   disabled?: boolean;
+  source: string;
 }
 
 /**
@@ -29,8 +33,38 @@ interface FileUploadProps {
  * @returns A React element. Potentially a file link or upload button depending on file status.
  */
 const FileUpload = (props: FileUploadProps) => {
-  const { files, setFiles, index, disabled } = props;
+  const { files, setFiles, index, disabled, source } = props;
+  const { id } = useParams();
   const uid = Math.random().toString();
+  const fileString = useRef('');
+  const { state: authState } = useAuthService();
+
+  // Gets the file from the API and returns the base64 string of the file
+  // Assumption: no file for this request will have exactly the same upload date down to the millisecond
+  const retrieveFile = async () => {
+    const { BACKEND_URL } = Constants;
+    console.log(files[index].date);
+    const axiosReqConfig = {
+      url: `${BACKEND_URL}/api/requests/${id}/files?date=${files[index].date}`,
+      method: `get`,
+      headers: {
+        Authorization: `Bearer ${authState.access_token}`,
+      },
+    };
+    const file: string = await axios(axiosReqConfig).then((response) => response.data.file);
+    return file;
+  };
+
+  // If the file isn't already stored, retrieves the file and uses a false anchor link to download
+  const downloadFile = async () => {
+    if (fileString.current === '') {
+      fileString.current = (await retrieveFile()) as unknown as string;
+    }
+    const tempLink = document.createElement('a');
+    tempLink.href = fileString.current;
+    tempLink.download = files[index].name;
+    tempLink.click();
+  };
 
   // Converts file to base64 for easy storage
   const toBase64 = (file: File) =>
@@ -55,7 +89,9 @@ const FileUpload = (props: FileUploadProps) => {
         date: new Date(Date.now()).toISOString(),
         deleted: false,
       };
-      tempFile.file = (await toBase64(e.target.files[0])) as string;
+      const base64File = (await toBase64(e.target.files[0])) as string;
+      fileString.current = base64File;
+      tempFile.file = base64File;
       tempFile.name = e.target.files[0].name;
       tempFile.size = e.target.files[0].size;
       tempFiles.splice(index, 1, tempFile);
@@ -68,11 +104,16 @@ const FileUpload = (props: FileUploadProps) => {
   } else if (disabled) {
     // Is this element disabled?
     // If file exists already, show link
-    if (files[index] && files[index].name && files[index].file) {
+    if (fileString.current !== 'removed' && files[index] && files[index].name) {
       return (
         <a
+          id={uid}
           download={files[index].name}
-          href={files[index].file}
+          href={fileString.current}
+          onClick={async (e) => {
+            e.preventDefault();
+            downloadFile();
+          }}
           style={{ ...normalFont, color: bcgov.links }}
         >{`${files[index].name}`}</a>
       );
@@ -83,18 +124,23 @@ const FileUpload = (props: FileUploadProps) => {
   } else {
     // Element is not disabled
     // If file exists already, show link
-    if (files[index] && files[index].name && files[index].file) {
+    if (fileString.current !== 'removed' && files[index] && files[index].name) {
       return (
         <>
           <a
+            id={uid}
             download={files[index].name}
-            href={files[index].file}
+            href={fileString.current}
+            onClick={async (e) => {
+              e.preventDefault();
+              downloadFile();
+            }}
             style={{ ...normalFont, color: bcgov.links }}
           >{`${files[index].name}`}</a>
           <Button
             onClick={() => {
               const deletePrompt: HTMLDialogElement = document.querySelector(
-                `#fileDelete${index}`,
+                `#fileDelete${source}${index}`,
               )!;
               deletePrompt.showModal();
             }}
@@ -107,15 +153,16 @@ const FileUpload = (props: FileUploadProps) => {
             X
           </Button>
           <DeletePrompt
-            id={`fileDelete${index}`}
+            id={`fileDelete${source}${index}`}
             title='Remove File?'
             blurb='Are you sure you want to remove this file?;;This is not recoverable, except by leaving this request without updating.'
             deleteHandler={() => {
               const tempFiles: IFile[] = [...files];
               delete tempFiles[index].file;
+              fileString.current = 'removed';
               setFiles(tempFiles);
               const deletePrompt: HTMLDialogElement = document.querySelector(
-                `#fileDelete${index}`,
+                `#fileDelete${source}${index}`,
               )!;
               deletePrompt.close();
             }}

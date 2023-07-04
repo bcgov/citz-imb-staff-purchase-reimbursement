@@ -128,8 +128,6 @@ const IndividualRequest = () => {
 
   // Fired when the record is updated (i.e. User selects UPDATE.)
   const handleUpdate = async () => {
-    // TODO: If approvals or purchases don't change, don't send back that info
-
     // Apply purchaseFiles to purchases
     const combinedPurchases = [...purchases];
     combinedPurchases.forEach((purchase, index) => {
@@ -152,7 +150,7 @@ const IndividualRequest = () => {
         data: {
           ...reimbursementRequest,
           purchases: combinedPurchases,
-          approvals: combinedApprovals,
+          approvals: combinedApprovals.filter((approval) => approval.fileObj),
           isAdmin,
         },
       };

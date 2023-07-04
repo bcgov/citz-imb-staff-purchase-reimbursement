@@ -1,10 +1,10 @@
 components:
-### SCHEMAS ###
+  ### SCHEMAS ###
   schemas:
     ReimbursementRequestObject:
       type: object
       description: The base reimbursement request. All requests should have these properties.
-      properties: 
+      properties:
         firstName:
           type: string
           example: Joe
@@ -40,7 +40,7 @@ components:
                   size:
                     type: number
                     example: 94702
-                  file: 
+                  file:
                     type: string
                     example: base64EncodedFile
         additionalComments:
@@ -60,8 +60,8 @@ components:
       properties:
         data:
           allOf:
-          - $ref: '#/components/schemas/ReimbursementRequestObject'
-          - type: object
+            - $ref: '#/components/schemas/ReimbursementRequestObject'
+            - type: object
           properties:
             lateEntry:
               type: boolean
@@ -90,22 +90,22 @@ components:
           items:
             type: object
             properties:
-              approvalDate: 
+              approvalDate:
                 type: string
                 example: '2023-05-24T20:08:34.000Z'
               fileObj:
                 type: object
                 properties:
-                  name: 
+                  name:
                     type: string
                     example: my_approval.pdf
-                  size: 
+                  size:
                     type: number
                     example: 94702
-                  date: 
+                  date:
                     type: string
                     example: '2023-06-05T20:08:38.709Z'
-                  file: 
+                  file:
                     type: string
                     example: base64EncodedFile
   responses:
@@ -147,7 +147,7 @@ paths:
       responses:
         '201':
           description: OK
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReimbursementRequest'
@@ -159,13 +159,13 @@ paths:
       tags:
         - Requests
       summary: Returns all request documents from the database.
-      description:  Returns all request documents from the database.
+      description: Returns all request documents from the database.
       parameters:
         - in: query
           name: minimal
           schema:
             type: boolean
-            example: true 
+            example: true
           description: Boolean to determine if a minimal version of each document is returned.
         - in: query
           name: before
@@ -208,7 +208,7 @@ paths:
           name: minimal
           schema:
             type: boolean
-            example: true 
+            example: true
           description: Boolean to determine if a minimal version of each document is returned.
         - in: query
           name: idir
@@ -294,22 +294,22 @@ paths:
                   items:
                     type: object
                     properties:
-                      approvalDate: 
+                      approvalDate:
                         type: string
                         example: '2023-05-24T20:08:34.000Z'
                       fileObj:
                         type: object
                         properties:
-                          name: 
+                          name:
                             type: string
                             example: my_approval.pdf
-                          size: 
+                          size:
                             type: number
                             example: 94702
-                          date: 
+                          date:
                             type: string
                             example: '2023-06-05T20:08:38.709Z'
-                          file: 
+                          file:
                             type: string
                             example: base64EncodedFile
                 purchases:
@@ -335,7 +335,7 @@ paths:
                           size:
                             type: number
                             example: 94702
-                          file: 
+                          file:
                             type: string
                             example: base64EncodedFile
                 additionalComments:
@@ -363,6 +363,62 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: 'An invalid state was requested. || Forbidden: User does not match requested record.' 
+                example: 'An invalid state was requested. || Forbidden: User does not match requested record.'
+        '429':
+          $ref: '#/components/responses/429TooManyRequests'
+
+  /requests/{id}/files:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Requests
+      summary: Returns a single file from a specific request record.
+      description: Returns a single file from a specific request record.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            example: 64480513a30c8be7b83d9593
+          description: The document ID of the request record.
+        - in: query
+          name: date
+          schema:
+            type: string
+            example: 2023-07-03T19:50:22.310Z
+          description: The upload date of the desired file.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  file:
+                    type: string
+                    example: base64encodedFile
+        '400':
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'ID was malformed. Cannot complete request. || Request could not be processed.'
+        '403':
+          description: Forbidden
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'Forbidden: User does not match requested record.'
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'No file matching that request. || No record with that ID found.'
         '429':
           $ref: '#/components/responses/429TooManyRequests'
