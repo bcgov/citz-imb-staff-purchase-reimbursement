@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useContext } from 'react';
 import { RequestStates } from '../utils/convertState';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -11,6 +11,7 @@ import { Approval } from '../interfaces/Approval';
 import RequestForm from '../components/custom/forms/RequestForm';
 import BackButton from '../components/bcgov/BackButton';
 import { marginBlock } from '../constants/styles';
+import { ErrorContext, errorStyles } from '../components/custom/notifications/ErrorWrapper';
 
 /**
  * @description A page showing an individual reimbursement requests and all its fields.
@@ -33,6 +34,9 @@ const IndividualRequest = () => {
   const isAdmin = authState.userInfo.client_roles?.includes('admin') || false;
   const [locked, setLocked] = useState<boolean>(false);
   const [showRecord, setShowRecord] = useState<boolean>(true);
+
+  // Error notification
+  const { setErrorState } = useContext(ErrorContext);
 
   // Fired when page is loaded.
   useEffect(() => {
@@ -93,10 +97,18 @@ const IndividualRequest = () => {
         switch (status) {
           case 401:
             console.warn('User is unauthenticated. Redirecting to login.');
+            setErrorState({
+              text: 'User is unauthenticated. Redirecting to login.',
+              open: true,
+            });
             window.location.reload();
             break;
           case 403:
             console.warn('User is not authorized to view record.');
+            setErrorState({
+              text: 'User is not authorized to view record.',
+              open: true,
+            });
             // Request was not a success. User didn't get a record back, so don't show the form.
             setShowRecord(false);
             break;
@@ -147,11 +159,21 @@ const IndividualRequest = () => {
       const response = await axios(axiosReqConfig);
       if (response.status === 200) {
         sessionStorage.removeItem('target-page');
+        setErrorState({
+          text: 'Update Successful',
+          open: true,
+          style: errorStyles.success,
+        });
         // Return to home page
         navigate(-1);
       }
     } catch (e) {
       console.warn('Record could not be updated.');
+      setErrorState({
+        text: 'Update was unsuccessful.',
+        open: true,
+        style: errorStyles.error,
+      });
     }
   };
 
