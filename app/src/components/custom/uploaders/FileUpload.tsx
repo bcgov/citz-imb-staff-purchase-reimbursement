@@ -43,12 +43,11 @@ const FileUpload = (props: FileUploadProps) => {
   // Assumption: no file for this request will have exactly the same upload date down to the millisecond
   const retrieveFile = async () => {
     const { BACKEND_URL } = Constants;
-    console.log(files[index].date);
     const axiosReqConfig = {
       url: `${BACKEND_URL}/api/requests/${id}/files?date=${files[index].date}`,
       method: `get`,
       headers: {
-        Authorization: `Bearer ${authState.access_token}`,
+        Authorization: `Bearer ${authState.accessToken}`,
       },
     };
     const file: string = await axios(axiosReqConfig).then((response) => response.data.file);
