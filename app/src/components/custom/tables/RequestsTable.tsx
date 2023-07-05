@@ -498,7 +498,7 @@ const RequestsTable = (props: RequestTableProps) => {
                 />
               </HeaderCell>
               <HeaderCell>
-                Suppliers
+                Vendors
                 <SortButton
                   id='suppliers'
                   currentValue={dataManipulator.suppliers.sort}
@@ -508,7 +508,7 @@ const RequestsTable = (props: RequestTableProps) => {
                   id='suppliers'
                   variant='standard'
                   name='suppliers'
-                  aria-label='Suppliers Filter Field'
+                  aria-label='Vendors Filter Field'
                   aria-description='Enter text here to filter the table data.'
                   sx={{
                     ...filterStyle,

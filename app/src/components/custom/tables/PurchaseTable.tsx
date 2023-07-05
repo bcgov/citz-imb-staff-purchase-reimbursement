@@ -37,7 +37,7 @@ const PurchaseTable = (props: PurchaseTableProps) => {
         <TableHead>
           <TableRow>
             <HeaderCell>#</HeaderCell>
-            <HeaderCell>Supplier</HeaderCell>
+            <HeaderCell>Vendor</HeaderCell>
             <HeaderCell>Purchase Date</HeaderCell>
             <HeaderCell>Cost</HeaderCell>
             <HeaderCell>Receipt</HeaderCell>
