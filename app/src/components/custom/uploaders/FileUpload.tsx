@@ -1,6 +1,6 @@
 import { Button } from '@mui/material';
 import { IFile } from '../../../interfaces/IFile';
-import { Dispatch, SetStateAction, useRef } from 'react';
+import { Dispatch, SetStateAction, useContext, useRef } from 'react';
 import { buttonStyles } from '../../bcgov/ButtonStyles';
 import { bcgov } from '../../../constants/colours';
 import { normalFont } from '../../../constants/fonts';
@@ -9,6 +9,7 @@ import axios from 'axios';
 import Constants from '../../../constants/Constants';
 import { useAuthService } from '../../../keycloak';
 import { useParams } from 'react-router-dom';
+import { ErrorContext, errorStyles } from '../notifications/ErrorWrapper';
 
 /**
  * @interface
@@ -39,20 +40,30 @@ const FileUpload = (props: FileUploadProps) => {
   const fileString = useRef('');
   const { state: authState } = useAuthService();
 
+  // Error notification
+  const { setErrorState } = useContext(ErrorContext);
+
   // Gets the file from the API and returns the base64 string of the file
   // Assumption: no file for this request will have exactly the same upload date down to the millisecond
   const retrieveFile = async () => {
     const { BACKEND_URL } = Constants;
-    console.log(files[index].date);
-    const axiosReqConfig = {
-      url: `${BACKEND_URL}/api/requests/${id}/files?date=${files[index].date}`,
-      method: `get`,
-      headers: {
-        Authorization: `Bearer ${authState.access_token}`,
-      },
-    };
-    const file: string = await axios(axiosReqConfig).then((response) => response.data.file);
-    return file;
+    try {
+      const axiosReqConfig = {
+        url: `${BACKEND_URL}/api/requests/${id}/files?date=${files[index].date}`,
+        method: `get`,
+        headers: {
+          Authorization: `Bearer ${authState.access_token}`,
+        },
+      };
+      const file: string = await axios(axiosReqConfig).then((response) => response.data.file);
+      return file;
+    } catch (e: any) {
+      setErrorState({
+        text: 'File could not be retrieved.',
+        open: true,
+        style: errorStyles.error,
+      });
+    }
   };
 
   // If the file isn't already stored, retrieves the file and uses a false anchor link to download
@@ -77,9 +88,14 @@ const FileUpload = (props: FileUploadProps) => {
 
   // When a file is uploaded. Checks size and updates file list.
   const handleFilesChange = async (e: any) => {
-    if (e.target.files[0].size > 10485760) {
-      // TODO: Replace with error text for user.
-      alert('File size is over 10MB and will not be uploaded.');
+    // File size must be below 10MB
+    const maxFileSize = 10485760;
+    if (e.target.files[0].size > maxFileSize) {
+      setErrorState({
+        text: 'File size is over 10MB and will not be uploaded.',
+        open: true,
+        style: errorStyles.warning,
+      });
     } else {
       const tempFiles = [...files];
       const tempFile: IFile = {
