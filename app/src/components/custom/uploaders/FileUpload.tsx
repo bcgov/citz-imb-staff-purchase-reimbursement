@@ -52,7 +52,7 @@ const FileUpload = (props: FileUploadProps) => {
         url: `${BACKEND_URL}/api/requests/${id}/files?date=${files[index].date}`,
         method: `get`,
         headers: {
-          Authorization: `Bearer ${authState.access_token}`,
+          Authorization: `Bearer ${authState.accessToken}`,
         },
       };
       const file: string = await axios(axiosReqConfig).then((response) => response.data.file);
@@ -171,7 +171,10 @@ const FileUpload = (props: FileUploadProps) => {
           <DeletePrompt
             id={`fileDelete${source}${index}`}
             title='Remove File?'
-            blurb='Are you sure you want to remove this file?;;This is not recoverable, except by leaving this request without updating.'
+            blurb={[
+              'Are you sure you want to remove this file?',
+              'This is not recoverable, except by leaving this request without updating.',
+            ]}
             deleteHandler={() => {
               const tempFiles: IFile[] = [...files];
               delete tempFiles[index].file;

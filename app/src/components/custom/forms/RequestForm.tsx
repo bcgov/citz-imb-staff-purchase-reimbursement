@@ -157,7 +157,10 @@ const RequestForm = (props: RequestFormProps) => {
       <DeletePrompt
         deleteHandler={handleDelete}
         title='Delete Request?'
-        blurb='Are you sure you want to delete this request?;;This action will hide the request from the requestor and may only be undone by an administrator.'
+        blurb={[
+          'Are you sure you want to delete this request?',
+          'This action will hide the request from the requestor and may only be undone by an administrator.',
+        ]}
         id='deletePrompt'
       />
       <Paper
