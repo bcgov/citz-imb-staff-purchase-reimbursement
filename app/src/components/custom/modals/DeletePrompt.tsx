@@ -13,7 +13,7 @@ import { buttonStyles } from '../../bcgov/ButtonStyles';
 interface DeletePromptProps {
   deleteHandler: () => void;
   title: string;
-  blurb: string;
+  blurb: string[];
   id: string;
 }
 
@@ -41,7 +41,7 @@ const DeletePrompt = (props: DeletePromptProps) => {
       >
         {title}
       </h4>
-      {blurb.split(';;').map((paragraph, index) => {
+      {blurb.map((paragraph, index) => {
         const key = `blurb${title}${index}`;
         return (
           <p key={key} style={{ textAlign: 'start' }}>

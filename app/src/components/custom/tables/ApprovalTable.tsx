@@ -87,7 +87,10 @@ const ApprovalTable = (props: ApprovalTableProps) => {
       <DeletePrompt
         id='approvalRemove'
         title='Remove Approval?'
-        blurb='Are you sure you want to remove this approval?;;This is not recoverable, except by leaving this request without updating.'
+        blurb={[
+          'Are you sure you want to remove this approval?',
+          'This is not recoverable, except by leaving this request without updating.',
+        ]}
         deleteHandler={removeApproval}
       />
       <Table aria-label='approval-files'>

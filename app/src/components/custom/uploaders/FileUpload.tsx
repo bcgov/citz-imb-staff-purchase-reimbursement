@@ -154,7 +154,10 @@ const FileUpload = (props: FileUploadProps) => {
           <DeletePrompt
             id={`fileDelete${source}${index}`}
             title='Remove File?'
-            blurb='Are you sure you want to remove this file?;;This is not recoverable, except by leaving this request without updating.'
+            blurb={[
+              'Are you sure you want to remove this file?',
+              'This is not recoverable, except by leaving this request without updating.',
+            ]}
             deleteHandler={() => {
               const tempFiles: IFile[] = [...files];
               delete tempFiles[index].file;
