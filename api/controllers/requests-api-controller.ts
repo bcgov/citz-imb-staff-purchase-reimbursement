@@ -273,8 +273,6 @@ export const updateRequestState = async (req: Request, res: Response) => {
       })
     : [];
 
-  console.log(refinedApprovals);
-
   // Create setting object
   const newProperties = {
     approvals: refinedApprovals,
