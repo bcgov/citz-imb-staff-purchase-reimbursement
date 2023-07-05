@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState, MouseEvent, CSSProperties } from 'react';
+import { Dispatch, SetStateAction, useContext, useState, MouseEvent, CSSProperties } from 'react';
 import { RequestStates, convertStateToStatus } from '../../../utils/convertState';
 import { useNavigate } from 'react-router-dom';
 import { ReimbursementRequest } from '../../../interfaces/ReimbursementRequest';
@@ -31,6 +31,7 @@ import Constants from '../../../constants/Constants';
 import { useAuthService } from '../../../keycloak';
 import BackButton from '../../bcgov/BackButton';
 import DeletePrompt from '../modals/DeletePrompt';
+import { ErrorContext, errorStyles } from '../notifications/ErrorWrapper';
 
 /**
  * @interface
@@ -98,6 +99,9 @@ const RequestForm = (props: RequestFormProps) => {
     setAnchorEl(null);
   };
 
+  // Error notification
+  const { setErrorState } = useContext(ErrorContext);
+
   const handleDelete = async () => {
     try {
       const axiosReqConfig = {
@@ -114,11 +118,21 @@ const RequestForm = (props: RequestFormProps) => {
       const response = await axios(axiosReqConfig);
       if (response.status === 200) {
         sessionStorage.removeItem('target-page');
+        setErrorState({
+          text: 'Request Deleted.',
+          open: true,
+          style: errorStyles.success,
+        });
         // Return to home page
         navigate(-1);
       }
     } catch (e) {
       console.warn(e);
+      setErrorState({
+        text: 'Deletion Unsuccessful.',
+        open: true,
+        style: errorStyles.error,
+      });
     }
   };
 

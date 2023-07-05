@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import Constants from '../constants/Constants';
 import axios from 'axios';
 import RequestsTable from '../components/custom/tables/RequestsTable';
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Switch } from '@mui/material';
 import LinkButton from '../components/bcgov/LinkButton';
 import { buttonStyles } from '../components/bcgov/ButtonStyles';
+import { ErrorContext } from '../components/custom/notifications/ErrorWrapper';
 
 /**
  * @description The Home page, showing a list of reimbursement requests.
@@ -22,6 +23,8 @@ const Home = () => {
     isAdmin && sessionStorage.getItem('adminView') === 'true',
   );
   const navigate = useNavigate();
+  // For ErrorWrapper notification
+  const { setErrorState } = useContext(ErrorContext);
 
   // Fires on page load.
   useEffect(() => {
@@ -52,11 +55,19 @@ const Home = () => {
         switch (status) {
           case 401:
             console.warn('User is unauthenticated. Redirecting to login.');
+            setErrorState({
+              text: 'User is unauthenticated. Redirecting to login.',
+              open: true,
+            });
             window.location.reload();
             break;
           case 404:
             // User has no records.
             setRequests([]);
+            setErrorState({
+              text: 'No records for this user.',
+              open: true,
+            });
             break;
           default:
             console.warn(e);
