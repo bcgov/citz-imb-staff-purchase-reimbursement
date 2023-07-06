@@ -265,7 +265,7 @@ export const updateRequestState = async (req: Request, res: Response) => {
           if (tempRecord.fileObj && tempRecord.fileObj.file) {
             // New file incoming. Replace original.
             return tempRecord;
-          } else if (existingList[index].fileObj) {
+          } else if (existingList[index] && existingList[index].fileObj) {
             // File exists on original, but not on incoming request
             if (tempRecord.fileObj && tempRecord.fileObj.removed) {
               // File has since been removed by the user
