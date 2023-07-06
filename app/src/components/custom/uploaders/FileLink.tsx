@@ -10,6 +10,16 @@ import { useAuthService } from '../../../keycloak';
 import { useParams } from 'react-router-dom';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 
+/**
+ * @interface
+ * @description Properties passed to the FileLink component.
+ * @property {string} uid The unique ID for this component
+ * @property {IFile[]} files A list of IFiles.
+ * @property {Dispatch<SetStateAction<Array<IFile>>>} setFiles A function to set the files variable.
+ * @property {number} index The index location of this file in the files list.
+ * @property {string} source The type of list this component is used for. Usually Purchase or Approval.
+ * @property {boolean} disabled Optional: Whether this component should be disabled for interaction.
+ */
 interface FileLinkProps {
   uid: string;
   files: IFile[];
@@ -18,6 +28,12 @@ interface FileLinkProps {
   source: string;
   disabled?: boolean;
 }
+
+/**
+ * @description A component that handles the link to download and remove files.
+ * @param {FileLinkProps} props Properties passed to the component
+ * @returns A FileLink React component.
+ */
 const FileLink = (props: FileLinkProps) => {
   const { uid, files, setFiles, index, source, disabled } = props;
   const { state: authState } = useAuthService();

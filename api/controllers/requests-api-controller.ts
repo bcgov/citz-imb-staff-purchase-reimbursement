@@ -379,10 +379,38 @@ export const getFile = async (req: Request, res: Response) => {
         if (!desiredFile) {
           return res.status(404).send('No file matches that request.');
         }
-        // TODO: Mark file as downloaded here as well....
+
+        // Update file to be marked as downloaded.
+        if (desiredFile.source === 'purchase') {
+          await collection.updateOne(
+            {
+              _id: { $eq: new ObjectId(id) },
+              'purchases.fileObj.date': date,
+            },
+            {
+              $set: {
+                'purchases.$.fileObj.downloaded': true,
+              },
+            },
+          );
+        } else {
+          await collection.updateOne(
+            {
+              _id: { $eq: new ObjectId(id) },
+              'approvals.fileObj.date': date,
+            },
+            {
+              $set: {
+                'approvals.$.fileObj.downloaded': true,
+              },
+            },
+          );
+        }
+
         return res.status(200).json({ file: desiredFile.file });
       } else {
         // No date? Return all files
+        // TODO: Mark all files as downloaded.
         return res.status(200).json({ files: allFiles });
       }
     }

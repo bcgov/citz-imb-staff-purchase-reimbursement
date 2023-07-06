@@ -34,8 +34,6 @@ const IndividualRequest = () => {
   const [locked, setLocked] = useState<boolean>(false);
   const [showRecord, setShowRecord] = useState<boolean>(true);
 
-  console.log(purchaseFiles);
-
   // Fired when page is loaded.
   useEffect(() => {
     getReimbursementRequest();
@@ -49,6 +47,7 @@ const IndividualRequest = () => {
     deleted: false,
     downloaded: false,
     removed: false,
+    source: '',
   };
 
   // Retrieves a single request's info
