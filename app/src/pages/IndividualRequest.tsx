@@ -34,10 +34,22 @@ const IndividualRequest = () => {
   const [locked, setLocked] = useState<boolean>(false);
   const [showRecord, setShowRecord] = useState<boolean>(true);
 
+  console.log(purchaseFiles);
+
   // Fired when page is loaded.
   useEffect(() => {
     getReimbursementRequest();
   }, []);
+
+  const tempFile: IFile = {
+    file: '',
+    name: '',
+    size: 0,
+    date: new Date(Date.now()).toISOString(),
+    deleted: false,
+    downloaded: false,
+    removed: false,
+  };
 
   // Retrieves a single request's info
   const getReimbursementRequest = useCallback(async () => {
@@ -53,8 +65,14 @@ const IndividualRequest = () => {
       if (response.status === 200) {
         // Populate values with existing record
         const reimbursementRequest: ReimbursementRequest = response.data;
-        const purchaseFileArray: Array<IFile> = [];
-        const approvalFileArray: Array<IFile> = [];
+
+        // These arrays need to be as pre-populated, otherwise slice has unexpected behaviour with 0-length lists.
+        const purchaseFileArray: Array<IFile> = Array<IFile>(
+          reimbursementRequest.purchases.length,
+        ).fill(tempFile);
+        const approvalFileArray: Array<IFile> = Array<IFile>(
+          reimbursementRequest.approvals?.length || 0,
+        ).fill(tempFile);
 
         if (reimbursementRequest.purchases.length > 0) {
           reimbursementRequest.purchases.forEach((purchase, index) => {

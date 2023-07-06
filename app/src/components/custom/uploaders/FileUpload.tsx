@@ -59,8 +59,10 @@ const FileUpload = (props: FileUploadProps) => {
       tempFile.file = base64File;
       tempFile.name = e.target.files[0].name;
       tempFile.size = e.target.files[0].size;
+      console.log(index);
       tempFiles.splice(index, 1, tempFile);
       setFiles(tempFiles);
+      console.log(tempFiles);
     }
   };
 
