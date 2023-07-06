@@ -41,7 +41,10 @@ const FileLink = (props: FileLinkProps) => {
   // If the file isn't already stored, retrieves the file and uses a false anchor link to download
   const downloadFile = async () => {
     const tempLink = document.createElement('a');
-    tempLink.href = (await retrieveFile()) as unknown as string;
+    // If the file is still local (not yet uploaded), take that version, otherwise get from API.
+    tempLink.href = files[index].file
+      ? (files[index].file as string)
+      : ((await retrieveFile()) as unknown as string);
     tempLink.download = files[index].name;
     tempLink.click();
 
