@@ -246,38 +246,53 @@ export const updateRequestState = async (req: Request, res: Response) => {
     }
   }
 
-  // If new files weren't uploaded, incoming patch won't have base64 file data, only metadata.
-  // Check each incoming file in purchases and approvals. If there's no base64 file, use the file from the existing record
-  const refinedPurchases: Purchase[] = purchases
-    ? purchases.map((purchase: Purchase, index: number) => {
-        if (purchase.fileObj && purchase.fileObj.file) {
-          return purchase;
-        } else {
-          return existingRequest.purchases[index];
-        }
-      })
-    : [];
+  /**
+   * @description Determines whether the records need to update their files.
+   * @param {Purchase[] | Approval[]} records A list of records that contain fileObj properties.
+   * @returns A list of records that has updated file information.
+   */
+  const recordRefiner = (records: Purchase[] | Approval[]) =>
+    records
+      ? records.map((record: unknown, index: number) => {
+          // Determine the type of records provided.
+          const listType = (record as Purchase).supplier ? 'purchase' : 'approval';
+          // Get the existing list of records
+          const existingList: Purchase[] | Approval[] =
+            listType === 'purchase' ? existingRequest.purchases : existingRequest.approvals;
+          // A mutable record copy
+          const tempRecord =
+            listType === 'purchase' ? { ...(record as Purchase) } : { ...(record as Approval) };
+          if (tempRecord.fileObj && tempRecord.fileObj.file) {
+            // New file incoming. Replace original.
+            return tempRecord;
+          } else if (existingList[index].fileObj) {
+            // File exists on original, but not on incoming request
+            if (tempRecord.fileObj && tempRecord.fileObj.removed) {
+              // File has since been removed by the user
+              delete tempRecord.fileObj;
+              return tempRecord;
+            } else {
+              // File was not included for bandwidth reasons. Keep original.
+              tempRecord.fileObj.file = existingList[index].fileObj.file;
+              return tempRecord;
+            }
+          } else {
+            // No incoming new file, and original didn't have file either. Don't include file info.
+            // Need to still update info from purchase
+            delete tempRecord.fileObj;
+            return tempRecord;
+          }
+        })
+      : [];
 
-  const refinedApprovals: Approval[] = approvals
-    ? approvals.map((approval: Approval, index: number) => {
-        if (approval.fileObj && approval.fileObj.file) {
-          return approval;
-        } else if (existingRequest.approvals[index].fileObj) {
-          return {
-            ...approval,
-            fileObj: existingRequest.approvals[index].fileObj,
-          };
-        } else {
-          return existingRequest.approvals[index];
-        }
-      })
-    : [];
+  const refinedPurchases: unknown = recordRefiner(purchases);
+  const refinedApprovals: unknown = recordRefiner(approvals);
 
   // Create setting object
   const newProperties = {
-    approvals: refinedApprovals,
+    approvals: refinedApprovals as Approval[],
     additionalComments: additionalComments || existingRequest?.additionalComments || '',
-    purchases: refinedPurchases,
+    purchases: refinedPurchases as Purchase[],
     employeeId: employeeId || existingRequest?.employeeId || 999999,
     state:
       refinedState === undefined || refinedState === null ? existingRequest.state : refinedState,
@@ -364,6 +379,7 @@ export const getFile = async (req: Request, res: Response) => {
         if (!desiredFile) {
           return res.status(404).send('No file matches that request.');
         }
+        // TODO: Mark file as downloaded here as well....
         return res.status(200).json({ file: desiredFile.file });
       } else {
         // No date? Return all files
