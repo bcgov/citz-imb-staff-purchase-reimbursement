@@ -1,6 +1,6 @@
 import { Button, Tooltip } from '@mui/material';
 import { IFile } from '../../../interfaces/IFile';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { bcgov } from '../../../constants/colours';
 import { normalFont } from '../../../constants/fonts';
 import DeletePrompt from '../modals/DeletePrompt';
@@ -9,6 +9,7 @@ import Constants from '../../../constants/Constants';
 import { useAuthService } from '../../../keycloak';
 import { useParams } from 'react-router-dom';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
+import { ErrorContext, errorStyles } from '../notifications/ErrorWrapper';
 
 /**
  * @interface
@@ -40,18 +41,29 @@ const FileLink = (props: FileLinkProps) => {
   const { id } = useParams();
   const { BACKEND_URL } = Constants;
 
+  // Error notification
+  const { setErrorState } = useContext(ErrorContext);
+
   // Gets the file from the API and returns the base64 string of the file
   // Assumption: no file for this request will have exactly the same upload date down to the millisecond
   const retrieveFile = async () => {
-    const axiosReqConfig = {
-      url: `${BACKEND_URL}/api/requests/${id}/files?date=${files[index].date}`,
-      method: `get`,
-      headers: {
-        Authorization: `Bearer ${authState.accessToken}`,
-      },
-    };
-    const file: string = await axios(axiosReqConfig).then((response) => response.data.file);
-    return file;
+    try {
+      const axiosReqConfig = {
+        url: `${BACKEND_URL}/api/requests/${id}/files?date=${files[index].date}`,
+        method: `get`,
+        headers: {
+          Authorization: `Bearer ${authState.accessToken}`,
+        },
+      };
+      const file: string = await axios(axiosReqConfig).then((response) => response.data.file);
+      return file;
+    } catch (e: any) {
+      setErrorState({
+        text: 'File could not be retrieved.',
+        open: true,
+        style: errorStyles.error,
+      });
+    }
   };
 
   // If the file isn't already stored, retrieves the file and uses a false anchor link to download

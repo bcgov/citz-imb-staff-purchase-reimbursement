@@ -1,8 +1,9 @@
 import { Button } from '@mui/material';
 import { IFile } from '../../../interfaces/IFile';
-import { Dispatch, SetStateAction } from 'react';
-import { buttonStyles } from '../../bcgov/ButtonStyles';
 import FileLink from './FileLink';
+import { Dispatch, SetStateAction, useContext } from 'react';
+import { buttonStyles } from '../../bcgov/ButtonStyles';
+import { ErrorContext, errorStyles } from '../notifications/ErrorWrapper';
 
 /**
  * @interface
@@ -30,6 +31,9 @@ const FileUpload = (props: FileUploadProps) => {
   const { files, setFiles, index, disabled, source } = props;
   const uid = Math.random().toString();
 
+  // Error notification
+  const { setErrorState } = useContext(ErrorContext);
+
   // Converts file to base64 for easy storage
   const toBase64 = (file: File) =>
     new Promise((resolve, reject) => {
@@ -41,9 +45,14 @@ const FileUpload = (props: FileUploadProps) => {
 
   // When a file is uploaded. Checks size and updates file list.
   const handleFilesChange = async (e: any) => {
-    if (e.target.files[0].size > 10485760) {
-      // TODO: Replace with error text for user.
-      alert('File size is over 10MB and will not be uploaded.');
+    // File size must be below 10MB
+    const maxFileSize = 10485760;
+    if (e.target.files[0].size > maxFileSize) {
+      setErrorState({
+        text: 'File size is over 10MB and will not be uploaded.',
+        open: true,
+        style: errorStyles.warning,
+      });
     } else {
       const tempFiles = [...files];
       const tempFile: IFile = {
