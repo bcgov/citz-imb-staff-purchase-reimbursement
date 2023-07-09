@@ -8,7 +8,7 @@ import { getUserInfo } from '../keycloak/utils';
 import Constants from '../constants/Constants';
 import { Purchase } from '../interfaces/Purchase';
 import { Approval } from '../interfaces/Approval';
-import { sendChangeNotification } from '../helpers/useGCNotify';
+import { sendChangeNotification, sendRequestSubmittedNotification } from '../helpers/useGCNotify';
 import { getIDIRUser, IDIRUser } from '../helpers/useCssApi';
 
 // All functions use requests collection
@@ -206,6 +206,7 @@ export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { employeeId, purchases, approvals, additionalComments, state, isAdmin } = req.body;
   const { TESTING, FRONTEND_URL } = Constants;
+  const { GC_NOTIFY_ADMIN_EMAIL } = process.env;
 
   // If ID doesn't match schema, return a 400
   try {
@@ -241,6 +242,12 @@ export const updateRequestState = async (req: Request, res: Response) => {
       // If previous state was Incomplete, change it to Submitted
       if (existingRequest.state === RequestStates.INCOMPLETE) {
         refinedState = RequestStates.SUBMITTED;
+        if (!TESTING) {
+          sendRequestSubmittedNotification(
+            GC_NOTIFY_ADMIN_EMAIL,
+            `${FRONTEND_URL}/request/${existingRequest._id}`,
+          );
+        }
       }
     } else {
       // Otherwise, submission should be marked as Incomplete

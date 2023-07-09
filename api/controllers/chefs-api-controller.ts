@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { Collection } from 'mongodb';
 import chefRequestSchema from '../schemas/chefRequestSchema';
 import RequestStates from '../constants/RequestStates';
-import { sendNewRequestNotification } from '../helpers/useGCNotify';
 import Constants from '../constants/Constants';
 
 /**
@@ -37,9 +36,6 @@ const removeBlankKeys = (obj: object) => {
  * @returns {Response}        Response with status code and either text or JSON data
  */
 const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
-  const { GC_NOTIFY_ADMIN_EMAIL } = process.env;
-  const { TESTING, FRONTEND_URL } = Constants;
-
   let requestData = { ...req.body };
   try {
     // Remove properties that may be blank. Otherwise the validation does not pass for optional fields.
@@ -62,12 +58,6 @@ const submitRequestHandler = async (req: ChefsRequest, res: Response) => {
   const response = await collection.insertOne(newPurchaseRequest);
   // If insertedID exists, the insert was successful!
   if (response.insertedId) {
-    if (!TESTING) {
-      sendNewRequestNotification(
-        GC_NOTIFY_ADMIN_EMAIL,
-        `${FRONTEND_URL}/request/${response.insertedId}`,
-      );
-    }
     return res.status(201).json({ ...newPurchaseRequest, _id: response.insertedId });
   }
   // Generic error response

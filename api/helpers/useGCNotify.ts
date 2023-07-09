@@ -30,7 +30,7 @@ const contactGCNotify = async (email: string, url: string, template: string) => 
  * @param {string}  email The email address for the recipient mailbox.
  * @param {string}  url  The URL needed to access the new request submission.
  */
-export const sendNewRequestNotification = (email: string, url: string) => {
+export const sendRequestSubmittedNotification = (email: string, url: string) => {
   contactGCNotify(email, url, Templates.NewRequestNotification);
 };
 
