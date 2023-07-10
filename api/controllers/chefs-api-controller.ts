@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { Collection } from 'mongodb';
 import chefRequestSchema from '../schemas/chefRequestSchema';
 import RequestStates from '../constants/RequestStates';
-import Constants from '../constants/Constants';
 
 /**
  * @interface
