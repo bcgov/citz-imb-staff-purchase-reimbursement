@@ -16,7 +16,7 @@ import {
 import HeaderCell from './HeaderCell';
 import CustomTableCell from './CustomTableCell';
 import { ReimbursementRequest } from '../../../interfaces/ReimbursementRequest';
-import { RequestStates, convertStateToStatus } from '../../../utils/convertState';
+import { RequestStates, convertStateToStatus } from '../../../helpers/convertState';
 import { bcgov } from '../../../constants/colours';
 import LinkButton from '../../bcgov/LinkButton';
 import { buttonStyles } from '../../bcgov/ButtonStyles';
@@ -30,7 +30,7 @@ import PaginationControl, { PaginationControlObject } from './PaginationControl'
 // Date Picker
 import { DateRangePicker } from 'rsuite';
 import 'rsuite/dist/rsuite.css';
-import { dateRanges } from '../../../utils/dateRanges';
+import { dateRanges } from '../../../helpers/dateRanges';
 
 /**
  * @interface

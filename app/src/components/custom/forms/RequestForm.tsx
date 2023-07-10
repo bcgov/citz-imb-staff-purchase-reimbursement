@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useContext, useState, MouseEvent, CSSProperties } from 'react';
-import { RequestStates, convertStateToStatus } from '../../../utils/convertState';
+import { RequestStates, convertStateToStatus } from '../../../helpers/convertState';
 import { useNavigate } from 'react-router-dom';
 import { ReimbursementRequest } from '../../../interfaces/ReimbursementRequest';
 import {
@@ -240,6 +240,7 @@ const RequestForm = (props: RequestFormProps) => {
                       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                     >
+                      <MenuItem>Download All Files</MenuItem>
                       <MenuItem
                         onClick={() => {
                           navigate(`/user/${reimbursementRequest?.idir}`);

@@ -3,7 +3,7 @@ import { Purchase } from '../../../interfaces/Purchase';
 import { bcgov } from '../../../constants/colours';
 import CustomTableCell from './CustomTableCell';
 import HeaderCell from './HeaderCell';
-import FileUpload from '../uploaders/FileUpload';
+import FileUpload from '../fileHandlers/FileUpload';
 import { Dispatch, SetStateAction } from 'react';
 import { IFile } from '../../../interfaces/IFile';
 
