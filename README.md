@@ -27,6 +27,10 @@ Create a `.env` file in the root of the project. Populate it with values for eac
 | SSO_AUTH_SERVER_URL   | https://...   | Keycloak. Authorization URL.                                |
 | GC_NOTIFY_API_KEY     | somesecret    | API Key for GC Notify.                                      |
 | GC_NOTIFY_ADMIN_EMAIL | bob@gmail.com | Email address for admin mailbox.                            |
+| CSS_API_TOKEN_URL     | https://...   | URL for getting CSS API Token.                              |
+| CSS_API_CLIENT_ID     | my-id-1234    | Client ID for CSS API account.                              |
+| CSS_API_CLIENT_SECRET | somesecret    | Secret for CSS API account.                                 |
+| CSS_API_BASE_URL      | https://...   | Base URL for CSS API. Used for API calls.                   |
 | TESTING               | true          | Disables Keycloak for API testing.                          |
 | TEST_USERNAME         | username      | Username used for testing.                                  |
 | TEST_PASSWORD         | password      | Password used for testing.                                  |

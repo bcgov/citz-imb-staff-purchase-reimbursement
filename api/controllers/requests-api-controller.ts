@@ -10,6 +10,8 @@ import { Purchase } from '../interfaces/Purchase';
 import { Approval } from '../interfaces/Approval';
 import JSZip from 'jszip';
 import { IFile } from '../interfaces/IFile';
+import { sendChangeNotification, sendRequestSubmittedNotification } from '../helpers/useGCNotify';
+import { getIDIRUser, IDIRUser } from '../helpers/useCssApi';
 
 // All functions use requests collection
 const collection: Collection<RequestRecord> = db.collection<RequestRecord>('requests');
@@ -205,7 +207,8 @@ export const getRequestByID = async (req: Request, res: Response) => {
 export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { employeeId, purchases, approvals, additionalComments, state, isAdmin } = req.body;
-  const { TESTING } = Constants;
+  const { TESTING, FRONTEND_URL } = Constants;
+  const { GC_NOTIFY_ADMIN_EMAIL } = process.env;
 
   // If ID doesn't match schema, return a 400
   try {
@@ -241,10 +244,24 @@ export const updateRequestState = async (req: Request, res: Response) => {
       // If previous state was Incomplete, change it to Submitted
       if (existingRequest.state === RequestStates.INCOMPLETE) {
         refinedState = RequestStates.SUBMITTED;
+        sendRequestSubmittedNotification(
+          GC_NOTIFY_ADMIN_EMAIL,
+          `${FRONTEND_URL}/request/${existingRequest._id}`,
+        );
       }
     } else {
       // Otherwise, submission should be marked as Incomplete
       refinedState = RequestStates.INCOMPLETE;
+    }
+  } else {
+    // User is admin
+    // If the state is changed by admin to Incomplete or Complete, notify requestor
+    if (refinedState === RequestStates.INCOMPLETE || refinedState === RequestStates.COMPLETE) {
+      // Get user with matching IDIR
+      const users: IDIRUser[] = await getIDIRUser(existingRequest.idir);
+      if (users) {
+        sendChangeNotification(users.at(0).email, `${FRONTEND_URL}/request/${id}`);
+      }
     }
   }
 
