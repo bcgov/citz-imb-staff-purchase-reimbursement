@@ -35,7 +35,7 @@ const contactGCNotify = async (email: string, url: string, template: string) => 
  * @param {string}  url  The URL needed to access the new request submission.
  */
 export const sendRequestSubmittedNotification = (email: string, url: string) => {
-  contactGCNotify(email, url, Templates.NewRequestNotification);
+  contactGCNotify(email, url, Templates.NotifyAdminOfUpdate);
 };
 
 export const sendIncompleteReminder = (email: string, url: string) => {
