@@ -8,6 +8,8 @@ import { getUserInfo } from '../keycloak/utils';
 import Constants from '../constants/Constants';
 import { Purchase } from '../interfaces/Purchase';
 import { Approval } from '../interfaces/Approval';
+import JSZip from 'jszip';
+import { IFile } from '../interfaces/IFile';
 
 // All functions use requests collection
 const collection: Collection<RequestRecord> = db.collection<RequestRecord>('requests');
@@ -410,8 +412,37 @@ export const getFile = async (req: Request, res: Response) => {
         return res.status(200).json({ file: desiredFile.file });
       } else {
         // No date? Return all files
-        // TODO: Mark all files as downloaded.
-        return res.status(200).json({ files: allFiles });
+        // If any files are undefined (missing purchase or approvals), remove them.
+        // Remove any deleted files
+        const trimmedFiles = allFiles.filter((fileObj) => fileObj && !fileObj.deleted);
+
+        // Zip the files together
+        const zip = new JSZip();
+        trimmedFiles.forEach((fileObj: IFile) => {
+          // Only need the base64 hash, not declaritive info
+          zip.file(fileObj.name, fileObj.file.split('base64,')[1], {
+            base64: true, // must specify files are base64
+          });
+        });
+        // Creates the zip folder (as base64), then sends with appropriate declarative info
+        zip.generateAsync({ type: 'base64' }).then((content: string) => {
+          res.status(200).json({ zip: `data:application/zip;base64,${content}` });
+        });
+
+        // Mark all files as downloaded.
+        await collection.updateOne(
+          {
+            _id: { $eq: new ObjectId(id) },
+          },
+          {
+            $set: {
+              'purchases.$[].fileObj.downloaded': true,
+              'approvals.$[].fileObj.downloaded': true,
+            },
+          },
+        );
+
+        return res;
       }
     }
   } catch (e) {

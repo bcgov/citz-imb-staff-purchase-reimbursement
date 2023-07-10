@@ -32,6 +32,7 @@ import { useAuthService } from '../../../keycloak';
 import BackButton from '../../bcgov/BackButton';
 import DeletePrompt from '../modals/DeletePrompt';
 import { ErrorContext, errorStyles } from '../notifications/ErrorWrapper';
+import { getAllFiles } from '../../../helpers/fileDownloadAll';
 
 /**
  * @interface
@@ -240,7 +241,21 @@ const RequestForm = (props: RequestFormProps) => {
                       transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                       anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                     >
-                      <MenuItem>Download All Files</MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          try {
+                            getAllFiles(reimbursementRequest?._id || '', authState.accessToken);
+                          } catch (e: any) {
+                            setErrorState({
+                              text: 'File could not be retrieved.',
+                              open: true,
+                              style: errorStyles.error,
+                            });
+                          }
+                        }}
+                      >
+                        Download All Files
+                      </MenuItem>
                       <MenuItem
                         onClick={() => {
                           navigate(`/user/${reimbursementRequest?.idir}`);
