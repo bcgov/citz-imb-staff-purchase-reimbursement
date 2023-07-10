@@ -242,12 +242,10 @@ export const updateRequestState = async (req: Request, res: Response) => {
       // If previous state was Incomplete, change it to Submitted
       if (existingRequest.state === RequestStates.INCOMPLETE) {
         refinedState = RequestStates.SUBMITTED;
-        if (!TESTING) {
-          sendRequestSubmittedNotification(
-            GC_NOTIFY_ADMIN_EMAIL,
-            `${FRONTEND_URL}/request/${existingRequest._id}`,
-          );
-        }
+        sendRequestSubmittedNotification(
+          GC_NOTIFY_ADMIN_EMAIL,
+          `${FRONTEND_URL}/request/${existingRequest._id}`,
+        );
       }
     } else {
       // Otherwise, submission should be marked as Incomplete

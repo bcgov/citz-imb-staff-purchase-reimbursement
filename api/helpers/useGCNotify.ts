@@ -1,27 +1,31 @@
 import axios from 'axios';
 import Templates from '../constants/GCNotifyTemplates';
+import Constants from '../constants/Constants';
 
 const contactGCNotify = async (email: string, url: string, template: string) => {
   const { GC_NOTIFY_API_KEY } = process.env;
-  try {
-    await axios.post(
-      'https://api.notification.canada.ca/v2/notifications/email',
-      {
-        template_id: template,
-        email_address: email,
-        personalisation: {
-          url,
+  const { TESTING } = Constants;
+  if (!TESTING) {
+    try {
+      await axios.post(
+        'https://api.notification.canada.ca/v2/notifications/email',
+        {
+          template_id: template,
+          email_address: email,
+          personalisation: {
+            url,
+          },
         },
-      },
-      {
-        headers: {
-          Authorization: `ApiKey-v1 ${GC_NOTIFY_API_KEY}`,
-          'Content-Type': 'application/json',
+        {
+          headers: {
+            Authorization: `ApiKey-v1 ${GC_NOTIFY_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
         },
-      },
-    );
-  } catch (e) {
-    console.log(e);
+      );
+    } catch (e) {
+      console.log(e);
+    }
   }
 };
 
