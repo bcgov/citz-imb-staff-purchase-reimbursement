@@ -8,6 +8,10 @@ import { getUserInfo } from '../keycloak/utils';
 import Constants from '../constants/Constants';
 import { Purchase } from '../interfaces/Purchase';
 import { Approval } from '../interfaces/Approval';
+import JSZip from 'jszip';
+import { IFile } from '../interfaces/IFile';
+import { sendChangeNotification, sendRequestSubmittedNotification } from '../helpers/useGCNotify';
+import { getIDIRUser, IDIRUser } from '../helpers/useCssApi';
 
 // All functions use requests collection
 const collection: Collection<RequestRecord> = db.collection<RequestRecord>('requests');
@@ -203,7 +207,8 @@ export const getRequestByID = async (req: Request, res: Response) => {
 export const updateRequestState = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { employeeId, purchases, approvals, additionalComments, state, isAdmin } = req.body;
-  const { TESTING } = Constants;
+  const { TESTING, FRONTEND_URL } = Constants;
+  const { GC_NOTIFY_ADMIN_EMAIL } = process.env;
 
   // If ID doesn't match schema, return a 400
   try {
@@ -239,45 +244,74 @@ export const updateRequestState = async (req: Request, res: Response) => {
       // If previous state was Incomplete, change it to Submitted
       if (existingRequest.state === RequestStates.INCOMPLETE) {
         refinedState = RequestStates.SUBMITTED;
+        sendRequestSubmittedNotification(
+          GC_NOTIFY_ADMIN_EMAIL,
+          `${FRONTEND_URL}/request/${existingRequest._id}`,
+        );
       }
     } else {
       // Otherwise, submission should be marked as Incomplete
       refinedState = RequestStates.INCOMPLETE;
     }
+  } else {
+    // User is admin
+    // If the state is changed by admin to Incomplete or Complete, notify requestor
+    if (refinedState === RequestStates.INCOMPLETE || refinedState === RequestStates.COMPLETE) {
+      // Get user with matching IDIR
+      const users: IDIRUser[] = await getIDIRUser(existingRequest.idir);
+      if (users) {
+        sendChangeNotification(users.at(0).email, `${FRONTEND_URL}/request/${id}`);
+      }
+    }
   }
 
-  // If new files weren't uploaded, incoming patch won't have base64 file data, only metadata.
-  // Check each incoming file in purchases and approvals. If there's no base64 file, use the file from the existing record
-  const refinedPurchases: Purchase[] = purchases
-    ? purchases.map((purchase: Purchase, index: number) => {
-        if (purchase.fileObj && purchase.fileObj.file) {
-          return purchase;
-        } else {
-          return existingRequest.purchases[index];
-        }
-      })
-    : [];
+  /**
+   * @description Determines whether the records need to update their files.
+   * @param {Purchase[] | Approval[]} records A list of records that contain fileObj properties.
+   * @returns A list of records that has updated file information.
+   */
+  const recordRefiner = (records: Purchase[] | Approval[]) =>
+    records
+      ? records.map((record: unknown, index: number) => {
+          // Determine the type of records provided.
+          const listType = (record as Purchase).supplier ? 'purchase' : 'approval';
+          // Get the existing list of records
+          const existingList: Purchase[] | Approval[] =
+            listType === 'purchase' ? existingRequest.purchases : existingRequest.approvals;
+          // A mutable record copy
+          const tempRecord =
+            listType === 'purchase' ? { ...(record as Purchase) } : { ...(record as Approval) };
+          if (tempRecord.fileObj && tempRecord.fileObj.file) {
+            // New file incoming. Replace original.
+            return tempRecord;
+          } else if (existingList[index] && existingList[index].fileObj) {
+            // File exists on original, but not on incoming request
+            if (tempRecord.fileObj && tempRecord.fileObj.removed) {
+              // File has since been removed by the user
+              delete tempRecord.fileObj;
+              return tempRecord;
+            } else {
+              // File was not included for bandwidth reasons. Keep original.
+              tempRecord.fileObj.file = existingList[index].fileObj.file;
+              return tempRecord;
+            }
+          } else {
+            // No incoming new file, and original didn't have file either. Don't include file info.
+            // Need to still update info from purchase
+            delete tempRecord.fileObj;
+            return tempRecord;
+          }
+        })
+      : [];
 
-  const refinedApprovals: Approval[] = approvals
-    ? approvals.map((approval: Approval, index: number) => {
-        if (approval.fileObj && approval.fileObj.file) {
-          return approval;
-        } else if (existingRequest.approvals[index].fileObj) {
-          return {
-            ...approval,
-            fileObj: existingRequest.approvals[index].fileObj,
-          };
-        } else {
-          return existingRequest.approvals[index];
-        }
-      })
-    : [];
+  const refinedPurchases: unknown = recordRefiner(purchases);
+  const refinedApprovals: unknown = recordRefiner(approvals);
 
   // Create setting object
   const newProperties = {
-    approvals: refinedApprovals,
+    approvals: refinedApprovals as Approval[],
     additionalComments: additionalComments || existingRequest?.additionalComments || '',
-    purchases: refinedPurchases,
+    purchases: refinedPurchases as Purchase[],
     employeeId: employeeId || existingRequest?.employeeId || 999999,
     state:
       refinedState === undefined || refinedState === null ? existingRequest.state : refinedState,
@@ -364,10 +398,68 @@ export const getFile = async (req: Request, res: Response) => {
         if (!desiredFile) {
           return res.status(404).send('No file matches that request.');
         }
+
+        // Update file to be marked as downloaded.
+        if (desiredFile.source === 'purchase') {
+          await collection.updateOne(
+            {
+              _id: { $eq: new ObjectId(id) },
+              'purchases.fileObj.date': date,
+            },
+            {
+              $set: {
+                'purchases.$.fileObj.downloaded': true,
+              },
+            },
+          );
+        } else {
+          await collection.updateOne(
+            {
+              _id: { $eq: new ObjectId(id) },
+              'approvals.fileObj.date': date,
+            },
+            {
+              $set: {
+                'approvals.$.fileObj.downloaded': true,
+              },
+            },
+          );
+        }
+
         return res.status(200).json({ file: desiredFile.file });
       } else {
         // No date? Return all files
-        return res.status(200).json({ files: allFiles });
+        // If any files are undefined (missing purchase or approvals), remove them.
+        // Remove any deleted files
+        const trimmedFiles = allFiles.filter((fileObj) => fileObj && !fileObj.deleted);
+
+        // Zip the files together
+        const zip = new JSZip();
+        trimmedFiles.forEach((fileObj: IFile) => {
+          // Only need the base64 hash, not declaritive info
+          zip.file(fileObj.name, fileObj.file.split('base64,')[1], {
+            base64: true, // must specify files are base64
+          });
+        });
+        // Creates the zip folder (as base64), then sends with appropriate declarative info
+        zip.generateAsync({ type: 'base64' }).then((content: string) => {
+          res.status(200).json({ zip: `data:application/zip;base64,${content}` });
+        });
+
+        // Mark all files as downloaded.
+        await collection.updateOne(
+          {
+            _id: { $eq: new ObjectId(id) },
+          },
+          {
+            $set: {
+              'purchases.$[].fileObj.downloaded': true,
+              'approvals.$[].fileObj.downloaded': true,
+            },
+          },
+        );
+
+        return res;
       }
     }
   } catch (e) {

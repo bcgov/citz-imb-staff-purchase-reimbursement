@@ -11,7 +11,7 @@ import { bcgov } from '../../../constants/colours';
 import CustomTableCell from './CustomTableCell';
 import HeaderCell from './HeaderCell';
 import { IFile } from '../../../interfaces/IFile';
-import FileUpload from '../uploaders/FileUpload';
+import FileUpload from '../fileHandlers/FileUpload';
 import { Dispatch, SetStateAction, useRef } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers';
