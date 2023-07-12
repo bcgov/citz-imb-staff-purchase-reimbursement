@@ -20,6 +20,7 @@ export const UserReport = () => {
     description: '',
   });
   const { state: authState } = useAuthService();
+  const user = authState.userInfo;
 
   const maxDescCharacters = 300;
   const maxTitleCharacters = 100;
@@ -40,7 +41,14 @@ export const UserReport = () => {
         headers: {
           Authorization: `Bearer ${authState.accessToken}`,
         },
-        data: issueData,
+        data: {
+          title: issueData.title,
+          description: `\
+          ${issueData.description}\n\n \
+          Submitted by ${user.given_name} ${user.family_name}\n \
+          Email: ${user.email}\n \
+          On ${new Date().toLocaleString()}`,
+        },
       };
       const response = await axios(axiosReqConfig);
 
