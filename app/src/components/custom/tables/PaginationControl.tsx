@@ -1,5 +1,5 @@
 import { SetStateAction, Dispatch } from 'react';
-import { IconButton, MenuItem, Select } from '@mui/material';
+import { IconButton, MenuItem, Select, Tooltip } from '@mui/material';
 import { FirstPage, LastPage, NavigateBefore, NavigateNext } from '@mui/icons-material';
 
 /**
@@ -118,20 +118,27 @@ const PaginationControl = (props: PaginationControlProps) => {
         <MenuItem value={100}>100</MenuItem>
         <MenuItem value={1000}>1000</MenuItem>
       </Select>
+
       <IconButton
         onClick={goToFirstPage}
         disabled={controlObject.currentPage === 1 || noRecords}
         aria-label='Go to first table page.'
       >
-        <FirstPage />
+        <Tooltip title='First Page'>
+          <FirstPage />
+        </Tooltip>
       </IconButton>
+
       <IconButton
         onClick={goToPreviousPage}
         disabled={controlObject.currentPage === 1 || noRecords}
         aria-label='Go to previous table page.'
       >
-        <NavigateBefore />
+        <Tooltip title='Previous Page'>
+          <NavigateBefore />
+        </Tooltip>
       </IconButton>
+
       {noRecords ? (
         <span style={{ margin: '0 1em' }}>0 records</span>
       ) : (
@@ -139,19 +146,25 @@ const PaginationControl = (props: PaginationControlProps) => {
           style={{ margin: '0 1em' }}
         >{`Record ${firstRecord} - ${lastRecord} of ${controlObject.totalRecords}`}</span>
       )}
+
       <IconButton
         onClick={goToNextPage}
         disabled={controlObject.currentPage === totalPages || noRecords}
         aria-label='Go to next table page.'
       >
-        <NavigateNext />
+        <Tooltip title='Next Page'>
+          <NavigateNext />
+        </Tooltip>
       </IconButton>
+
       <IconButton
         onClick={goToLastPage}
         disabled={controlObject.currentPage === totalPages || noRecords}
         aria-label='Go to last table page.'
       >
-        <LastPage />
+        <Tooltip title='Last Page'>
+          <LastPage />
+        </Tooltip>
       </IconButton>
     </div>
   );
