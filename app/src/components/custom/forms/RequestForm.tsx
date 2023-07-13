@@ -1,4 +1,12 @@
-import { Dispatch, SetStateAction, useContext, useState, MouseEvent, CSSProperties } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState,
+  MouseEvent,
+  CSSProperties,
+  useRef,
+} from 'react';
 import { RequestStates, convertStateToStatus } from '../../../helpers/convertState';
 import { useNavigate } from 'react-router-dom';
 import { ReimbursementRequest } from '../../../interfaces/ReimbursementRequest';
@@ -91,6 +99,13 @@ const RequestForm = (props: RequestFormProps) => {
 
   const { state: authState } = useAuthService();
 
+  // Bypass state for modal popups. Used to know which popups have already been dismissed.
+  const defaultModalBypassState = {
+    incomplete: isAdmin, // Because admins always bypass this
+    unsaved: !isAdmin, // Because only admins care about this
+  };
+  const modalBypassState = useRef(defaultModalBypassState);
+
   // Controls for menu dropdown
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -168,10 +183,28 @@ const RequestForm = (props: RequestFormProps) => {
     return allApprovalsHaveFiles && allPurchasesHaveFiles;
   };
 
+  // Are all files saved?
+  const allFilesSaved = () => {
+    // Remove any temporary or removed files
+    const actualApprovalFiles = approvalFiles.filter(
+      (file) => file.source !== 'temp' && !file.removed,
+    );
+    const actualPurchaseFiles = purchaseFiles.filter(
+      (file) => file.source !== 'temp' && !file.removed,
+    );
+
+    // Check the downloaded property of each file
+    return [...actualApprovalFiles, ...actualPurchaseFiles].every((file) => file.downloaded);
+  };
+
   // When the update button is selected.
   const onUpdate = () => {
-    if (!isAdmin && !(allRequiredInfoIsHere() && allFilesAdded())) {
+    if (!modalBypassState.current.incomplete && !(allRequiredInfoIsHere() && allFilesAdded())) {
+      // Is all info filled in?
       openDialog('incompletePrompt');
+    } else if (!modalBypassState.current.unsaved && !allFilesSaved()) {
+      // Have all files been saved?
+      openDialog('unsavedPrompt');
     } else {
       handleUpdate();
     }
@@ -201,7 +234,12 @@ const RequestForm = (props: RequestFormProps) => {
         id='deletePrompt'
       />
       <GeneralPrompt
-        handler={handleUpdate}
+        handler={() => {
+          const dialog: HTMLDialogElement = document.querySelector(`#incompletePrompt`)!;
+          dialog.close();
+          modalBypassState.current = { ...modalBypassState.current, incomplete: true };
+          onUpdate();
+        }}
         title='Incomplete Request'
         blurb={[
           'This record is incomplete.',
@@ -210,6 +248,21 @@ const RequestForm = (props: RequestFormProps) => {
           'Do you wish to continue?',
         ]}
         id='incompletePrompt'
+      />
+      <GeneralPrompt
+        handler={() => {
+          const dialog: HTMLDialogElement = document.querySelector(`#unsavedPrompt`)!;
+          dialog.close();
+          modalBypassState.current = { ...modalBypassState.current, unsaved: true };
+          onUpdate();
+        }}
+        title='Unsaved Files'
+        blurb={[
+          'Not all files have been downloaded.',
+          'Requests marked as Deleted or Complete may lose these files after 30 days.',
+          'Download files and save them elsewhere to avoid file loss.',
+        ]}
+        id='unsavedPrompt'
       />
       {/* Start Actual Form */}
       <Paper
