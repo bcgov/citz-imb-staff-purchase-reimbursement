@@ -51,7 +51,7 @@ const IndividualRequest = () => {
     deleted: false,
     downloaded: false,
     removed: false,
-    source: '',
+    source: 'temp',
   };
 
   // Retrieves a single request's info

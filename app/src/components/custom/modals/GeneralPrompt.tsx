@@ -4,28 +4,28 @@ import { modalStyles } from './modalStyles';
 
 /**
  * @interface
- * @description Properties passed to the DeletePrompt component.
- * @property {() => void} deleteHander - The action taken when delete is confirmed.
+ * @description Properties passed to the GeneralPrompt component.
+ * @property {() => void} handler - The action taken when prompt is confirmed.
  * @property {string} title - The title of the modal popup.
  * @property {string[]} blurb - The text in the body of the modal.
  * @property {string} id - The id assigned to this modal.
  */
-interface DeletePromptProps {
-  deleteHandler: () => void;
+interface GeneralPromptProps {
+  handler: () => void;
   title: string;
   blurb: string[];
   id: string;
 }
 
 /**
- * @description A modal element that can be used to confirm deletions.
- * @param {DeletePromptProps} props The properties passed to the component.
+ * @description A modal element that can be used to confirm actions.
+ * @param {GeneralPromptProps} props The properties passed to the component.
  * @returns A React component.
  */
-const DeletePrompt = (props: DeletePromptProps) => {
-  const { deleteHandler, title, blurb, id } = props;
+const GeneralPrompt = (props: GeneralPromptProps) => {
+  const { handler, title, blurb, id } = props;
   return (
-    <dialog id={id} style={modalStyles.warningModalStyle}>
+    <dialog id={id} style={modalStyles.standardModalStyle}>
       <h4
         style={{
           marginBottom: '1em',
@@ -57,7 +57,7 @@ const DeletePrompt = (props: DeletePromptProps) => {
         >
           Cancel
         </ActionButton>
-        <ActionButton style={buttonStyles.warning} handler={deleteHandler}>
+        <ActionButton style={buttonStyles.primary} handler={handler}>
           Confirm
         </ActionButton>
       </div>
@@ -65,4 +65,4 @@ const DeletePrompt = (props: DeletePromptProps) => {
   );
 };
 
-export default DeletePrompt;
+export default GeneralPrompt;

@@ -33,6 +33,7 @@ import BackButton from '../../bcgov/BackButton';
 import DeletePrompt from '../modals/DeletePrompt';
 import { ErrorContext, errorStyles } from '../notifications/ErrorWrapper';
 import { getAllFiles } from '../../../helpers/fileDownloadAll';
+import GeneralPrompt from '../modals/GeneralPrompt';
 
 /**
  * @interface
@@ -137,9 +138,43 @@ const RequestForm = (props: RequestFormProps) => {
     }
   };
 
-  const openDialog = () => {
-    const dialog: HTMLDialogElement = document.querySelector('#deletePrompt')!;
+  // Opens dialog elements based on id
+  const openDialog = (id: string) => {
+    const dialog: HTMLDialogElement = document.querySelector(`#${id}`)!;
     dialog.showModal();
+  };
+
+  // Checks if few required fields are populated
+  const allRequiredInfoIsHere = () =>
+    reimbursementRequest?.employeeId && approvals && approvals.length !== 0;
+
+  // Checks if all elements have files.
+  const allFilesAdded = () => {
+    // Are both types of lists here?
+    if (!approvals || !purchases) return false;
+
+    // Remove any temporary or removed files
+    const actualApprovalFiles = approvalFiles.filter(
+      (file) => file.source !== 'temp' && !file.removed,
+    );
+    const actualPurchaseFiles = purchaseFiles.filter(
+      (file) => file.source !== 'temp' && !file.removed,
+    );
+
+    // Do lists have all file objects?
+    const allApprovalsHaveFiles = approvals.length === actualApprovalFiles.length;
+    const allPurchasesHaveFiles = purchases.length === actualPurchaseFiles.length;
+
+    return allApprovalsHaveFiles && allPurchasesHaveFiles;
+  };
+
+  // When the update button is selected.
+  const onUpdate = () => {
+    if (!isAdmin && !(allRequiredInfoIsHere() && allFilesAdded())) {
+      openDialog('incompletePrompt');
+    } else {
+      handleUpdate();
+    }
   };
 
   const theme = useTheme();
@@ -155,6 +190,7 @@ const RequestForm = (props: RequestFormProps) => {
 
   return (
     <>
+      {/* Modals Exist Here */}
       <DeletePrompt
         deleteHandler={handleDelete}
         title='Delete Request?'
@@ -164,6 +200,18 @@ const RequestForm = (props: RequestFormProps) => {
         ]}
         id='deletePrompt'
       />
+      <GeneralPrompt
+        handler={handleUpdate}
+        title='Incomplete Request'
+        blurb={[
+          'This record is incomplete.',
+          'It may be missing necessary information, such as attached files.',
+          'Updating now will keep the status as Incomplete.',
+          'Do you wish to continue?',
+        ]}
+        id='incompletePrompt'
+      />
+      {/* Start Actual Form */}
       <Paper
         sx={{
           padding: '1em',
@@ -188,7 +236,7 @@ const RequestForm = (props: RequestFormProps) => {
                 <BackButton />
                 <ActionButton
                   style={{ ...buttonStyles.primary, marginLeft: '1em' }}
-                  handler={handleUpdate}
+                  handler={onUpdate}
                   ariaDescription='Updates the record with the info currently displayed.'
                 >
                   Update
@@ -263,7 +311,13 @@ const RequestForm = (props: RequestFormProps) => {
                       >
                         View User&apos;s Requests
                       </MenuItem>
-                      <MenuItem onClick={openDialog}>Delete Request</MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          openDialog('deletePrompt');
+                        }}
+                      >
+                        Delete Request
+                      </MenuItem>
                     </Menu>
                   </>
                 ) : (

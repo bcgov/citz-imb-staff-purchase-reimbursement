@@ -259,7 +259,7 @@ export const updateRequestState = async (req: Request, res: Response) => {
     if (refinedState === RequestStates.INCOMPLETE || refinedState === RequestStates.COMPLETE) {
       // Get user with matching IDIR
       const users: IDIRUser[] = await getIDIRUser(existingRequest.idir);
-      if (users) {
+      if (users.length > 0) {
         sendChangeNotification(users.at(0).email, `${FRONTEND_URL}/request/${id}`);
       }
     }
