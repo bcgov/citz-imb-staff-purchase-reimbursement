@@ -4,7 +4,7 @@ import axios from 'axios';
 import RequestsTable from '../components/custom/tables/RequestsTable';
 import { headerFont } from '../constants/fonts';
 import { useAuthService } from '../keycloak';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Switch } from '@mui/material';
 import LinkButton from '../components/bcgov/LinkButton';
 import { buttonStyles } from '../components/bcgov/ButtonStyles';
@@ -25,6 +25,10 @@ const Home = () => {
   const navigate = useNavigate();
   // For ErrorWrapper notification
   const { setErrorState } = useContext(ErrorContext);
+
+  // For back button behaviour
+  const location = useLocation();
+  sessionStorage.setItem('backTarget', location.pathname);
 
   // Fires on page load.
   useEffect(() => {

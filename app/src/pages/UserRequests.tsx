@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import RequestsTable from '../components/custom/tables/RequestsTable';
 import { headerFont } from '../constants/fonts';
 import { useAuthService } from '../keycloak';
@@ -19,6 +19,10 @@ const UserRequests = () => {
 
   // Error notification
   const { setErrorState } = useContext(ErrorContext);
+
+  // For back button behaviour
+  const location = useLocation();
+  sessionStorage.setItem('backTarget', location.pathname);
 
   // Fires on page load.
   useEffect(() => {

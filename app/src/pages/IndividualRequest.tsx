@@ -12,6 +12,7 @@ import RequestForm from '../components/custom/forms/RequestForm';
 import BackButton from '../components/bcgov/BackButton';
 import { marginBlock } from '../constants/styles';
 import { ErrorContext, errorStyles } from '../components/custom/notifications/ErrorWrapper';
+import { lastVisitedPage } from '../helpers/navigator';
 
 /**
  * @description A page showing an individual reimbursement requests and all its fields.
@@ -131,7 +132,7 @@ const IndividualRequest = () => {
             break;
           case 404:
             // Record doesn't exist
-            navigate(-1);
+            navigate(lastVisitedPage());
             break;
           default:
             console.warn(e);
@@ -179,8 +180,8 @@ const IndividualRequest = () => {
           open: true,
           style: errorStyles.success,
         });
-        // Return to home page
-        navigate(-1);
+        // Return to previous page
+        navigate(lastVisitedPage());
       }
     } catch (e) {
       console.warn('Record could not be updated.');

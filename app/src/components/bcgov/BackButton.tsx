@@ -1,6 +1,7 @@
 import { Button } from '@mui/material';
 import { buttonStyles } from './ButtonStyles';
 import { useNavigate } from 'react-router-dom';
+import { lastVisitedPage } from '../../helpers/navigator';
 
 /**
  * @interface
@@ -28,7 +29,7 @@ const BackButton = (props: BackButtonProps) => {
       sx={buttonStyles.secondary}
       onClick={() => {
         sessionStorage.removeItem('target-page'); // Otherwise there can be strange affects with redirect.
-        navigate(-1);
+        navigate(lastVisitedPage());
       }}
       aria-label='Back Button'
       aria-description='A button that sends the user back one page.'
