@@ -291,6 +291,7 @@ const RequestForm = (props: RequestFormProps) => {
                   style={{ ...buttonStyles.primary, marginLeft: '1em' }}
                   handler={onUpdate}
                   ariaDescription='Updates the record with the info currently displayed.'
+                  disabled={locked}
                 >
                   Update
                 </ActionButton>
