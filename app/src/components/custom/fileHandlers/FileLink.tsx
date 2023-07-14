@@ -58,11 +58,19 @@ const FileLink = (props: FileLinkProps) => {
       const file: string = await axios(axiosReqConfig).then((response) => response.data.file);
       return file;
     } catch (e: any) {
-      setErrorState({
-        text: 'File could not be retrieved.',
-        open: true,
-        style: errorStyles.error,
-      });
+      if (axios.isAxiosError(e) && e.code === '401') {
+        setErrorState({
+          text: 'User is unauthenticated. Redirecting to login.',
+          open: true,
+        });
+        window.location.reload();
+      } else {
+        setErrorState({
+          text: 'File could not be retrieved.',
+          open: true,
+          style: errorStyles.error,
+        });
+      }
     }
   };
 
