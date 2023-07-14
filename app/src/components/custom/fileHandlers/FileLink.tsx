@@ -108,7 +108,7 @@ const FileLink = (props: FileLinkProps) => {
         }}
         style={{ ...normalFont, color: bcgov.links, marginRight: '1em' }}
       >{`${files[index].name}`}</a>
-      {files[index].downloaded ? (
+      {isAdmin && files[index].downloaded ? (
         <Tooltip title='Previously Downloaded'>
           <DownloadDoneIcon
             fontSize='medium'
