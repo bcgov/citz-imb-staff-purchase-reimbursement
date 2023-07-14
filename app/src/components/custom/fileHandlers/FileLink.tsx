@@ -10,6 +10,7 @@ import { useAuthService } from '../../../keycloak';
 import { useParams } from 'react-router-dom';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import { ErrorContext, errorStyles } from '../notifications/ErrorWrapper';
+import { User } from '../../../keycloak/utils/User';
 
 /**
  * @interface
@@ -38,6 +39,7 @@ interface FileLinkProps {
 const FileLink = (props: FileLinkProps) => {
   const { uid, files, setFiles, index, source, disabled } = props;
   const { state: authState } = useAuthService();
+  const isAdmin = (authState.userInfo as User).client_roles?.includes('admin');
   const { id } = useParams();
   const { BACKEND_URL } = Constants;
 
@@ -76,10 +78,12 @@ const FileLink = (props: FileLinkProps) => {
     tempLink.download = files[index].name;
     tempLink.click();
 
-    // Mark file as downloaded
-    const tempFiles = [...files];
-    tempFiles[index].downloaded = true;
-    setFiles(tempFiles);
+    // Mark file as downloaded, only if admin
+    if (isAdmin) {
+      const tempFiles = [...files];
+      tempFiles[index].downloaded = true;
+      setFiles(tempFiles);
+    }
   };
 
   return (

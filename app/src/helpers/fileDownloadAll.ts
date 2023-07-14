@@ -15,7 +15,11 @@ export const getAllFiles = async (id: string, token: string) => {
       Authorization: `Bearer ${token}`,
     },
   };
-  const file: string = await axios(axiosReqConfig).then((response) => response.data.zip);
+  const file: string = await axios(axiosReqConfig)
+    .then((response) => response.data.zip)
+    .catch(() => {
+      throw Error('File retrieval failed.');
+    });
   const tempLink = document.createElement('a');
   tempLink.href = file;
   tempLink.download = `allFiles${id}.zip`;
