@@ -1,2 +1,1 @@
-export const lastVisitedPage: () => string = () =>
-  window.sessionStorage.getItem('backTarget') || '/';
+export const lastVisitedPage: () => string = () => sessionStorage.getItem('backTarget') || '/';
