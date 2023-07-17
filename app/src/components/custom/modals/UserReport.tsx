@@ -65,12 +65,20 @@ export const UserReport = () => {
       }
     } catch (e) {
       console.warn(e);
-      // Request failed. Report error to user.
-      setErrorState({
-        text: 'Issue could not be submitted.',
-        open: true,
-        style: errorStyles.error,
-      });
+      if (axios.isAxiosError(e) && e.code === '401') {
+        setErrorState({
+          text: 'User is unauthenticated. Redirecting to login.',
+          open: true,
+        });
+        window.location.reload();
+      } else {
+        // Request failed. Report error to user.
+        setErrorState({
+          text: 'Issue could not be submitted.',
+          open: true,
+          style: errorStyles.error,
+        });
+      }
     }
   };
 

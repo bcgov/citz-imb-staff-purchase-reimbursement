@@ -185,11 +185,19 @@ const IndividualRequest = () => {
       }
     } catch (e) {
       console.warn('Record could not be updated.');
-      setErrorState({
-        text: 'Update was unsuccessful.',
-        open: true,
-        style: errorStyles.error,
-      });
+      if (axios.isAxiosError(e) && e.code === '401') {
+        setErrorState({
+          text: 'User is unauthenticated. Redirecting to login.',
+          open: true,
+        });
+        window.location.reload();
+      } else {
+        setErrorState({
+          text: 'Update was unsuccessful.',
+          open: true,
+          style: errorStyles.error,
+        });
+      }
     }
   };
 

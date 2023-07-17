@@ -146,11 +146,19 @@ const RequestForm = (props: RequestFormProps) => {
       }
     } catch (e) {
       console.warn(e);
-      setErrorState({
-        text: 'Deletion Unsuccessful.',
-        open: true,
-        style: errorStyles.error,
-      });
+      if (axios.isAxiosError(e) && e.code === '401') {
+        setErrorState({
+          text: 'User is unauthenticated. Redirecting to login.',
+          open: true,
+        });
+        window.location.reload();
+      } else {
+        setErrorState({
+          text: 'Deletion Unsuccessful.',
+          open: true,
+          style: errorStyles.error,
+        });
+      }
     }
   };
 

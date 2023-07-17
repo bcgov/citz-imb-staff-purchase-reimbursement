@@ -9,8 +9,9 @@ interface IKeycloakWrapper {
 const KeycloakWrapper = (props: IKeycloakWrapper) => {
   const { children } = props;
   const { setUserInfo, refreshAccessToken } = useAuthService();
+  const tokenRefreshTime = 1000 * 60; // 60 seconds
 
-  useEffect(() => {
+  const checkToken = () => {
     // Get the current URL and its search parameters
     const url = new URL(window.location.href);
     const { searchParams } = url;
@@ -26,6 +27,11 @@ const KeycloakWrapper = (props: IKeycloakWrapper) => {
       // If there is no token in the URL, try to refresh the access token
       refreshAccessToken();
     }
+  };
+
+  useEffect(() => {
+    checkToken();
+    setInterval(checkToken, tokenRefreshTime);
   }, []);
 
   return <div>{children}</div>;
