@@ -42,6 +42,7 @@ import DeletePrompt from '../modals/DeletePrompt';
 import { ErrorContext, errorStyles } from '../notifications/ErrorWrapper';
 import { getAllFiles } from '../../../helpers/fileDownloadAll';
 import GeneralPrompt from '../modals/GeneralPrompt';
+import { lastVisitedPage } from '../../../helpers/navigator';
 
 /**
  * @interface
@@ -140,8 +141,8 @@ const RequestForm = (props: RequestFormProps) => {
           open: true,
           style: errorStyles.success,
         });
-        // Return to home page
-        navigate(-1);
+        // Return to previous page
+        navigate(lastVisitedPage());
       }
     } catch (e) {
       console.warn(e);
