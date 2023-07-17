@@ -211,6 +211,14 @@ const RequestForm = (props: RequestFormProps) => {
     }
   };
 
+  // Marks all files in a list of Purchases or Approvals as downloaded
+  const markAllFilesAsDownloaded = (list: IFile[]) =>
+    list.map((file: IFile) => {
+      const tempFile = { ...file };
+      tempFile.downloaded = true;
+      return tempFile;
+    });
+
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
   const navigate = useNavigate();
@@ -348,6 +356,8 @@ const RequestForm = (props: RequestFormProps) => {
                         onClick={() => {
                           try {
                             getAllFiles(reimbursementRequest?._id || '', authState.accessToken);
+                            setPurchaseFiles(markAllFilesAsDownloaded(purchaseFiles));
+                            setApprovalFiles(markAllFilesAsDownloaded(approvalFiles));
                           } catch (e: any) {
                             setErrorState({
                               text: 'File could not be retrieved.',

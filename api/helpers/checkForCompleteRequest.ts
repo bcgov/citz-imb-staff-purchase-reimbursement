@@ -25,16 +25,17 @@ export const checkForCompleteRequest = (requestData: RequestUpdateData) => {
 
   // Do all purchases have a file?
   const purchasesHaveFiles = requestData.purchases.every(
-    (purchase: Purchase) => purchase.fileObj && !purchase.fileObj.removed,
+    (purchase: Purchase) =>
+      purchase.fileObj && !purchase.fileObj.removed && purchase.fileObj.source !== 'temp',
   );
   if (!purchasesHaveFiles) return false;
-
   // Does at least one approval exist?
   if (requestData.approvals.length === 0) return false;
 
   // Does each approval have a file?
   const approvalsHaveFiles = requestData.approvals.every(
-    (approval: Approval) => approval.fileObj && !approval.fileObj.removed,
+    (approval: Approval) =>
+      approval.fileObj && !approval.fileObj.removed && approval.fileObj.source !== 'temp',
   );
   if (!approvalsHaveFiles) return false;
 

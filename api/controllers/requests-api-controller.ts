@@ -4,7 +4,7 @@ import { Collection, WithId, ObjectId, Filter } from 'mongodb';
 import RequestStates from '../constants/RequestStates';
 import { z } from 'zod';
 import { checkForCompleteRequest } from '../helpers/checkForCompleteRequest';
-import { getUserInfo } from '../keycloak/utils';
+import { User, getUserInfo } from '../keycloak/utils';
 import Constants from '../constants/Constants';
 import { Purchase } from '../interfaces/Purchase';
 import { Approval } from '../interfaces/Approval';
@@ -400,30 +400,33 @@ export const getFile = async (req: Request, res: Response) => {
         }
 
         // Update file to be marked as downloaded.
-        if (desiredFile.source === 'purchase') {
-          await collection.updateOne(
-            {
-              _id: { $eq: new ObjectId(id) },
-              'purchases.fileObj.date': date,
-            },
-            {
-              $set: {
-                'purchases.$.fileObj.downloaded': true,
+        const { user } = req;
+        if ((user as User).client_roles?.includes('admin')) {
+          if (desiredFile.source === 'purchase') {
+            await collection.updateOne(
+              {
+                _id: { $eq: new ObjectId(id) },
+                'purchases.fileObj.date': date,
               },
-            },
-          );
-        } else {
-          await collection.updateOne(
-            {
-              _id: { $eq: new ObjectId(id) },
-              'approvals.fileObj.date': date,
-            },
-            {
-              $set: {
-                'approvals.$.fileObj.downloaded': true,
+              {
+                $set: {
+                  'purchases.$.fileObj.downloaded': true,
+                },
               },
-            },
-          );
+            );
+          } else {
+            await collection.updateOne(
+              {
+                _id: { $eq: new ObjectId(id) },
+                'approvals.fileObj.date': date,
+              },
+              {
+                $set: {
+                  'approvals.$.fileObj.downloaded': true,
+                },
+              },
+            );
+          }
         }
 
         return res.status(200).json({ file: desiredFile.file });
@@ -446,18 +449,21 @@ export const getFile = async (req: Request, res: Response) => {
           res.status(200).json({ zip: `data:application/zip;base64,${content}` });
         });
 
-        // Mark all files as downloaded.
-        await collection.updateOne(
-          {
-            _id: { $eq: new ObjectId(id) },
-          },
-          {
-            $set: {
-              'purchases.$[].fileObj.downloaded': true,
-              'approvals.$[].fileObj.downloaded': true,
+        const { user } = req;
+        if ((user as User).client_roles?.includes('admin')) {
+          // Mark all files as downloaded.
+          await collection.updateOne(
+            {
+              _id: { $eq: new ObjectId(id) },
             },
-          },
-        );
+            {
+              $set: {
+                'purchases.$[].fileObj.downloaded': true,
+                'approvals.$[].fileObj.downloaded': true,
+              },
+            },
+          );
+        }
 
         return res;
       }
