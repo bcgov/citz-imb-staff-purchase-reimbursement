@@ -112,7 +112,7 @@ const ApprovalTable = (props: ApprovalTableProps) => {
               }}
             >
               <CustomTableCell sx={{ width: '2em' }}>{index + 1}</CustomTableCell>
-              <CustomTableCell sx={{ width: '12em' }}>
+              <CustomTableCell sx={{ minWidth: '10em', width: '20%' }}>
                 {!editable ? (
                   new Date(approval.approvalDate || Date.now()).toLocaleDateString()
                 ) : (

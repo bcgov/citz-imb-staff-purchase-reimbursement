@@ -59,7 +59,7 @@ const PurchaseTable = (props: PurchaseTableProps) => {
               >
                 <CustomTableCell sx={{ width: '40px' }}>{index + 1}</CustomTableCell>
                 <CustomTableCell>{`${purchase.supplier}`}</CustomTableCell>
-                <CustomTableCell sx={{ width: '150px' }}>
+                <CustomTableCell sx={{ minWidth: '10em', width: '15%' }}>
                   {new Date(purchase.purchaseDate).toLocaleDateString()}
                 </CustomTableCell>
                 <CustomTableCell>{`$ ${purchase.cost.toFixed(2)}`}</CustomTableCell>
