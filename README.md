@@ -1,6 +1,8 @@
-# CITZ IMB Staff Purchasing Reimbursement
+# CITZ: IMB Staff Purchase Reimbursement Project
 
-Citizen Services Capstone Project A for 2023
+The Staff Purchase Reimbursement Project (SPR) aims to facilitate the process of managing purchase reimbursements for administrative staff. Users will be able to access a web application that addresses their needs to submit and update reimbursement requests, download and upload required files, and view the ongoing status of their requests.
+
+A quick setup guide is available below. For more information on the application, please see [the project's Wiki pages](https://github.com/bcgov/citz-imb-staff-purchasing-reimbursement/wiki).
 
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](Redirect-URL)
 
