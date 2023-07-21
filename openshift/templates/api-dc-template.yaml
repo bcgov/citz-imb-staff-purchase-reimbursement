@@ -10,7 +10,7 @@ objects:
     apiVersion: apps.openshift.io/v1
     metadata:
       annotations:
-        app.openshift.io/route-disabled: 'false'
+        app.openshift.io/route-disabled: "false"
         openshift.io/generated-by: OpenShiftWebConsole
       name: ${CONTAINER_NAME}
       namespace: ${OPENSHIFT_NAMESPACE}
@@ -135,6 +135,36 @@ objects:
                     secretKeyRef:
                       name: spr-secret
                       key: GC_NOTIFY_ADMIN_EMAIL
+                - name: CSS_API_TOKEN_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: spr-secret
+                      key: CSS_API_TOKEN_URL
+                - name: CSS_API_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: spr-secret
+                      key: CSS_API_CLIENT_ID
+                - name: CSS_API_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: spr-secret
+                      key: CSS_API_CLIENT_SECRET
+                - name: CSS_API_BASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: spr-secret
+                      key: CSS_API_BASE_URL
+                - name: JIRA_ACCOUNT_EMAIL
+                  valueFrom:
+                    secretKeyRef:
+                      name: spr-secret
+                      key: JIRA_ACCOUNT_EMAIL
+                - name: JIRA_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: spr-secret
+                      key: JIRA_TOKEN
                 - name: TESTING
                   valueFrom:
                     secretKeyRef:
